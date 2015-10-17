@@ -7,12 +7,9 @@ import android.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebView;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.yaozu.foodienote.fragment.DiscoverFragment;
 import com.yaozu.foodienote.fragment.HomeFragment;
@@ -123,5 +120,16 @@ public class HomeMainActivity extends Activity implements View.OnClickListener ,
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
     }
 }

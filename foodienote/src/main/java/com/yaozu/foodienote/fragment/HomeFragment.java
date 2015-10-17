@@ -7,9 +7,11 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.yaozu.foodienote.R;
+import com.yaozu.foodienote.adapter.HomeListViewAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,7 +31,9 @@ public class HomeFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-
+    private Activity mActivity;
+    private ListView mListView;
+    private HomeListViewAdapter mAdapter;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -66,13 +70,9 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view  = inflater.inflate(R.layout.fragment_home, container, false);
-        final TextView textView = (TextView) view.findViewById(R.id.homefragment_text);
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                textView.setText("");
-            }
-        });
+        mListView = (ListView) view.findViewById(R.id.home_listview);
+        mAdapter = new HomeListViewAdapter(mActivity);
+        mListView.setAdapter(mAdapter);
         return view;
     }
 
@@ -86,6 +86,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        mActivity = activity;
         try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
