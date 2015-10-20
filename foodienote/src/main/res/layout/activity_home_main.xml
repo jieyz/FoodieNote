@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeMainActivity">
 
@@ -7,23 +8,75 @@
         android:id="@+id/main_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/main_divider">
-    </FrameLayout>
+        android:layout_above="@+id/main_divider"></FrameLayout>
 
     <View
         android:id="@+id/main_divider"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="#55000000"
-        android:layout_above="@+id/mb_tablelayout"/>
+        android:layout_above="@+id/main_play_layout"
+        android:background="#55000000" />
 
+    <RelativeLayout
+        android:id="@+id/main_play_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true">
+
+        <ImageView
+            android:id="@+id/main_music_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/ic_launcher" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/main_music_photo"
+            android:layout_marginLeft="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="the day you went awaye"
+                android:layout_marginTop="3dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:text="mojic cat" />
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:layout_toLeftOf="@+id/main_play_list"
+            android:src="@drawable/ic_launcher" />
+
+        <ImageView
+            android:id="@+id/main_play_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/ic_launcher" />
+    </RelativeLayout>
+    <!--
     <RadioGroup
         android:id="@+id/mb_tablelayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="#ffffff"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:visibility="gone">
         <RelativeLayout
             android:id="@+id/rl_first"
             android:layout_width="0dp"
@@ -58,6 +111,7 @@
         </RelativeLayout>
 
         <ImageButton
+            android:id="@+id/music_home"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -98,5 +152,5 @@
         </RelativeLayout>
 
     </RadioGroup>
-
+-->
 </RelativeLayout>
