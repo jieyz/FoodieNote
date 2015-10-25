@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.yaozu.foodienote.R;
 
@@ -33,6 +35,13 @@ public class HomeListViewAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = View.inflate(mContext, R.layout.list_msg_item,null);
+        ImageView userface = (ImageView) view.findViewById(R.id.list_item_userface);
+        userface.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext,"这是用户头像",Toast.LENGTH_SHORT).show();
+            }
+        });
         return view;
     }
 }

@@ -34,28 +34,32 @@ public class HomeMainActivity extends Activity implements View.OnClickListener ,
         mFragmentManager = getFragmentManager();
         findViewByIds();
         setOnclickLisener();
+
+        FragmentTransaction tr = mFragmentManager.beginTransaction();
+        tr.add(R.id.main_fragment_container,new HomeFragment());
+        tr.commit();
     }
 
     private void findViewByIds(){
-        mRadioFirst = (RadioButton) findViewById(R.id.radio_first);
+/*        mRadioFirst = (RadioButton) findViewById(R.id.radio_first);
         mRadioFirst.setChecked(true);
         mRadioSecond = (RadioButton) findViewById(R.id.radio_second);
         mRadioThird = (RadioButton) findViewById(R.id.radio_third);
         mRadioFour = (RadioButton) findViewById(R.id.radio_four);
-        music_home = (ImageButton) findViewById(R.id.music_home);
+        music_home = (ImageButton) findViewById(R.id.music_home);*/
     }
 
     private void setOnclickLisener(){
-        mRadioFirst.setOnClickListener(this);
+/*        mRadioFirst.setOnClickListener(this);
         mRadioSecond.setOnClickListener(this);
         mRadioThird.setOnClickListener(this);
         mRadioFour.setOnClickListener(this);
-        music_home.setOnClickListener(this);
+        music_home.setOnClickListener(this);*/
     }
 
     @Override
     public void onClick(View v) {
-        mRadioFirst.setChecked(false);
+        /*mRadioFirst.setChecked(false);
         mRadioSecond.setChecked(false);
         mRadioThird.setChecked(false);
         mRadioFour.setChecked(false);
@@ -116,7 +120,7 @@ public class HomeMainActivity extends Activity implements View.OnClickListener ,
             tr.add(R.id.main_fragment_container,fragment,tag);
         }
         tr.commit();
-        mCurrentFragmentTag = tag;
+        mCurrentFragmentTag = tag;*/
     }
 
     @Override
