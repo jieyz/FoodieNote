@@ -2,11 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.yaozu.foodienote" >
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:name=".YaozuApplication">
         <activity
             android:name=".HomeMainActivity"
             android:label="@string/app_name" >
@@ -17,12 +19,19 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".broadcast.MusicBroadcastReceiver">
+        <receiver android:name=".broadcast.MusicBroadcastReceiver" >
             <intent-filter>
-                <action android:name="android.intent.action.SCREEN_ON"/>
+                <action android:name="android.intent.action.SCREEN_ON" />
             </intent-filter>
         </receiver>
+
         <activity android:name=".activity.MusicHomeActivity" />
+
+        <service
+            android:name=".service.MusicService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
