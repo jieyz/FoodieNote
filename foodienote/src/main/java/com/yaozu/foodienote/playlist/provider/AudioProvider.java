@@ -19,6 +19,23 @@ public class AudioProvider {
         this.context = context;
     }
 
+    /**
+     * 获得指定目录下的歌曲信息
+     * @param path
+     * @return
+     */
+    public List<Song> getSongListFromPath(String path){
+        List<Song> pathList = new ArrayList<>();
+        List<Song> list = (List<Song>) getList();
+        for(int i = 0;i<list.size();i++){
+            Song song = list.get(i);
+            if(song.getFileUrl().contains(path)){
+                pathList.add(song);
+            }
+        }
+        return pathList;
+    }
+
     public List<?> getList() {
         List<Song> list = null;
         if (context != null) {

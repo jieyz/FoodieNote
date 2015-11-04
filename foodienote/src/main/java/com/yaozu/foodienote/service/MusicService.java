@@ -8,8 +8,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.text.TextUtils;
 
 import com.yaozu.foodienote.YaozuApplication;
+import com.yaozu.foodienote.constant.IntentKey;
 import com.yaozu.foodienote.playlist.model.Song;
 import com.yaozu.foodienote.playlist.provider.AudioProvider;
 
@@ -36,7 +38,7 @@ public class MusicService extends Service {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case MUSIC_START:
                     if (mVolume < 10) {
                         mVolume++;
@@ -61,27 +63,21 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        initAuidoData();
+        System.out.println("=============onStartCommand==============>");
+        initAuidoData(intent);
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void initAuidoData() {
-        String path = Environment.getExternalStorageDirectory().getPath();
-        path = path + File.separator + "KuwoMusic" + File.separator + "music";
-        File file = new File(path);
-        File[] files = file.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            File f = files[i];
-            if (i == 14) {
-                mCurrentMediaPath = f.getAbsolutePath();
-            }
+    private void initAuidoData(Intent intent) {
+        mCurrentMediaPath = intent.getStringExtra(IntentKey.MEDIA_FILE_URL);
+        if (!TextUtils.isEmpty(mCurrentMediaPath)) {
+            prepareToPlay();
         }
+    }
+
+    public void setMediaPathAndPrepare(String mediaPath) {
+        mCurrentMediaPath = mediaPath;
         prepareToPlay();
-        AudioProvider provider = new AudioProvider(this.getApplication());
-        List<Song> songs = (List<Song>) provider.getList();
-        for(int i = 0;i<songs.size();i++){
-            System.out.println("========>"+songs.get(i).toString());
-        }
     }
 
     private void prepareToPlay() {
@@ -101,13 +97,21 @@ public class MusicService extends Service {
                 mMediaPlayer.start();
             }
         });
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mMediaPlayer.release();
+            }
+        });
     }
 
     public void start() {
-        mMediaPlayer.start();
-        Message msg = mHandler.obtainMessage();
-        msg.what = MUSIC_START;
-        mHandler.sendMessageDelayed(msg, 50);
+        if (!TextUtils.isEmpty(mCurrentMediaPath)) {
+            mMediaPlayer.start();
+            Message msg = mHandler.obtainMessage();
+            msg.what = MUSIC_START;
+            mHandler.sendMessageDelayed(msg, 50);
+        }
     }
 
     public void pause() {
@@ -117,8 +121,20 @@ public class MusicService extends Service {
         mHandler.sendMessageDelayed(msg, 50);
     }
 
+    public void stopPlayBack(){
+        if(mMediaPlayer != null){
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
+    }
+
     public boolean isPlaying() {
-        return mMediaPlayer.isPlaying();
+        if (!TextUtils.isEmpty(mCurrentMediaPath)) {
+            return mMediaPlayer.isPlaying();
+        } else {
+            return false;
+        }
     }
 
     @Override

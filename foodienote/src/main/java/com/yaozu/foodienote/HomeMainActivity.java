@@ -44,6 +44,12 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
         FragmentTransaction tr = mFragmentManager.beginTransaction();
         tr.add(R.id.main_fragment_container, new HomeFragment());
         tr.commit();
+
+        MusicService service = app.getMusicService();
+        if (service == null) {
+            Intent intent = new Intent(this, MusicService.class);
+            startService(intent);
+        }
     }
 
     private void findViewByIds() {

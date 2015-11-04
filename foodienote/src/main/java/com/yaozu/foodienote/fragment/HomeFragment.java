@@ -4,14 +4,17 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.yaozu.foodienote.R;
 import com.yaozu.foodienote.adapter.HomeListViewAdapter;
+import com.yaozu.foodienote.playlist.provider.AudioProvider;
+
+import java.io.File;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,6 +37,7 @@ public class HomeFragment extends Fragment {
     private Activity mActivity;
     private ListView mListView;
     private HomeListViewAdapter mAdapter;
+    private AudioProvider mProvider;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -72,6 +76,10 @@ public class HomeFragment extends Fragment {
         View view  = inflater.inflate(R.layout.fragment_home, container, false);
         mListView = (ListView) view.findViewById(R.id.home_listview);
         mAdapter = new HomeListViewAdapter(mActivity);
+        mProvider = new AudioProvider(this.getActivity());
+        String path = Environment.getExternalStorageDirectory().getPath();
+        path = path + File.separator + "KuwoMusic" + File.separator + "music";
+        mAdapter.setSongData(mProvider.getSongListFromPath(path));
         mListView.setAdapter(mAdapter);
         return view;
     }
