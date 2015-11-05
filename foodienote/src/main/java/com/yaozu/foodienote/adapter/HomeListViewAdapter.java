@@ -62,7 +62,7 @@ public class HomeListViewAdapter extends BaseAdapter {
                     mContext.startService(intent);
                 } else {
                     service.stopPlayBack();
-                    service.setMediaPathAndPrepare(song.getFileUrl());
+                    service.setMediaSongAndPrepare(song);
                 }
             }
         });

@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
 import com.yaozu.foodienote.YaozuApplication;
@@ -29,7 +30,7 @@ public class MusicService extends Service {
     private int mVolume = 10;
     private final static int MUSIC_START = 0;
     private final static int MUSIC_PAUSE = 1;
-
+    private Song mCurrentSong;
     public MusicService() {
 
     }
@@ -44,7 +45,7 @@ public class MusicService extends Service {
                         mVolume++;
                         float volume = (float) mVolume / 10.0f;
                         mMediaPlayer.setVolume(volume, volume);
-                        mHandler.sendMessageDelayed(mHandler.obtainMessage(MUSIC_START), 100);
+                        mHandler.sendMessageDelayed(mHandler.obtainMessage(MUSIC_START), 80);
                     }
                     break;
                 case MUSIC_PAUSE:
@@ -52,7 +53,7 @@ public class MusicService extends Service {
                         mVolume--;
                         float volume = (float) mVolume / 10.0f;
                         mMediaPlayer.setVolume(volume, volume);
-                        mHandler.sendMessageDelayed(mHandler.obtainMessage(MUSIC_PAUSE), 100);
+                        mHandler.sendMessageDelayed(mHandler.obtainMessage(MUSIC_PAUSE), 80);
                     } else {
                         mMediaPlayer.pause();
                     }
@@ -63,7 +64,6 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        System.out.println("=============onStartCommand==============>");
         initAuidoData(intent);
         return super.onStartCommand(intent, flags, startId);
     }
@@ -75,9 +75,18 @@ public class MusicService extends Service {
         }
     }
 
-    public void setMediaPathAndPrepare(String mediaPath) {
-        mCurrentMediaPath = mediaPath;
+    public void setMediaSongAndPrepare(Song song) {
+        mCurrentSong = song;
+        mCurrentMediaPath = song.getFileUrl();
         prepareToPlay();
+
+        Intent intent = new Intent(IntentKey.NOTIFY_CURRENT_SONG_MSG);
+        intent.putExtra(IntentKey.MEDIA_FILE_SONG_NAME,mCurrentSong.getTitle());
+        intent.putExtra(IntentKey.MEDIA_FILE_SONG_SINGER,mCurrentSong.getSinger());
+        intent.putExtra(IntentKey.MEDIA_FILE_SONG_ID,(long)mCurrentSong.getId());
+        intent.putExtra(IntentKey.MEDIA_FILE_SONG_ALBUMID,mCurrentSong.getAlbumid());
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(app);
+        localBroadcastManager.sendBroadcast(intent);
     }
 
     private void prepareToPlay() {
@@ -100,7 +109,7 @@ public class MusicService extends Service {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                mMediaPlayer.release();
+
             }
         });
     }

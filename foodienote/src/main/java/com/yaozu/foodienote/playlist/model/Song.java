@@ -13,10 +13,11 @@ public class Song {
     private String type;
     private String size;
     private String fileUrl;
+    private long albumid;
 
 
     public Song(int id, String title, String album, String singer, String fileUrl, String fileName, String type,
-                int duration, String size) {
+                int duration, String size,long albumid) {
         super();
         this.id = id;
         this.fileName = fileName;
@@ -27,6 +28,7 @@ public class Song {
         this.type = type;
         this.size = size;
         this.fileUrl = fileUrl;
+        this.albumid = albumid;
     }
 
     @Override
@@ -35,6 +37,14 @@ public class Song {
                 + ", duration=" + duration + ", singer=" + singer + ", album="
                 + album + ", type=" + type + ", size="
                 + size + ", fileUrl=" + fileUrl + "]";
+    }
+
+    public long getAlbumid() {
+        return albumid;
+    }
+
+    public void setAlbumid(long albumid) {
+        this.albumid = albumid;
     }
 
     public int getId() {
