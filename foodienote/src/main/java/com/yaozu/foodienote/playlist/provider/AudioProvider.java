@@ -97,6 +97,18 @@ public class AudioProvider {
     }
 
     public static Bitmap getArtwork(Context context, long song_id, long album_id) {
+        if (album_id < 0) {
+            // This is something that is not in the database, so get the album art directly
+            // from the file.
+            if (song_id >= 0) {
+                Bitmap bm = getArtworkFromFile(context, song_id, -1);
+                if (bm != null) {
+                    return bm;
+                }
+            }
+            return null;
+        }
+
         ContentResolver res = context.getContentResolver();
         Uri uri = ContentUris.withAppendedId(sArtworkUri, album_id);
         if (uri != null) {
@@ -116,7 +128,7 @@ public class AudioProvider {
                 return bm;
 
             } finally {
-                if(in != null){
+                if (in != null) {
                     try {
                         in.close();
                     } catch (IOException e) {
@@ -157,6 +169,32 @@ public class AudioProvider {
         }
         if (bm != null) {
             //mCachedBit = bm;
+        }
+        return bm;
+    }
+
+    private String getAlbumArt(Context context, int album_id) {
+        String mUriAlbums = "content://media/external/audio/albums";
+        String[] projection = new String[]{"album_art"};
+        Cursor cur = context.getContentResolver().query(
+                Uri.parse(mUriAlbums + "/" + Integer.toString(album_id)),
+                projection, null, null, null);
+        String album_art = null;
+        if (cur.getCount() > 0 && cur.getColumnCount() > 0) {
+            cur.moveToNext();
+            album_art = cur.getString(0);
+        }
+        cur.close();
+        cur = null;
+        return album_art;
+    }
+
+    public Bitmap getImage(Context context,int album_id){
+        String albumArt = getAlbumArt(context,album_id);
+        Bitmap bm = null;
+        if (albumArt == null) {
+        } else {
+            bm = BitmapFactory.decodeFile(albumArt);
         }
         return bm;
     }

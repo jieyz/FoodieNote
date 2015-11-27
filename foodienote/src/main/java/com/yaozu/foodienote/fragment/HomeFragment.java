@@ -12,9 +12,11 @@ import android.widget.ListView;
 
 import com.yaozu.foodienote.R;
 import com.yaozu.foodienote.adapter.HomeListViewAdapter;
+import com.yaozu.foodienote.playlist.model.Song;
 import com.yaozu.foodienote.playlist.provider.AudioProvider;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,7 +81,7 @@ public class HomeFragment extends Fragment {
         mProvider = new AudioProvider(this.getActivity());
         String path = Environment.getExternalStorageDirectory().getPath();
         path = path + File.separator + "KuwoMusic" + File.separator + "music";
-        mAdapter.setSongData(mProvider.getSongListFromPath(path));
+        mAdapter.setSongData((List<Song>) mProvider.getList());
         mListView.setAdapter(mAdapter);
         return view;
     }
