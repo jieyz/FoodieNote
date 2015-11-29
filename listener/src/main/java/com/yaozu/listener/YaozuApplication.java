@@ -23,6 +23,10 @@ public class YaozuApplication extends Application {
         return musicService.get(MUSIC_SERVICE);
     }
 
+    public void cleanMusicService(){
+        musicService.remove(MUSIC_SERVICE);
+    }
+
     public void setMusicService(MusicService service){
         musicService.put(MUSIC_SERVICE,service);
     }

@@ -2,9 +2,12 @@ package com.yaozu.listener.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yaozu.listener.R;
@@ -12,21 +15,30 @@ import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.widget.SoundWaveView;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by Ò«×æ on 2015/10/17.
  */
 public class HomeListViewAdapter extends BaseAdapter {
     private Context mContext;
-    private List<Song> songs;
-    public HomeListViewAdapter(Context context){
+    private ArrayList<Song> songs;
+    private int mCurrentPlayingPos = -1;
+    private View mView;
+
+    public HomeListViewAdapter(Context context) {
         mContext = context;
     }
 
-    public void setSongData(List<Song> songs){
+    public void setSongData(ArrayList<Song> songs) {
         this.songs = songs;
+    }
+
+    public void setCurrentPlayingPos(int pos) {
+        mCurrentPlayingPos = pos;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -36,7 +48,7 @@ public class HomeListViewAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return mView;
     }
 
     @Override
@@ -45,27 +57,69 @@ public class HomeListViewAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = View.inflate(mContext, R.layout.list_song_item,null);
-        TextView songName = (TextView) view.findViewById(R.id.song_name);
-        TextView singer = (TextView) view.findViewById(R.id.song_singer);
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        View view = null;
+        ViewHolder holder = null;
+        if (convertView == null) {
+            holder = new ViewHolder();
+            view = View.inflate(mContext, R.layout.list_song_item, null);
+            holder.songName = (TextView) view.findViewById(R.id.song_name);
+            holder.singer = (TextView) view.findViewById(R.id.song_singer);
+            holder.indicate = (ImageView) view.findViewById(R.id.playing_item);
+            holder.back = (RelativeLayout) view.findViewById(R.id.playing_item_back);
+            holder.soundWaveView = (SoundWaveView) view.findViewById(R.id.sound_wave);
+            view.setTag(holder);
+        } else {
+            view = convertView;
+            holder = (ViewHolder) view.getTag();
+        }
+        if (mCurrentPlayingPos == position) {
+            holder.indicate.setVisibility(View.VISIBLE);
+            holder.back.setBackgroundColor(Color.parseColor("#11000000"));
+            holder.soundWaveView.setVisibility(View.VISIBLE);
+            MusicService service = YaozuApplication.getIntance().getMusicService();
+            if(service != null && service.isPlaying()){
+                holder.soundWaveView.start();
+            }
+            mView = holder.soundWaveView;
+        }else{
+            holder.indicate.setVisibility(View.INVISIBLE);
+            holder.back.setBackgroundColor(Color.TRANSPARENT);
+            holder.soundWaveView.setVisibility(View.GONE);
+            holder.soundWaveView.stop();
+        }
         final Song song = songs.get(position);
-        songName.setText(song.getTitle());
-        singer.setText(song.getSinger());
+        holder.songName.setText(song.getTitle());
+        holder.singer.setText(song.getSinger());
+        final int currentPosition = position;
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setCurrentPlayingPos(position);
                 MusicService service = YaozuApplication.getIntance().getMusicService();
                 if (service == null) {
                     Intent intent = new Intent(mContext, MusicService.class);
-                    intent.putExtra(IntentKey.MEDIA_FILE_URL, song.getFileUrl());
+                    //intent.putExtra(IntentKey.MEDIA_FILE_URL, song.getFileUrl());
+                    intent.putExtra(IntentKey.MEDIA_CURRENT_INDEX, currentPosition);
+                    intent.putExtra(IntentKey.MEDIA_FILE_LIST, songs);
                     mContext.startService(intent);
                 } else {
-                    service.stopPlayBack();
-                    service.setMediaSongAndPrepare(song);
+                    if (service.getmCurrentIndex() == currentPosition) {
+                        return;
+                    }
+                    service.setmSongs(songs);
+                    service.switchNextSong(currentPosition);
                 }
             }
         });
         return view;
+    }
+
+    private class ViewHolder {
+        public TextView songName;
+        public TextView singer;
+        public ImageView indicate;
+        public RelativeLayout back;
+        public SoundWaveView soundWaveView;
     }
 }

@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,18 +16,20 @@ import com.yaozu.listener.R;
 import com.yaozu.listener.adapter.HomeListViewAdapter;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.playlist.provider.AudioProvider;
+import com.yaozu.listener.widget.SoundWaveView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * to handle interaction events.
- * Use the {@link HomeFragment#newInstance} factory method to
+ * Use the {@link LocalFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class LocalFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -40,17 +44,24 @@ public class HomeFragment extends Fragment {
     private ListView mListView;
     private HomeListViewAdapter mAdapter;
     private AudioProvider mProvider;
+
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    };
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
+     * @return A new instance of fragment LocalFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
+    public static LocalFragment newInstance(String param1, String param2) {
+        LocalFragment fragment = new LocalFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -58,7 +69,7 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
-    public HomeFragment() {
+    public LocalFragment() {
         // Required empty public constructor
     }
 
@@ -78,12 +89,21 @@ public class HomeFragment extends Fragment {
         View view  = inflater.inflate(R.layout.fragment_home, container, false);
         mListView = (ListView) view.findViewById(R.id.home_listview);
         mAdapter = new HomeListViewAdapter(mActivity);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getData();
+    }
+
+    private void getData(){
         mProvider = new AudioProvider(this.getActivity());
         String path = Environment.getExternalStorageDirectory().getPath();
         path = path + File.separator + "KuwoMusic" + File.separator + "music";
-        mAdapter.setSongData((List<Song>) mProvider.getList());
+        mAdapter.setSongData((ArrayList<Song>) mProvider.getSongListFromPath(path));
         mListView.setAdapter(mAdapter);
-        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -111,4 +131,21 @@ public class HomeFragment extends Fragment {
         mListener = null;
     }
 
+    public void highLightPlayingItem(int pos){
+        mAdapter.setCurrentPlayingPos(pos);
+    }
+
+    public void pause(){
+        SoundWaveView view = (SoundWaveView) mAdapter.getItem(0);
+        if(view != null){
+            view.stop();
+        }
+    }
+
+    public void start(){
+        SoundWaveView view = (SoundWaveView) mAdapter.getItem(0);
+        if(view != null){
+            view.start();
+        }
+    }
 }

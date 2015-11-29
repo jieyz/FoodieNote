@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -18,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -25,8 +27,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.yaozu.listener.constant.IntentKey;
-import com.yaozu.listener.fragment.HomeFragment;
+import com.yaozu.listener.fragment.LocalFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
+import com.yaozu.listener.playlist.model.SongList;
 import com.yaozu.listener.service.MusicService;
 
 import org.json.JSONObject;
@@ -56,14 +59,14 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
         setOnclickLisener();
 
         FragmentTransaction tr = mFragmentManager.beginTransaction();
-        tr.add(R.id.main_fragment_container, new HomeFragment());
+        tr.add(R.id.main_fragment_container, new LocalFragment(), LocalFragment.class.getSimpleName());
         tr.commit();
 
-        MusicService service = app.getMusicService();
+/*        MusicService service = app.getMusicService();
         if (service == null) {
             Intent intent = new Intent(this, MusicService.class);
             startService(intent);
-        }
+        }*/
         registerPushReceiver();
     }
 
@@ -104,7 +107,8 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
                             @Override
                             public void onResponse(JSONObject response) {
                                 //Log.d(TAG, "response : " + response.toString());
-                                Toast.makeText(HomeMainActivity.this, response.toString(), Toast.LENGTH_SHORT).show();
+                                SongList songList = JSON.parseObject(response.toString(), SongList.class);
+                                Toast.makeText(HomeMainActivity.this, songList.getTotalcount(), Toast.LENGTH_SHORT).show();
                             }
                         }, new Response.ErrorListener() {
                     @Override
@@ -125,6 +129,10 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(app != null && app.getMusicService() != null){
+            app.getMusicService().killMyself();
+            app.cleanMusicService();
+        }
         unRegisterPushRecevier();
     }
 
@@ -135,8 +143,16 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
 
     @Override
     protected void onResume() {
-
         super.onResume();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(false);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     /**
@@ -150,10 +166,12 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
             musicServiceBroadcastReceiver = new MusicServiceBroadcastReceiver();
             IntentFilter filter = new IntentFilter();
             filter.addAction(IntentKey.NOTIFY_CURRENT_SONG_MSG);
+            filter.addAction(IntentKey.NOTIFY_SONG_PAUSE);
+            filter.addAction(IntentKey.NOTIFY_SONG_PLAYING);
             localBroadcastManager = LocalBroadcastManager.getInstance(this);
             localBroadcastManager.registerReceiver(musicServiceBroadcastReceiver, filter);
         }
-}
+    }
 
     /**
      * @Description: 脳垄脧煤脥脝脣脥陆脫脢脺脮脽
@@ -184,13 +202,23 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
             if (IntentKey.NOTIFY_CURRENT_SONG_MSG.equals(intent.getAction())) {
                 String songName = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_NAME);
                 String songSinger = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_SINGER);
+                int currentPos = intent.getIntExtra(IntentKey.MEDIA_CURRENT_INDEX, -1);
                 mCurrentSongName.setText(songName);
                 mCurrentSinger.setText(songSinger);
-
+                LocalFragment localFragment = (LocalFragment) mFragmentManager.findFragmentByTag(LocalFragment.class.getSimpleName());
+                localFragment.highLightPlayingItem(currentPos);
 //                long songid = intent.getLongExtra(IntentKey.MEDIA_FILE_SONG_ID, -1);
 //                long albumid = intent.getLongExtra(IntentKey.MEDIA_FILE_SONG_ALBUMID, -1);
 //                Bitmap bmp = AudioProvider.getArtwork(HomeMainActivity.this, songid, albumid);
 //                mMusicPhoto.setImageBitmap(bmp);
+            }else if(IntentKey.NOTIFY_SONG_PLAYING.equals(intent.getAction())){
+                LocalFragment localFragment = (LocalFragment) mFragmentManager.findFragmentByTag(LocalFragment.class.getSimpleName());
+                localFragment.start();
+                mPlayPause.setImageResource(R.drawable.phone_playing_pressed);
+            }else if(IntentKey.NOTIFY_SONG_PAUSE.equals(intent.getAction())){
+                LocalFragment localFragment = (LocalFragment) mFragmentManager.findFragmentByTag(LocalFragment.class.getSimpleName());
+                localFragment.pause();
+                mPlayPause.setImageResource(R.drawable.phone_play_pressed);
             }
         }
 

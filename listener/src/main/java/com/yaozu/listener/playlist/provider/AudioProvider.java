@@ -1,5 +1,6 @@
 package com.yaozu.listener.playlist.provider;
 
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 
@@ -50,6 +52,7 @@ public class AudioProvider {
         return pathList;
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public List<?> getList() {
         List<Song> list = null;
         if (context != null) {

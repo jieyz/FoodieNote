@@ -57,6 +57,7 @@
                 android:singleLine="true"
                 android:paddingBottom="5dp"
                 android:textSize="12dp"
+                android:textColor="#7F7F7F"
                 android:text="mojic cat" />
         </RelativeLayout>
 
@@ -67,7 +68,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="15dp"
             android:layout_toLeftOf="@+id/main_play_list"
-            android:src="@drawable/ic_launcher" />
+            android:src="@drawable/phone_play_pressed" />
 
         <ImageView
             android:id="@+id/main_play_list"

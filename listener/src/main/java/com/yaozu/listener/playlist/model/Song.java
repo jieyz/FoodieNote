@@ -1,9 +1,11 @@
 package com.yaozu.listener.playlist.model;
 
+import java.io.Serializable;
+
 /**
  * Created by Ò«×æ on 2015/11/1.
  */
-public class Song {
+public class Song implements Serializable{
     private int id;
     private String fileName;
     private String title;
@@ -12,9 +14,13 @@ public class Song {
     private String album;
     private String type;
     private String size;
+    private String downloadurl;
     private String fileUrl;
     private long albumid;
 
+    public Song(){
+
+    }
 
     public Song(int id, String title, String album, String singer, String fileUrl, String fileName, String type,
                 int duration, String size,long albumid) {
@@ -37,6 +43,14 @@ public class Song {
                 + ", duration=" + duration + ", singer=" + singer + ", album="
                 + album + ", type=" + type + ", size="
                 + size + ", fileUrl=" + fileUrl + "]";
+    }
+
+    public String getDownloadurl() {
+        return downloadurl;
+    }
+
+    public void setDownloadurl(String downloadurl) {
+        this.downloadurl = downloadurl;
     }
 
     public long getAlbumid() {
