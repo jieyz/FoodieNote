@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.widget.Toast;
 
 /**
- * Created by Ò«×æ on 2015/9/22.
+ * Created by è€€ç¥– on 2015/9/22.
  */
 public class MusicBroadcastReceiver extends BroadcastReceiver {
     private String artistName;

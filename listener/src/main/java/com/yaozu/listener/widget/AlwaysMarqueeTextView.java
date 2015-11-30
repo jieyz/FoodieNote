@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 /**
- * Created by Ò«×æ on 2015/11/27.
+ * Created by è€€ç¥– on 2015/11/27.
  */
 public class AlwaysMarqueeTextView extends TextView {
     public AlwaysMarqueeTextView(Context context) {

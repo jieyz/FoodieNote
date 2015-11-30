@@ -14,12 +14,12 @@ import android.view.View;
 import java.util.Random;
 
 /**
- * Created by Ò«×æ on 2015/11/29.
+ * Created by è€€ç¥– on 2015/11/29.
  */
 public class SoundWaveView extends View {
     private Paint mPaint;
     /**
-     * ÉÏÏÂÎÄ¶ÔÏñ
+     * ä¸Šä¸‹æ–‡å¯¹åƒ
      *
      * @param context
      */

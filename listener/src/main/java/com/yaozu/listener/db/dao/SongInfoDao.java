@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Ò«×æ on 2015/11/28.
+ * Created by è€€ç¥– on 2015/11/28.
  */
 public class SongInfoDao {
     private SongDbHelper helper;
@@ -23,7 +23,7 @@ public class SongInfoDao {
     }
 
     /**
-     * Ìí¼ÓÒ»Ê×¸èµ½Êı¾İ¿âÖĞ
+     * æ·»åŠ ä¸€é¦–æ­Œåˆ°æ•°æ®åº“ä¸­
      * @param songinfo
      */
     public void add(Song songinfo) {
@@ -37,7 +37,7 @@ public class SongInfoDao {
     }
 
     /**
-     * É¾³ı
+     * åˆ é™¤
      */
     public void deleteSongById(Song songinfo){
         SQLiteDatabase db = helper.getWritableDatabase();

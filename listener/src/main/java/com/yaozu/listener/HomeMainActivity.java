@@ -40,7 +40,7 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
     private FragmentManager mFragmentManager;
     private String mCurrentFragmentTag;
     private ImageButton music_home;
-    //虏楼路脜禄貌脮脽脭脻脥拢掳麓脜楼
+    //播放或者暂停的按钮
     private ImageView mPlayPause;
     private YaozuApplication app;
 
@@ -48,7 +48,7 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
     private TextView mCurrentSinger;
     private RelativeLayout mShowController;
     private ImageView mMusicPhoto;
-
+    private ImageView mActionbarShadow;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +76,7 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
         mCurrentSinger = (TextView) findViewById(R.id.current_songsinger);
         mShowController = (RelativeLayout) findViewById(R.id.main_play_layout);
         mMusicPhoto = (ImageView) findViewById(R.id.main_music_photo);
+        mActionbarShadow = (ImageView) findViewById(R.id.main_actionbar_shadow);
     }
 
     private void setOnclickLisener() {
@@ -156,9 +157,9 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
     }
 
     /**
-     * @Description: 脳垄虏谩脧没脧垄鹿茫虏楼陆脫脢脮脌脿
-     * @author 陆脪脪芦脳忙
-     * @date 2013-10-28 脡脧脦莽10:30:27
+     * @Description:
+     * @author
+     * @date 2013-10-28 jieyaozu 10:30:27
      */
 
     public void registerPushReceiver() {
@@ -174,9 +175,9 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
     }
 
     /**
-     * @Description: 脳垄脧煤脥脝脣脥陆脫脢脺脮脽
-     * @author 陆脪脪芦脳忙
-     * @date 2013-10-28 脡脧脦莽10:17:28
+     * @Description:
+     * @author
+     * @date 2013-10-28 jieyaozu10:17:28
      */
     private void unRegisterPushRecevier() {
         if (musicServiceBroadcastReceiver != null) {
@@ -188,12 +189,12 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
 
     private MusicServiceBroadcastReceiver musicServiceBroadcastReceiver;
     /**
-     * 卤戮碌脴鹿茫虏楼鹿脺脌铆脌脿
+     * 
      */
     private LocalBroadcastManager localBroadcastManager;
 
     /**
-     * 脌脿脙猫脢枚拢潞 脫脙脫脷脧没脧垄脥脝脣脥鹿茫虏楼碌脛陆脫脢脮 麓麓陆篓脠脣拢潞 陆脪脪芦脳忙 麓麓陆篓脢卤录盲拢潞 2015-11-5
+     * 2015-11-5
      */
     private class MusicServiceBroadcastReceiver extends BroadcastReceiver {
 

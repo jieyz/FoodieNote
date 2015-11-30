@@ -20,7 +20,7 @@ import com.yaozu.listener.widget.SoundWaveView;
 import java.util.ArrayList;
 
 /**
- * Created by Ò«×æ on 2015/10/17.
+ * Created by jieyaozu on 2015/10/17.
  */
 public class HomeListViewAdapter extends BaseAdapter {
     private Context mContext;
@@ -66,7 +66,6 @@ public class HomeListViewAdapter extends BaseAdapter {
             holder.songName = (TextView) view.findViewById(R.id.song_name);
             holder.singer = (TextView) view.findViewById(R.id.song_singer);
             holder.indicate = (ImageView) view.findViewById(R.id.playing_item);
-            holder.back = (RelativeLayout) view.findViewById(R.id.playing_item_back);
             holder.soundWaveView = (SoundWaveView) view.findViewById(R.id.sound_wave);
             view.setTag(holder);
         } else {
@@ -75,7 +74,6 @@ public class HomeListViewAdapter extends BaseAdapter {
         }
         if (mCurrentPlayingPos == position) {
             holder.indicate.setVisibility(View.VISIBLE);
-            holder.back.setBackgroundColor(Color.parseColor("#11000000"));
             holder.soundWaveView.setVisibility(View.VISIBLE);
             MusicService service = YaozuApplication.getIntance().getMusicService();
             if(service != null && service.isPlaying()){
@@ -84,13 +82,12 @@ public class HomeListViewAdapter extends BaseAdapter {
             mView = holder.soundWaveView;
         }else{
             holder.indicate.setVisibility(View.INVISIBLE);
-            holder.back.setBackgroundColor(Color.TRANSPARENT);
             holder.soundWaveView.setVisibility(View.GONE);
             holder.soundWaveView.stop();
         }
         final Song song = songs.get(position);
         holder.songName.setText(song.getTitle());
-        holder.singer.setText(song.getSinger());
+        holder.singer.setText(song.getSinger()+"-"+song.getAlbum());
         final int currentPosition = position;
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,7 +116,6 @@ public class HomeListViewAdapter extends BaseAdapter {
         public TextView songName;
         public TextView singer;
         public ImageView indicate;
-        public RelativeLayout back;
         public SoundWaveView soundWaveView;
     }
 }

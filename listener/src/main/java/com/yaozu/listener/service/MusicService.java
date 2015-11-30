@@ -75,7 +75,7 @@ public class MusicService extends Service {
 
     private void playCurrentIndexSong(int currentpos) {
         if (mSongs == null || mSongs.size() <= 0) {
-            Toast.makeText(this.getApplication(), "播放列表为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getApplication(), "鎾斁鍒楄〃涓虹┖", Toast.LENGTH_SHORT).show();
             return;
         }
         mCurrentIndex = currentpos;
@@ -140,7 +140,7 @@ public class MusicService extends Service {
                 intent.putExtra(IntentKey.MEDIA_FILE_SONG_SINGER, mCurrentSong.getSinger());
                 intent.putExtra(IntentKey.MEDIA_CURRENT_INDEX, mCurrentIndex);
                 intent.putExtra(IntentKey.MEDIA_FILE_SONG_ID, (long) mCurrentSong.getId());
-                intent.putExtra(IntentKey.MEDIA_FILE_SONG_ALBUMID, mCurrentSong.getAlbumid());
+                //intent.putExtra(IntentKey.MEDIA_FILE_SONG_ALBUM, mCurrentSong.getAlbum());
                 LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(app);
                 localBroadcastManager.sendBroadcast(intent);
                 break;

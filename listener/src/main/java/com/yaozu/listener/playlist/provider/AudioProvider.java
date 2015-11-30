@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Ò«×æ on 2015/11/1.
+ * Created by æ­è€€ç¥– on 2015/11/1.
  */
 public class AudioProvider {
     private Context context;
@@ -35,8 +35,7 @@ public class AudioProvider {
     private static final BitmapFactory.Options sBitmapOptions = new BitmapFactory.Options();
 
     /**
-     * »ñµÃÖ¸¶¨Ä¿Â¼ÏÂµÄ¸èÇúÐÅÏ¢
-     *
+     * èŽ·å–æŒ‡å®šç›®å½•ä¸‹çš„éŸ³é¢‘ä¿¡æ¯
      * @param path
      * @return
      */
@@ -89,6 +88,7 @@ public class AudioProvider {
                     long size = cursor
                             .getLong(cursor
                                     .getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
+                    System.out.println("===artist==>"+artist+"   ===title==>"+title);
                     Song song = new Song(id, title, album, artist, path,
                             displayName, mimeType, duration, size + "", albumid);
                     list.add(song);

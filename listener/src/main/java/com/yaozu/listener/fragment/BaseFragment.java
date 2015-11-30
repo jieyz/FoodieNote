@@ -7,7 +7,7 @@ import android.view.View;
 import com.yaozu.listener.R;
 
 /**
- * Created by Ò«×æ on 2015/11/28.
+ * Created by è€€ç¥– on 2015/11/28.
  */
 public class BaseFragment extends Fragment {
     private View progressBar;

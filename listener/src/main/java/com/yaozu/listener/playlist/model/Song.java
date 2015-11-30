@@ -3,7 +3,7 @@ package com.yaozu.listener.playlist.model;
 import java.io.Serializable;
 
 /**
- * Created by Ò«×æ on 2015/11/1.
+ * Created by jieyaozu on 2015/11/1.
  */
 public class Song implements Serializable{
     private int id;
