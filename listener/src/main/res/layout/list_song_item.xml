@@ -21,6 +21,7 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/playing_item"
             android:orientation="vertical"
+            android:layout_toLeftOf="@+id/sound_wave"
             android:paddingLeft="5dp">
 
             <TextView
@@ -31,6 +32,7 @@
                 android:paddingRight="5dp"
                 android:paddingTop="5dp"
                 android:text="暗号"
+                android:singleLine="true"
                 android:textSize="16dp" />
 
             <TextView
@@ -42,6 +44,7 @@
                 android:paddingBottom="5dp"
                 android:text="周杰伦"
                 android:textSize="11dp"
+                android:singleLine="true"
                 android:textColor="#7F7F7F"/>
         </LinearLayout>
         <com.yaozu.listener.widget.SoundWaveView
