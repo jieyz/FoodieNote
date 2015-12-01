@@ -9,8 +9,8 @@
         android:id="@+id/home_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:divider="@null"
         android:cacheColorHint="#00000000"
-        android:divider="@android:color/black"
         android:background="@android:color/transparent"
         tools:listitem="@layout/list_song_item">
     </ListView>
