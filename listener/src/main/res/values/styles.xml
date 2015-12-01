@@ -4,5 +4,7 @@
     <style name="AppTheme" parent="android:Theme.Light.NoTitleBar">
         <!-- Customize your theme here. -->
     </style>
+    <style name="RippleBackground">
 
+    </style>
 </resources>

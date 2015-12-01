@@ -23,6 +23,7 @@
         android:id="@+id/main_play_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        style="@style/RippleBackground"
         android:layout_alignParentBottom="true">
 
         <ImageView
@@ -49,6 +50,7 @@
                 android:singleLine="true"
                 android:ellipsize="marquee"
                 android:layout_marginTop="3dp"
+                android:textColor="#363636"
                 android:textSize="16dp"/>
 
             <TextView

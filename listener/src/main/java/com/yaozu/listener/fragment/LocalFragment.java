@@ -7,6 +7,8 @@ import android.app.Fragment;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,7 +104,9 @@ public class LocalFragment extends BaseFragment {
         mProvider = new AudioProvider(this.getActivity());
         String path = Environment.getExternalStorageDirectory().getPath();
         path = path + File.separator + "KuwoMusic" + File.separator + "music";
-        mAdapter.setSongData((ArrayList<Song>) mProvider.getSongListFromPath(path));
+/*        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
+        mListView.setLayoutManager(linearLayoutManager);*/
+        mAdapter.setSongData((ArrayList<Song>) mProvider.getList());
         mListView.setAdapter(mAdapter);
     }
 

@@ -3,6 +3,8 @@ package com.yaozu.listener.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -56,6 +58,7 @@ public class HomeListViewAdapter extends BaseAdapter {
         return 0;
     }
 
+
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         View view = null;
@@ -76,18 +79,18 @@ public class HomeListViewAdapter extends BaseAdapter {
             holder.indicate.setVisibility(View.VISIBLE);
             holder.soundWaveView.setVisibility(View.VISIBLE);
             MusicService service = YaozuApplication.getIntance().getMusicService();
-            if(service != null && service.isPlaying()){
+            if (service != null && service.isPlaying()) {
                 holder.soundWaveView.start();
             }
             mView = holder.soundWaveView;
-        }else{
+        } else {
             holder.indicate.setVisibility(View.INVISIBLE);
             holder.soundWaveView.setVisibility(View.GONE);
             holder.soundWaveView.stop();
         }
         final Song song = songs.get(position);
         holder.songName.setText(song.getTitle());
-        holder.singer.setText(song.getSinger()+"-"+song.getAlbum());
+        holder.singer.setText(song.getSinger() + "-" + song.getAlbum());
         final int currentPosition = position;
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,7 +115,7 @@ public class HomeListViewAdapter extends BaseAdapter {
         return view;
     }
 
-    private class ViewHolder {
+    public class ViewHolder {
         public TextView songName;
         public TextView singer;
         public ImageView indicate;
