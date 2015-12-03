@@ -43,12 +43,14 @@ public class SoundWaveView extends View {
         super(context);
         mContext = context;
         mPaint = new Paint();
+        mPaint.setColor(Color.parseColor("#363636"));
     }
 
     public SoundWaveView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         mPaint = new Paint();
+        mPaint.setColor(Color.parseColor("#363636"));
     }
 
     @Override

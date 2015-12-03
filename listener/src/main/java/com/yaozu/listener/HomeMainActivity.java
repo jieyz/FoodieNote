@@ -27,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.yaozu.listener.activity.MusicHomeActivity;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.fragment.LocalFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
@@ -50,6 +51,7 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
     private RelativeLayout mShowController;
     private ImageView mMusicPhoto;
     private ImageView mActionbarShadow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,25 +104,30 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
                 }
                 break;
             case R.id.main_play_layout:
-                RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
-                mQueue.add(new JsonObjectRequest(Request.Method.GET,
-                        "http://120.27.129.229:8080/MyApp/index.html",
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                //Log.d(TAG, "response : " + response.toString());
-                                SongList songList = JSON.parseObject(response.toString(), SongList.class);
-                                Toast.makeText(HomeMainActivity.this, songList.getTotalcount(), Toast.LENGTH_SHORT).show();
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }));
-                mQueue.start();
+                Intent intent = new Intent(HomeMainActivity.this, MusicHomeActivity.class);
+                startActivity(intent);
                 break;
         }
+    }
+
+    private void requestNet() {
+        RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
+        mQueue.add(new JsonObjectRequest(Request.Method.GET,
+                "http://120.27.129.229:8080/MyApp/index.html",
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //Log.d(TAG, "response : " + response.toString());
+                        SongList songList = JSON.parseObject(response.toString(), SongList.class);
+                        Toast.makeText(HomeMainActivity.this, songList.getTotalcount(), Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }));
+        mQueue.start();
     }
 
     @Override
@@ -131,7 +138,7 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(app != null && app.getMusicService() != null){
+        if (app != null && app.getMusicService() != null) {
             app.getMusicService().killMyself();
             app.cleanMusicService();
         }
@@ -190,7 +197,7 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
 
     private MusicServiceBroadcastReceiver musicServiceBroadcastReceiver;
     /**
-     * 
+     *
      */
     private LocalBroadcastManager localBroadcastManager;
 
@@ -213,11 +220,11 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
 //                long albumid = intent.getLongExtra(IntentKey.MEDIA_FILE_SONG_ALBUMID, -1);
 //                Bitmap bmp = AudioProvider.getArtwork(HomeMainActivity.this, songid, albumid);
 //                mMusicPhoto.setImageBitmap(bmp);
-            }else if(IntentKey.NOTIFY_SONG_PLAYING.equals(intent.getAction())){
+            } else if (IntentKey.NOTIFY_SONG_PLAYING.equals(intent.getAction())) {
                 LocalFragment localFragment = (LocalFragment) mFragmentManager.findFragmentByTag(LocalFragment.class.getSimpleName());
                 localFragment.start();
                 mPlayPause.setImageResource(R.drawable.phone_playing_pressed);
-            }else if(IntentKey.NOTIFY_SONG_PAUSE.equals(intent.getAction())){
+            } else if (IntentKey.NOTIFY_SONG_PAUSE.equals(intent.getAction())) {
                 LocalFragment localFragment = (LocalFragment) mFragmentManager.findFragmentByTag(LocalFragment.class.getSimpleName());
                 localFragment.pause();
                 mPlayPause.setImageResource(R.drawable.phone_play_pressed);
