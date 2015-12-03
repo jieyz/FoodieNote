@@ -89,7 +89,6 @@ public class AudioProvider {
                     long size = cursor
                             .getLong(cursor
                                     .getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
-                    System.out.println("===artist==>"+artist+"   ===title==>"+title);
                     Song song = new Song(id, title, album, artist, path,
                             displayName, mimeType, duration, size + "", albumid);
                     list.add(song);

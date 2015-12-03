@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_toRightOf="@+id/media_current_position"
+            android:max="1000"
             android:layout_toLeftOf="@+id/media_duration"/>
 
         <TextView

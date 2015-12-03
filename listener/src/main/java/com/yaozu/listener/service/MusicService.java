@@ -257,6 +257,36 @@ public class MusicService extends Service {
         }
     }
 
+    /**
+     * 得到当前播放器的进度
+     * @return
+     */
+    public int getCurrentPlayPosition(){
+        if(currentState == PlayState.playing || currentState == PlayState.pause){
+            return mMediaPlayer.getCurrentPosition();
+        }
+        return -1;
+    }
+
+    /**
+     * 获取播放时长
+     * @return
+     */
+    public int getDuration(){
+        if(currentState == PlayState.playing || currentState == PlayState.pause){
+            return mMediaPlayer.getDuration();
+        }
+        return -1;
+    }
+
+    public void seekto(int pos){
+        if(currentState == PlayState.playing || currentState == PlayState.pause){
+            if(mMediaPlayer != null){
+                mMediaPlayer.seekTo(pos);
+            }
+        }
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();

@@ -106,7 +106,7 @@ public class LocalFragment extends BaseFragment {
         path = path + File.separator + "KuwoMusic" + File.separator + "music";
 /*        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
         mListView.setLayoutManager(linearLayoutManager);*/
-        mAdapter.setSongData((ArrayList<Song>) mProvider.getList());
+        mAdapter.setSongData((ArrayList<Song>) mProvider.getSongListFromPath(path));
         mListView.setAdapter(mAdapter);
     }
 
