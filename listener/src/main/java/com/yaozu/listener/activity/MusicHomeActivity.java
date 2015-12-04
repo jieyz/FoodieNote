@@ -22,7 +22,6 @@ import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.service.MusicService;
 
-import java.io.InputStream;
 import java.util.Locale;
 
 /**
