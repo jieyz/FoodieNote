@@ -223,11 +223,11 @@ public class HomeMainActivity extends Activity implements View.OnClickListener, 
             } else if (IntentKey.NOTIFY_SONG_PLAYING.equals(intent.getAction())) {
                 LocalFragment localFragment = (LocalFragment) mFragmentManager.findFragmentByTag(LocalFragment.class.getSimpleName());
                 localFragment.start();
-                mPlayPause.setImageResource(R.drawable.phone_playing_pressed);
+                mPlayPause.setImageResource(R.drawable.playbar_btn_pause);
             } else if (IntentKey.NOTIFY_SONG_PAUSE.equals(intent.getAction())) {
                 LocalFragment localFragment = (LocalFragment) mFragmentManager.findFragmentByTag(LocalFragment.class.getSimpleName());
                 localFragment.pause();
-                mPlayPause.setImageResource(R.drawable.phone_play_pressed);
+                mPlayPause.setImageResource(R.drawable.playbar_btn_play);
             }
         }
 

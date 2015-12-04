@@ -70,18 +70,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
             android:layout_toLeftOf="@+id/main_play_list"
-            android:src="@drawable/phone_play_pressed" />
+            android:src="@drawable/playbar_btn_play" />
 
         <ImageView
             android:id="@+id/main_play_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
             android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
-            android:src="@drawable/ic_launcher" />
+            android:src="@drawable/playbar_btn_next" />
     </RelativeLayout>
     <!--
     <RadioGroup
