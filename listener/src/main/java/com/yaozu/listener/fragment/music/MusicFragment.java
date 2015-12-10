@@ -1,4 +1,4 @@
-package com.yaozu.listener.fragment;
+package com.yaozu.listener.fragment.music;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -7,8 +7,6 @@ import android.app.Fragment;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,22 +14,23 @@ import android.widget.ListView;
 
 import com.yaozu.listener.R;
 import com.yaozu.listener.adapter.HomeListViewAdapter;
+import com.yaozu.listener.fragment.BaseFragment;
+import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.playlist.provider.AudioProvider;
 import com.yaozu.listener.widget.SoundWaveView;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * to handle interaction events.
- * Use the {@link LocalFragment#newInstance} factory method to
+ * Use the {@link MusicFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LocalFragment extends BaseFragment {
+public class MusicFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -59,11 +58,11 @@ public class LocalFragment extends BaseFragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment LocalFragment.
+     * @return A new instance of fragment MusicFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static LocalFragment newInstance(String param1, String param2) {
-        LocalFragment fragment = new LocalFragment();
+    public static MusicFragment newInstance(String param1, String param2) {
+        MusicFragment fragment = new MusicFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -71,7 +70,7 @@ public class LocalFragment extends BaseFragment {
         return fragment;
     }
 
-    public LocalFragment() {
+    public MusicFragment() {
         // Required empty public constructor
     }
 
@@ -88,7 +87,7 @@ public class LocalFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view  = inflater.inflate(R.layout.fragment_home, container, false);
+        View view  = inflater.inflate(R.layout.fragment_local, container, false);
         mListView = (ListView) view.findViewById(R.id.home_listview);
         mAdapter = new HomeListViewAdapter(mActivity);
         return view;
@@ -98,6 +97,21 @@ public class LocalFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getData();
+    }
+
+    @Override
+    public void notifyCurrentSongMsg(String name, String singer, int currentPos) {
+        highLightPlayingItem(currentPos);
+    }
+
+    @Override
+    public void notifySongPlaying() {
+        start();
+    }
+
+    @Override
+    public void notifySongPause() {
+        pause();
     }
 
     private void getData(){

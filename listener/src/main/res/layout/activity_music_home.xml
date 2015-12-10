@@ -3,7 +3,45 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/music_background">
+    android:background="#44000000"
+    android:id="@+id/music_background"
+    android:fitsSystemWindows="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+        <ImageView
+            android:id="@+id/music_lyric_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:src="@drawable/actionbar_back"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/music_lyric_back"
+            android:layout_centerVertical="true">
+            <TextView
+                android:id="@+id/music_lyric_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="愿望"
+                android:textSize="16dp"
+                android:singleLine="true"
+                android:textColor="#ffffffff"/>
+            <TextView
+                android:id="@+id/music_lyric_singer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="dsddsd"
+                android:textSize="12dp"
+                android:singleLine="true"
+                android:textColor="#ffffffff"/>
+        </LinearLayout>
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,14 +52,26 @@
             android:id="@+id/media_current_position"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="02:49"/>
+            android:layout_centerVertical="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="5dp"
+            android:text="00:00"
+            android:textColor="#ffffffff"
+            android:textSize="12dp"/>
         <SeekBar
             android:id="@+id/media_seekbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/media_current_position"
             android:max="1000"
+            android:maxHeight="16dp"
+            android:minHeight="16dp"
+            android:progressDrawable="@drawable/seekbar"
+            android:thumb="@drawable/play_plybar_btn"
             android:layout_toLeftOf="@+id/media_duration"/>
 
         <TextView
@@ -29,7 +79,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:text="02:49"/>
+            android:layout_centerVertical="true"
+            android:paddingLeft="5dp"
+            android:paddingRight="10dp"
+            android:text="00:00"
+            android:textColor="#ffffffff"
+            android:textSize="12dp"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -42,7 +97,22 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/lock_btn_play_prs"
+            android:src="@drawable/play_btn_prev"
+            android:layout_toLeftOf="@+id/play_btn_play"
+            android:layout_centerVertical="true"
+            />
+        <ImageView
+            android:id="@+id/play_btn_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/play_btn_play"
             android:layout_centerHorizontal="true"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/play_btn_next"
+            android:layout_toRightOf="@+id/play_btn_play"
+            android:layout_centerVertical="true"
+            />
     </RelativeLayout>
 </RelativeLayout>

@@ -1,55 +1,32 @@
-package com.yaozu.listener.fragment;
+package com.yaozu.listener.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.View;
-
-import com.yaozu.listener.R;
 import com.yaozu.listener.constant.IntentKey;
 
 /**
- * Created by 耀祖 on 2015/11/28.
+ * Created by 耀祖 on 2015/12/5.
  */
-public abstract class BaseFragment extends Fragment {
-    private View progressBar;
-
-    public BaseFragment() {
-        super();
-    }
+public abstract class BaseActivity extends FragmentActivity {
+    protected String mSongName;
+    protected String mSinger;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         registerPushReceiver();
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        progressBar = view.findViewById(R.id.base_layout);
-    }
-
-    @Override
-    public void onDestroy() {
+    protected void onDestroy() {
         super.onDestroy();
         unRegisterPushRecevier();
-    }
-
-    protected void showProgressBar() {
-        if (progressBar != null) {
-            progressBar.setVisibility(View.VISIBLE);
-        }
-    }
-
-    protected void hideProgressBar() {
-        if (progressBar != null) {
-            progressBar.setVisibility(View.GONE);
-        }
     }
 
     /**
@@ -65,7 +42,7 @@ public abstract class BaseFragment extends Fragment {
             filter.addAction(IntentKey.NOTIFY_CURRENT_SONG_MSG);
             filter.addAction(IntentKey.NOTIFY_SONG_PAUSE);
             filter.addAction(IntentKey.NOTIFY_SONG_PLAYING);
-            localBroadcastManager = LocalBroadcastManager.getInstance(this.getActivity());
+            localBroadcastManager = LocalBroadcastManager.getInstance(this);
             localBroadcastManager.registerReceiver(musicServiceBroadcastReceiver, filter);
         }
     }
@@ -77,7 +54,7 @@ public abstract class BaseFragment extends Fragment {
      */
     protected void unRegisterPushRecevier() {
         if (musicServiceBroadcastReceiver != null) {
-            localBroadcastManager = LocalBroadcastManager.getInstance(this.getActivity());
+            localBroadcastManager = LocalBroadcastManager.getInstance(this);
             localBroadcastManager.unregisterReceiver(musicServiceBroadcastReceiver);
             musicServiceBroadcastReceiver = null;
         }
@@ -97,10 +74,10 @@ public abstract class BaseFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (IntentKey.NOTIFY_CURRENT_SONG_MSG.equals(intent.getAction())) {
-                String mSongName = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_NAME);
-                String mSinger = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_SINGER);
+                mSongName = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_NAME);
+                mSinger = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_SINGER);
                 int currentPos = intent.getIntExtra(IntentKey.MEDIA_CURRENT_INDEX, -1);
-                notifyCurrentSongMsg(mSongName, mSinger, currentPos);
+                notifyCurrentSongMsg(mSongName,mSinger,currentPos);
             } else if (IntentKey.NOTIFY_SONG_PLAYING.equals(intent.getAction())) {
                 notifySongPlaying();
             } else if (IntentKey.NOTIFY_SONG_PAUSE.equals(intent.getAction())) {

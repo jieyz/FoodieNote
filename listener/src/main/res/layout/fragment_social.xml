@@ -1,0 +1,53 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.yaozu.listener.fragment.social.SocialFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:id="@+id/social_actionbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/social_chat_actionbar"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:button="@null"
+                android:text="聊天" />
+
+            <RadioButton
+                android:id="@+id/social_maillist_actionbar"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:button="@null"
+                android:text="通讯录" />
+
+            <RadioButton
+                android:id="@+id/social_my_actionbar"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:button="@null"
+                android:text="我" />
+        </RadioGroup>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/social_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/social_actionbar"
+            />
+    </RelativeLayout>
+
+</FrameLayout>

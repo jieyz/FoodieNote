@@ -174,7 +174,7 @@ public class MusicService extends Service {
     }
 
     private void notification() {
-        String songName;
+/*        String songName;
         // assign the song name to songName
         PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0,
                 new Intent(getApplicationContext(), HomeMainActivity.class),
@@ -184,7 +184,7 @@ public class MusicService extends Service {
         notification.icon = R.drawable.ic_launcher;
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
         notification.setLatestEventInfo(getApplicationContext(), mCurrentSong.getTitle(), mCurrentSong.getSinger(), pi);
-        startForeground(NOTIFICATION_ID, notification);
+        startForeground(NOTIFICATION_ID, notification);*/
     }
 
     public Song getmCurrentSong() {

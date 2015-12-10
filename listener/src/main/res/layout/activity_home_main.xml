@@ -2,88 +2,97 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/appthemecolor"
+    android:fitsSystemWindows="true"
     tools:context=".HomeMainActivity">
 
     <FrameLayout
         android:id="@+id/main_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/main_play_layout"/>
+        android:layout_above="@+id/main_play_layout"
+        android:background="#ffffffff" />
 
     <ImageView
         android:id="@+id/main_actionbar_shadow"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:rotation="180"
+        android:layout_above="@+id/main_play_layout"
         android:alpha="0.4"
         android:background="@drawable/actionbar_tab_shadow_skin_white"
-        android:layout_above="@+id/main_play_layout"/>
+        android:rotation="180" />
 
     <RelativeLayout
         android:id="@+id/main_play_layout"
+        android:background="#ffffffff"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        style="@style/RippleBackground"
         android:layout_alignParentBottom="true">
 
-        <ImageView
-            android:id="@+id/main_music_photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:src="@drawable/ic_launcher" />
-
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/main_music_photo"
-            android:layout_toLeftOf="@+id/mediaplay_play_pause"
-            android:layout_marginLeft="5dp"
-            android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            style="@style/RippleBackground">
 
-            <com.yaozu.listener.widget.AlwaysMarqueeTextView
-                android:id="@+id/current_songname"
+            <ImageView
+                android:id="@+id/main_music_photo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="the day you went awaye"
-                android:singleLine="true"
-                android:ellipsize="marquee"
-                android:layout_marginTop="3dp"
-                android:textColor="#363636"
-                android:textSize="16dp"/>
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/ic_launcher" />
 
-            <TextView
-                android:id="@+id/current_songsinger"
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:singleLine="true"
-                android:paddingBottom="5dp"
-                android:textSize="12dp"
-                android:textColor="#7F7F7F"
-                android:text="mojic cat" />
+                android:layout_marginLeft="5dp"
+                android:layout_toLeftOf="@+id/mediaplay_play_pause"
+                android:layout_toRightOf="@+id/main_music_photo"
+                android:orientation="vertical">
+
+                <com.yaozu.listener.widget.AlwaysMarqueeTextView
+                    android:id="@+id/current_songname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
+                    android:text="the day you went awaye"
+                    android:textColor="#363636"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/current_songsinger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:paddingBottom="5dp"
+                    android:singleLine="true"
+                    android:text="mojic cat"
+                    android:textColor="#7F7F7F"
+                    android:textSize="12dp" />
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/mediaplay_play_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/main_play_list"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:src="@drawable/playbar_btn_play" />
+
+            <ImageView
+                android:id="@+id/main_play_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:src="@drawable/playbar_btn_next" />
         </RelativeLayout>
-
-        <ImageView
-            android:id="@+id/mediaplay_play_pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:paddingRight="5dp"
-            android:paddingLeft="5dp"
-            android:layout_toLeftOf="@+id/main_play_list"
-            android:src="@drawable/playbar_btn_play" />
-
-        <ImageView
-            android:id="@+id/main_play_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:paddingRight="5dp"
-            android:paddingLeft="5dp"
-            android:layout_centerVertical="true"
-            android:src="@drawable/playbar_btn_next" />
     </RelativeLayout>
     <!--
     <RadioGroup

@@ -1,8 +1,13 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Material.Light.DarkActionBar">
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="android:textColorPrimary">#000000</item>
+        <item name="colorPrimary">#ff0000</item>
+        <item name="colorPrimaryDark">#00ff00</item>
+        <item name="colorAccent">#0000ff</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="RippleBackground">

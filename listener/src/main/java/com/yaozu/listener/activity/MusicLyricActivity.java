@@ -1,6 +1,10 @@
 package com.yaozu.listener.activity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -14,25 +18,38 @@ import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.support.v4.content.LocalBroadcastManager;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
+import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.service.MusicService;
 
+import org.w3c.dom.Text;
+
 import java.util.Locale;
+
+import me.imid.swipebacklayout.lib.SwipeBackLayout;
+import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 /**
  * Created by jieyz on 2015/9/29.
  */
-public class MusicHomeActivity extends Activity {
+public class MusicLyricActivity extends SwipeBackActivity implements View.OnClickListener {
     private SeekBar mSeekBar;
     private MediaSeekBarChangeListener seekBarChangeListener;
     private MusicService mService;
     private TextView media_current_position, media_duration;
+    private TextView lyricTitle;
+    private TextView lyricSinger;
     private RelativeLayout background;
+    private ImageView mPlay;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -48,8 +65,21 @@ public class MusicHomeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_home);
         findviewByids();
+        setOnclickListener();
+        initDate();
         mService = YaozuApplication.getIntance().getMusicService();
         setProgress();
+        if(mService != null && mService.isPlaying()){
+            mPlay.setImageResource(R.drawable.play_btn_pause);
+        }
+        registerPushReceiver();
+
+        SwipeBackLayout swipeBackLayout = getSwipeBackLayout();
+        swipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_RIGHT|SwipeBackLayout.EDGE_LEFT);
+
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        int width = wm.getDefaultDisplay().getWidth();
+        swipeBackLayout.setEdgeSize(width/2);
     }
 
     private void findviewByids() {
@@ -59,11 +89,42 @@ public class MusicHomeActivity extends Activity {
         media_current_position = (TextView) findViewById(R.id.media_current_position);
         media_duration = (TextView) findViewById(R.id.media_duration);
         background = (RelativeLayout) findViewById(R.id.music_background);
+        mPlay = (ImageView) findViewById(R.id.play_btn_play);
+        lyricTitle = (TextView) findViewById(R.id.music_lyric_title);
+        lyricSinger = (TextView) findViewById(R.id.music_lyric_singer);
+
         Bitmap mBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.background);
         mBitmap = getAeroBitmap(mBitmap);
         BitmapDrawable drawable = new BitmapDrawable(mBitmap);
         drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
         background.setBackground(drawable);
+    }
+
+    private void initDate(){
+        Intent intent = getIntent();
+        String name = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_NAME);
+        String singer = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_SINGER);
+        lyricTitle.setText(name);
+        lyricSinger.setText(singer);
+    }
+
+    private void setOnclickListener() {
+        mPlay.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.play_btn_play:
+                if (mService.isPlaying()) {
+                    mService.pause();
+                    mPlay.setImageResource(R.drawable.play_btn_play);
+                } else {
+                    mService.start();
+                    mPlay.setImageResource(R.drawable.play_btn_pause);
+                }
+                break;
+        }
     }
 
     private class MediaSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
@@ -150,5 +211,82 @@ public class MusicHomeActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         mHandler.removeMessages(0);
+        unRegisterPushRecevier();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.music_lyric_out,R.anim.music_lyric_bottom_out);
+    }
+
+    /**
+     * @Description:
+     * @author
+     * @date 2013-10-28 jieyaozu 10:30:27
+     */
+
+    protected void registerPushReceiver() {
+        if (musicServiceBroadcastReceiver == null) {
+            musicServiceBroadcastReceiver = new MusicServiceBroadcastReceiver();
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(IntentKey.NOTIFY_CURRENT_SONG_MSG);
+            filter.addAction(IntentKey.NOTIFY_SONG_PAUSE);
+            filter.addAction(IntentKey.NOTIFY_SONG_PLAYING);
+            localBroadcastManager = LocalBroadcastManager.getInstance(this);
+            localBroadcastManager.registerReceiver(musicServiceBroadcastReceiver, filter);
+        }
+    }
+
+    /**
+     * @Description:
+     * @author
+     * @date 2013-10-28 jieyaozu10:17:28
+     */
+    protected void unRegisterPushRecevier() {
+        if (musicServiceBroadcastReceiver != null) {
+            localBroadcastManager = LocalBroadcastManager.getInstance(this);
+            localBroadcastManager.unregisterReceiver(musicServiceBroadcastReceiver);
+            musicServiceBroadcastReceiver = null;
+        }
+    }
+
+    private MusicServiceBroadcastReceiver musicServiceBroadcastReceiver;
+    /**
+     *
+     */
+    private LocalBroadcastManager localBroadcastManager;
+
+    /**
+     * 2015-11-5
+     */
+    private class MusicServiceBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (IntentKey.NOTIFY_CURRENT_SONG_MSG.equals(intent.getAction())) {
+                String mSongName = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_NAME);
+                String mSinger = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_SINGER);
+                int currentPos = intent.getIntExtra(IntentKey.MEDIA_CURRENT_INDEX, -1);
+                notifyCurrentSongMsg(mSongName,mSinger,currentPos);
+            } else if (IntentKey.NOTIFY_SONG_PLAYING.equals(intent.getAction())) {
+                notifySongPlaying();
+            } else if (IntentKey.NOTIFY_SONG_PAUSE.equals(intent.getAction())) {
+                notifySongPause();
+            }
+        }
+
+    }
+    public void notifyCurrentSongMsg(String name, String singer, int currentPos) {
+        lyricTitle.setText(name);
+        lyricSinger.setText(singer);
+    }
+
+    public void notifySongPlaying() {
+
+    }
+
+    public void notifySongPause() {
+
     }
 }

@@ -1,0 +1,25 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.yaozu.listener.fragment.music.MusicFragment">
+        <!-- TODO: Update blank fragment layout -->
+        <ListView
+            android:id="@+id/home_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:cacheColorHint="#00000000"
+            android:divider="@null"
+            tools:listitem="@layout/list_song_item"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@drawable/actionbar_tab_shadow_skin_white"
+            android:visibility="gone"/>
+
+        <include
+            android:id="@+id/base_layout"
+            layout="@layout/base_fragment_layout" />
+</FrameLayout>

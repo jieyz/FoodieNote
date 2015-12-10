@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- SEEKBAR背景底部的颜色 -->
+    <item android:id="@android:id/background">
+        <nine-patch android:src="@drawable/play_plybar_bg" />
+    </item>
+
+    <!-- 拖动后的颜色 -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <nine-patch android:src="@drawable/play_plybar_red" />
+        </clip>
+    </item>
+</layer-list>

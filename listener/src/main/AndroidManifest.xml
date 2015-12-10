@@ -30,7 +30,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name="com.yaozu.listener.activity.MusicHomeActivity" />
+        <activity android:name=".activity.MusicLyricActivity"
+                  android:theme="@style/MusicLyricTheme"/>
 
         <service
             android:name="com.yaozu.listener.service.MusicService"
