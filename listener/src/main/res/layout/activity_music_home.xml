@@ -8,6 +8,7 @@
     android:fitsSystemWindows="true">
 
     <RelativeLayout
+        android:id="@+id/music_lyric_actionbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="5dp">
@@ -44,6 +45,21 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/music_lyric_actionbar"
+        android:layout_above="@+id/music_lyric_seekbar_rl">
+
+        <ListView
+            android:id="@+id/music_lyric_show"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@null"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/music_lyric_seekbar_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/lock_playbar">

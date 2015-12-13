@@ -2,4 +2,6 @@
 <resources>
     <color name="appthemecolor">#7EC0EE</color>
     <color name="black">#99000000</color>
+    <color name="white">#ffffffff</color>
+    <color name="gray_white">#B5B5B5</color>
 </resources>

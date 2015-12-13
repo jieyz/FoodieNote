@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,7 +43,7 @@ public class SocialFragment extends BaseFragment {
     private ArrayList<Fragment> fragments = new ArrayList<Fragment>();
     private RadioGroup mRdioGroup;
     private RadioButton chat, maillist, my;
-
+    private PagerTabStrip pagertabstrip;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -105,6 +106,10 @@ public class SocialFragment extends BaseFragment {
         mViewPager = (ViewPager) view.findViewById(R.id.social_viewpager);
         mViewPager.setAdapter(new SocialViewPagerAdapter(((FragmentActivity) getActivity()).getSupportFragmentManager()));
         mRdioGroup = (RadioGroup) view.findViewById(R.id.social_actionbar);
+        pagertabstrip = (PagerTabStrip) view.findViewById(R.id.social_pagertabstrip);
+        pagertabstrip.setDrawFullUnderline(false);
+        pagertabstrip.setBackgroundColor(getResources().getColor(R.color.white));
+        pagertabstrip.setTabIndicatorColor(getResources().getColor(R.color.appthemecolor));
 
         chat = (RadioButton) view.findViewById(R.id.social_chat_actionbar);
         maillist = (RadioButton) view.findViewById(R.id.social_maillist_actionbar);

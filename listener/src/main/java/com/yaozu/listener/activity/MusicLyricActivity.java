@@ -1,6 +1,5 @@
 package com.yaozu.listener.activity;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +11,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.renderscript.Allocation;
@@ -20,8 +20,11 @@ import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -29,10 +32,11 @@ import android.widget.TextView;
 import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.constant.IntentKey;
+import com.yaozu.listener.playlist.lyric.LRCUtils;
 import com.yaozu.listener.service.MusicService;
 
-import org.w3c.dom.Text;
-
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import me.imid.swipebacklayout.lib.SwipeBackLayout;
@@ -50,12 +54,48 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     private TextView lyricSinger;
     private RelativeLayout background;
     private ImageView mPlay;
+    private ListView mShowLyricView;
+    private LyricAdapter mAdapter;
+    private ArrayList<LRCUtils.timelrc> lyricData;
 
+    private final int SET_PROGRESS = 0;
+    private final int GET_CURRENT_PLAY_POSTTION = 1;
+
+    private int notifyPostion = 0;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            setProgress();
+            switch (msg.what) {
+                case SET_PROGRESS:
+                    setProgress();
+                    break;
+                case GET_CURRENT_PLAY_POSTTION:
+                    if(mService == null){
+                        return;
+                    }
+                    int currentposition = mService.getCurrentPlayPosition();
+                    if (lyricData != null && lyricData.size() > 0) {
+                        for (int i = 0; i < lyricData.size(); i++) {
+                            LRCUtils.timelrc nexttimelrc = lyricData.get(i);
+                            if (currentposition < nexttimelrc.getTimePoint()) {
+                                if (i == 0 || currentposition > lyricData.get(i - 1).getTimePoint()) {
+                                    int position = (i - 1) >= 0 ? (i - 1) : 0;
+                                    if (notifyPostion != position) {
+                                        LRCUtils.timelrc currenttimelrc = lyricData.get(position);
+                                        mAdapter.setCurrentPosition(position);
+                                        mAdapter.notifyDataSetChanged();
+                                        mShowLyricView.smoothScrollToPositionFromTop(position, mShowLyricView.getHeight() / 2);
+                                        notifyPostion = position;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    sendMessageDelayed(this.obtainMessage(GET_CURRENT_PLAY_POSTTION), 100);
+                    break;
+            }
         }
     };
     private int mDuration;
@@ -69,17 +109,17 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         initDate();
         mService = YaozuApplication.getIntance().getMusicService();
         setProgress();
-        if(mService != null && mService.isPlaying()){
+        if (mService != null && mService.isPlaying()) {
             mPlay.setImageResource(R.drawable.play_btn_pause);
         }
         registerPushReceiver();
 
         SwipeBackLayout swipeBackLayout = getSwipeBackLayout();
-        swipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_RIGHT|SwipeBackLayout.EDGE_LEFT);
+        swipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
 
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         int width = wm.getDefaultDisplay().getWidth();
-        swipeBackLayout.setEdgeSize(width/2);
+        swipeBackLayout.setEdgeSize(width / 2);
     }
 
     private void findviewByids() {
@@ -92,20 +132,53 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         mPlay = (ImageView) findViewById(R.id.play_btn_play);
         lyricTitle = (TextView) findViewById(R.id.music_lyric_title);
         lyricSinger = (TextView) findViewById(R.id.music_lyric_singer);
+        mShowLyricView = (ListView) findViewById(R.id.music_lyric_show);
 
-        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.background);
+        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
         mBitmap = getAeroBitmap(mBitmap);
         BitmapDrawable drawable = new BitmapDrawable(mBitmap);
         drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
         background.setBackground(drawable);
     }
 
-    private void initDate(){
+    private void initDate() {
         Intent intent = getIntent();
         String name = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_NAME);
         String singer = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_SINGER);
         lyricTitle.setText(name);
         lyricSinger.setText(singer);
+
+        showMusicLyric(name);
+    }
+
+    /**
+     * 显示歌词
+     */
+    private void showMusicLyric(String name){
+        LRCUtils utils = new LRCUtils();
+        String path = Environment.getExternalStorageDirectory().getPath();
+        path = path + File.separator + "KuwoMusic" + File.separator + "lyrics" + File.separator + name + ".lrc";
+
+        lyricData = new ArrayList<LRCUtils.timelrc>();
+        addEmptyDatatolyricData(lyricData,false);
+        utils.ReadLRC(new File(path),lyricData);
+        addEmptyDatatolyricData(lyricData,true);
+        mAdapter = new LyricAdapter();
+        mShowLyricView.setAdapter(mAdapter);
+        mHandler.sendMessageDelayed(mHandler.obtainMessage(GET_CURRENT_PLAY_POSTTION), 100);
+    }
+
+    /**
+     * 在lyricData的前后加入空的数据
+     */
+    private void addEmptyDatatolyricData(ArrayList<LRCUtils.timelrc> lyricData,boolean islast){
+       for(int i=0;i<6;i++){
+           LRCUtils.timelrc timelrc = new LRCUtils.timelrc();
+           if(islast && i == 0){
+               timelrc.setTimePoint(999999);
+           }
+           lyricData.add(timelrc);
+       }
     }
 
     private void setOnclickListener() {
@@ -114,7 +187,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.play_btn_play:
                 if (mService.isPlaying()) {
                     mService.pause();
@@ -150,6 +223,49 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         }
     }
 
+    private class LyricAdapter extends BaseAdapter {
+        private int mPosition = 0;
+
+        public void setCurrentPosition(int position) {
+            mPosition = position;
+        }
+
+        @Override
+        public int getCount() {
+            if (lyricData != null) {
+                return lyricData.size();
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View convertView, ViewGroup viewGroup) {
+            View view = View.inflate(MusicLyricActivity.this, R.layout.activity_lyric_item, null);
+            TextView textView = (TextView) view.findViewById(R.id.music_lyric_list_item);
+            if (lyricData != null && lyricData.size() > 0) {
+                String lyric = lyricData.get(i).getLrcString();
+                textView.setText(lyric);
+                if (mPosition == i) {
+                    textView.setTextColor(getResources().getColor(R.color.appthemecolor));
+                } else {
+                    textView.setTextColor(getResources().getColor(R.color.gray_white));
+                }
+            }
+            return textView;
+        }
+    }
+
     private void setProgress() {
         if (mService == null) {
             return;
@@ -171,7 +287,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
             media_current_position.setText(generateTime(currentpos));
         }
 
-        mHandler.sendMessageDelayed(mHandler.obtainMessage(0), 1000);
+        mHandler.sendMessageDelayed(mHandler.obtainMessage(SET_PROGRESS), 1000);
     }
 
     private static String generateTime(long position) {
@@ -210,14 +326,15 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mHandler.removeMessages(0);
+        mHandler.removeMessages(SET_PROGRESS);
+        mHandler.removeMessages(GET_CURRENT_PLAY_POSTTION);
         unRegisterPushRecevier();
     }
 
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.music_lyric_out,R.anim.music_lyric_bottom_out);
+        overridePendingTransition(R.anim.music_lyric_out, R.anim.music_lyric_bottom_out);
     }
 
     /**
@@ -268,7 +385,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                 String mSongName = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_NAME);
                 String mSinger = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_SINGER);
                 int currentPos = intent.getIntExtra(IntentKey.MEDIA_CURRENT_INDEX, -1);
-                notifyCurrentSongMsg(mSongName,mSinger,currentPos);
+                notifyCurrentSongMsg(mSongName, mSinger, currentPos);
             } else if (IntentKey.NOTIFY_SONG_PLAYING.equals(intent.getAction())) {
                 notifySongPlaying();
             } else if (IntentKey.NOTIFY_SONG_PAUSE.equals(intent.getAction())) {
@@ -277,9 +394,11 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         }
 
     }
+
     public void notifyCurrentSongMsg(String name, String singer, int currentPos) {
         lyricTitle.setText(name);
         lyricSinger.setText(singer);
+        showMusicLyric(name);
     }
 
     public void notifySongPlaying() {

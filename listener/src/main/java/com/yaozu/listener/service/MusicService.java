@@ -205,8 +205,6 @@ public class MusicService extends Service {
 
     public void start() {
         if (mCurrentSong != null) {
-            mAudioManager.requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN);
             mMediaPlayer.start();
             notifyState(PlayState.playing);
         }
@@ -293,6 +291,8 @@ public class MusicService extends Service {
         app = YaozuApplication.getIntance();
         app.setMusicService(this);
         mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        mAudioManager.requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
     }
 
     @Override
