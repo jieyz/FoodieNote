@@ -262,7 +262,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                     textView.setTextColor(getResources().getColor(R.color.gray_white));
                 }
             }
-            return textView;
+            return view;
         }
     }
 
