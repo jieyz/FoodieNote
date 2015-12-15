@@ -42,17 +42,27 @@
                 android:button="@null"
                 android:text="我" />
         </RadioGroup>
+        <com.yaozu.listener.widget.PagerSlidingTabStrip
+            android:id="@+id/social_pager_tabstrip"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/social_actionbar"
+            />
+
+        <ImageView
+            android:id="@+id/main_actionbar_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:alpha="0.4"
+            android:layout_below="@+id/social_pager_tabstrip"
+            android:background="@drawable/actionbar_tab_shadow_skin_white" />
+
         <android.support.v4.view.ViewPager
             android:id="@+id/social_viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/social_actionbar"
+            android:layout_below="@+id/social_pager_tabstrip"
             >
-            <android.support.v4.view.PagerTabStrip
-                android:id="@+id/social_pagertabstrip"
-                android:layout_width="match_parent"
-                android:layout_height="10dp"
-                android:gravity="center"/>
         </android.support.v4.view.ViewPager>
     </RelativeLayout>
 

@@ -18,6 +18,7 @@ import android.widget.RadioGroup;
 import com.yaozu.listener.R;
 import com.yaozu.listener.fragment.BaseFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
+import com.yaozu.listener.widget.PagerSlidingTabStrip;
 
 import java.util.ArrayList;
 
@@ -43,7 +44,7 @@ public class SocialFragment extends BaseFragment {
     private ArrayList<Fragment> fragments = new ArrayList<Fragment>();
     private RadioGroup mRdioGroup;
     private RadioButton chat, maillist, my;
-    private PagerTabStrip pagertabstrip;
+    private PagerSlidingTabStrip pagerSlidingTabStrip;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -106,10 +107,6 @@ public class SocialFragment extends BaseFragment {
         mViewPager = (ViewPager) view.findViewById(R.id.social_viewpager);
         mViewPager.setAdapter(new SocialViewPagerAdapter(((FragmentActivity) getActivity()).getSupportFragmentManager()));
         mRdioGroup = (RadioGroup) view.findViewById(R.id.social_actionbar);
-        pagertabstrip = (PagerTabStrip) view.findViewById(R.id.social_pagertabstrip);
-        pagertabstrip.setDrawFullUnderline(false);
-        pagertabstrip.setBackgroundColor(getResources().getColor(R.color.white));
-        pagertabstrip.setTabIndicatorColor(getResources().getColor(R.color.appthemecolor));
 
         chat = (RadioButton) view.findViewById(R.id.social_chat_actionbar);
         maillist = (RadioButton) view.findViewById(R.id.social_maillist_actionbar);
@@ -140,8 +137,10 @@ public class SocialFragment extends BaseFragment {
                 }
             }
         });
-        
-        mViewPager.addOnPageChangeListener(new SocialOnPageChangeListener());
+
+        pagerSlidingTabStrip = (PagerSlidingTabStrip) view.findViewById(R.id.social_pager_tabstrip);
+        pagerSlidingTabStrip.setViewPager(mViewPager);
+        pagerSlidingTabStrip.setOnPageChangeListener(new SocialOnPageChangeListener());
     }
 
     // TODO: Rename method, update argument and hook method into UI event
