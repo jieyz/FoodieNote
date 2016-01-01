@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.yaozu.listener" >
+    package="com.yaozu.listener"
+    android:versionCode="1"
+    android:versionName="1.0">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
+        android:name="com.yaozu.listener.YaozuApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="com.yaozu.listener.YaozuApplication">
+        android:theme="@style/AppTheme">
         <activity
             android:name="com.yaozu.listener.HomeMainActivity"
+            android:label="@string/app_name"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            android:label="@string/app_name" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,20 +29,20 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.yaozu.listener.broadcast.MusicBroadcastReceiver" >
+        <receiver android:name="com.yaozu.listener.broadcast.MusicBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.SCREEN_ON" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activity.MusicLyricActivity"
-                  android:theme="@style/MusicLyricTheme"/>
+        <activity
+            android:name=".activity.MusicLyricActivity"
+            android:theme="@style/MusicLyricTheme" />
 
         <service
             android:name="com.yaozu.listener.service.MusicService"
             android:enabled="true"
-            android:exported="true" >
-        </service>
+            android:exported="true"></service>
     </application>
 
 </manifest>

@@ -64,5 +64,18 @@
             android:layout_marginLeft="15dp"
             android:background="#447F7F7F"
             android:layout_alignParentBottom="true"/>
+
+        <TextView
+            android:id="@+id/upload_file"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:layout_marginRight="5dp"
+            android:text="上传"
+            android:textSize="16dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
     </RelativeLayout>
 </RelativeLayout>

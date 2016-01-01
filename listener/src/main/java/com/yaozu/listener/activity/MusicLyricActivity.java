@@ -11,7 +11,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.renderscript.Allocation;
@@ -19,6 +18,8 @@ import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -28,14 +29,19 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.playlist.lyric.LRCUtils;
 import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.utils.DownLoadUtil;
+import com.yaozu.listener.utils.FileUtil;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -46,6 +52,10 @@ import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
  * Created by jieyz on 2015/9/29.
  */
 public class MusicLyricActivity extends SwipeBackActivity implements View.OnClickListener {
+    //?songname=爷爷泡的茶&singer=周杰伦"
+    private static final String downloadUrl = "http://120.27.129.229:8080/TestServers/servlet/DownLoadServlet";
+    private static final String baiduGetLrcIdUrl = "http://box.zhangmen.baidu.com/x?op=12&count=1";//&title=我是一只鱼$$任贤齐$$$$";
+    private static final String baiduDownLoadLrc = "http://box.zhangmen.baidu.com/bdlrc/";
     private SeekBar mSeekBar;
     private MediaSeekBarChangeListener seekBarChangeListener;
     private MusicService mService;
@@ -57,9 +67,11 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     private ListView mShowLyricView;
     private LyricAdapter mAdapter;
     private ArrayList<LRCUtils.timelrc> lyricData;
+    private boolean mFirstEnter = true;
 
     private final int SET_PROGRESS = 0;
     private final int GET_CURRENT_PLAY_POSTTION = 1;
+    private final int FILE_DOWNLOAD = 2;
 
     private int notifyPostion = 0;
     private Handler mHandler = new Handler() {
@@ -71,7 +83,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                     setProgress();
                     break;
                 case GET_CURRENT_PLAY_POSTTION:
-                    if(mService == null){
+                    if (mService == null) {
                         return;
                     }
                     int currentposition = mService.getCurrentPlayPosition();
@@ -85,7 +97,12 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                                         LRCUtils.timelrc currenttimelrc = lyricData.get(position);
                                         mAdapter.setCurrentPosition(position);
                                         mAdapter.notifyDataSetChanged();
-                                        mShowLyricView.smoothScrollToPositionFromTop(position, mShowLyricView.getHeight() / 2);
+                                        if (mFirstEnter) {
+                                            mFirstEnter = false;
+                                            mShowLyricView.setSelectionFromTop(position, mShowLyricView.getHeight() / 2);
+                                        } else {
+                                            mShowLyricView.smoothScrollToPositionFromTop(position, mShowLyricView.getHeight() / 2);
+                                        }
                                         notifyPostion = position;
                                     }
                                     break;
@@ -95,10 +112,23 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                     }
                     sendMessageDelayed(this.obtainMessage(GET_CURRENT_PLAY_POSTTION), 100);
                     break;
+                case FILE_DOWNLOAD:
+                    File file = (File) msg.obj;
+                    LRCUtils utils = new LRCUtils();
+                    utils.ReadLRC(file, lyricData);
+                    addEmptyDatatolyricData(lyricData, true);
+                    mAdapter = new LyricAdapter();
+                    mShowLyricView.setAdapter(mAdapter);
+                    mHandler.sendMessageDelayed(mHandler.obtainMessage(GET_CURRENT_PLAY_POSTTION), 100);
+                    break;
             }
         }
     };
     private int mDuration;
+    private String name;
+    private String singer;
+    private FileUtil fileUtil;
+    private String TAG = this.getClass().getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,8 +173,8 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
 
     private void initDate() {
         Intent intent = getIntent();
-        String name = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_NAME);
-        String singer = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_SINGER);
+        name = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_NAME);
+        singer = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_SINGER);
         lyricTitle.setText(name);
         lyricSinger.setText(singer);
 
@@ -154,31 +184,110 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     /**
      * 显示歌词
      */
-    private void showMusicLyric(String name){
+    private void showMusicLyric(String name) {
         LRCUtils utils = new LRCUtils();
-        String path = Environment.getExternalStorageDirectory().getPath();
-        path = path + File.separator + "KuwoMusic" + File.separator + "lyrics" + File.separator + name + ".lrc";
+        fileUtil = new FileUtil();
+        String path = fileUtil.getSDPATH();
+        path = path + singer + File.separator + name + ".lrc";
 
         lyricData = new ArrayList<LRCUtils.timelrc>();
-        addEmptyDatatolyricData(lyricData,false);
-        utils.ReadLRC(new File(path),lyricData);
-        addEmptyDatatolyricData(lyricData,true);
-        mAdapter = new LyricAdapter();
-        mShowLyricView.setAdapter(mAdapter);
-        mHandler.sendMessageDelayed(mHandler.obtainMessage(GET_CURRENT_PLAY_POSTTION), 100);
+        addEmptyDatatolyricData(lyricData, false);
+        File file = new File(path);
+        if (!file.exists()) {
+            downLoadLyric();
+            return;
+        } else {
+            utils.ReadLRC(file, lyricData);
+            for(int i=0;i<lyricData.size();i++){
+                System.out.println("=============>"+lyricData.get(i).getLrcString());
+            }
+            addEmptyDatatolyricData(lyricData, true);
+            mAdapter = new LyricAdapter();
+            mShowLyricView.setAdapter(mAdapter);
+            mHandler.sendMessageDelayed(mHandler.obtainMessage(GET_CURRENT_PLAY_POSTTION), 100);
+        }
     }
+
+    File file = null;
+
+    private void downLoadLyric() {
+        final String url = downloadUrl + "?songname=" + name + "&singer=" + singer;
+        //创建歌词目录(以歌手名为目录名)
+        fileUtil.creatSDDir(singer.trim());
+        try {
+            file = fileUtil.creatSDFile(singer + File.separator + name + ".lrc");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DownLoadUtil.download(fileUtil, url, file);
+                String downLrcUrl = null;
+                if (getFileSize(file) <= 0) {
+                    file.delete();
+                    Log.d(TAG, "=======文件大小为0，已删除=======>");
+                    //&title=我是一只鱼$$任贤齐$$$$"
+                    String url = baiduGetLrcIdUrl + "&title=" + name + "$$" + singer + "$$$$";
+                    String lrcid = DownLoadUtil.baiduDownLoadLrc(url);
+                    if(TextUtils.isEmpty(lrcid)){
+                        Log.d(TAG, "=======获取的歌词为空!=======>");
+                        return;
+                    }
+                    downLrcUrl = baiduDownLoadLrc + Integer.parseInt(lrcid)/100 +"/" + lrcid + ".lrc";
+                    Log.d(TAG, "======downLrcUrl=======>" + downLrcUrl);
+                }
+                DownLoadUtil.download(fileUtil, downLrcUrl, file);
+                if(getFileSize(file) <= 0){
+                    file.delete();
+                    Log.d(TAG, "=======从百度上下载的文件大小为0，已删除=======>");
+                }
+                Message msg = mHandler.obtainMessage();
+                msg.what = FILE_DOWNLOAD;
+                msg.obj = file;
+                mHandler.sendMessage(msg);
+            }
+        }).start();
+    }
+
+
+    /**
+     * 获取指定文件大小
+     *
+     * @param file
+     * @return
+     * @throws Exception
+     */
+    private static long getFileSize(File file) {
+        long size = 0;
+        try {
+            if (file.exists()) {
+                FileInputStream fis = null;
+                fis = new FileInputStream(file);
+                size = fis.available();
+            } else {
+                file.createNewFile();
+                Log.e("获取文件大小", "文件不存在!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return size;
+    }
+
 
     /**
      * 在lyricData的前后加入空的数据
      */
-    private void addEmptyDatatolyricData(ArrayList<LRCUtils.timelrc> lyricData,boolean islast){
-       for(int i=0;i<6;i++){
-           LRCUtils.timelrc timelrc = new LRCUtils.timelrc();
-           if(islast && i == 0){
-               timelrc.setTimePoint(999999);
-           }
-           lyricData.add(timelrc);
-       }
+    private void addEmptyDatatolyricData(ArrayList<LRCUtils.timelrc> lyricData, boolean islast) {
+        for (int i = 0; i < 6; i++) {
+            LRCUtils.timelrc timelrc = new LRCUtils.timelrc();
+            if (islast && i == 0) {
+                timelrc.setTimePoint(999999);
+            }
+            lyricData.add(timelrc);
+        }
     }
 
     private void setOnclickListener() {

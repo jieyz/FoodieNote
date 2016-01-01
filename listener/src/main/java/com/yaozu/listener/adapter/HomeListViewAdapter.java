@@ -17,8 +17,10 @@ import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.widget.SoundWaveView;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -70,6 +72,7 @@ public class HomeListViewAdapter extends BaseAdapter {
             holder.singer = (TextView) view.findViewById(R.id.song_singer);
             holder.indicate = (ImageView) view.findViewById(R.id.playing_item);
             holder.soundWaveView = (SoundWaveView) view.findViewById(R.id.sound_wave);
+            holder.uploadFile = (TextView) view.findViewById(R.id.upload_file);
             view.setTag(holder);
         } else {
             view = convertView;
@@ -112,6 +115,13 @@ public class HomeListViewAdapter extends BaseAdapter {
                 }
             }
         });
+
+        holder.uploadFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NetUtil.uploadFile(mContext,new File(song.getFileUrl()));
+            }
+        });
         return view;
     }
 
@@ -120,5 +130,6 @@ public class HomeListViewAdapter extends BaseAdapter {
         public TextView singer;
         public ImageView indicate;
         public SoundWaveView soundWaveView;
+        public TextView uploadFile;
     }
 }

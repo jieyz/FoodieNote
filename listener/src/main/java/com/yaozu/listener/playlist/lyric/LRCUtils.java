@@ -56,9 +56,9 @@ public class LRCUtils {
                 is.close();
                 Collections.sort(lrclist, new Sort());
 
-                for (int i = 0; i < lrclist.size(); i++) {
-                    Log.d(TAG, "time = " + lrclist.get(i).getTimePoint() + "   string = " + lrclist.get(i).getLrcString());
-                }
+//                for (int i = 0; i < lrclist.size(); i++) {
+//                    Log.d(TAG, "time = " + lrclist.get(i).getTimePoint() + "   string = " + lrclist.get(i).getLrcString());
+//                }
             }
         } catch (Exception e) {
             e.printStackTrace();
