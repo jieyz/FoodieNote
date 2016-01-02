@@ -178,7 +178,9 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         lyricTitle.setText(name);
         lyricSinger.setText(singer);
 
-        showMusicLyric(name);
+        if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(singer)) {
+            showMusicLyric(name);
+        }
     }
 
     /**
@@ -198,8 +200,8 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
             return;
         } else {
             utils.ReadLRC(file, lyricData);
-            for(int i=0;i<lyricData.size();i++){
-                System.out.println("=============>"+lyricData.get(i).getLrcString());
+            for (int i = 0; i < lyricData.size(); i++) {
+                System.out.println("=============>" + lyricData.get(i).getLrcString());
             }
             addEmptyDatatolyricData(lyricData, true);
             mAdapter = new LyricAdapter();
@@ -230,15 +232,15 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                     //&title=我是一只鱼$$任贤齐$$$$"
                     String url = baiduGetLrcIdUrl + "&title=" + name + "$$" + singer + "$$$$";
                     String lrcid = DownLoadUtil.baiduDownLoadLrc(url);
-                    if(TextUtils.isEmpty(lrcid)){
+                    if (TextUtils.isEmpty(lrcid)) {
                         Log.d(TAG, "=======获取的歌词为空!=======>");
                         return;
                     }
-                    downLrcUrl = baiduDownLoadLrc + Integer.parseInt(lrcid)/100 +"/" + lrcid + ".lrc";
+                    downLrcUrl = baiduDownLoadLrc + Integer.parseInt(lrcid) / 100 + "/" + lrcid + ".lrc";
                     Log.d(TAG, "======downLrcUrl=======>" + downLrcUrl);
                 }
                 DownLoadUtil.download(fileUtil, downLrcUrl, file);
-                if(getFileSize(file) <= 0){
+                if (getFileSize(file) <= 0) {
                     file.delete();
                     Log.d(TAG, "=======从百度上下载的文件大小为0，已删除=======>");
                 }
@@ -298,12 +300,14 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.play_btn_play:
-                if (mService.isPlaying()) {
-                    mService.pause();
-                    mPlay.setImageResource(R.drawable.play_btn_play);
-                } else {
-                    mService.start();
-                    mPlay.setImageResource(R.drawable.play_btn_pause);
+                if (mService != null) {
+                    if (mService.isPlaying()) {
+                        mService.pause();
+                        mPlay.setImageResource(R.drawable.play_btn_play);
+                    } else {
+                        mService.start();
+                        mPlay.setImageResource(R.drawable.play_btn_pause);
+                    }
                 }
                 break;
         }
@@ -327,8 +331,10 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            int pos = (int) (((float) seekBar.getProgress() / 1000f) * mService.getDuration());
-            mService.seekto(pos);
+            if(mService != null){
+                int pos = (int) (((float) seekBar.getProgress() / 1000f) * mService.getDuration());
+                mService.seekto(pos);
+            }
         }
     }
 

@@ -10,11 +10,14 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.yaozu.listener.Infointerface;
 import com.yaozu.listener.R;
 import com.yaozu.listener.adapter.HomeListViewAdapter;
 import com.yaozu.listener.fragment.BaseFragment;
+import com.yaozu.listener.fragment.HomeFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.playlist.provider.AudioProvider;
@@ -27,10 +30,10 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * to handle interaction events.
- * Use the {@link MusicFragment#newInstance} factory method to
+ * Use the {@link MusicLocalFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MusicFragment extends BaseFragment {
+public class MusicLocalFragment extends BaseFragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -42,9 +45,11 @@ public class MusicFragment extends BaseFragment {
 
     private OnFragmentInteractionListener mListener;
     private Activity mActivity;
+    private Infointerface mInfointerface;
     private ListView mListView;
     private HomeListViewAdapter mAdapter;
     private AudioProvider mProvider;
+    private ImageView actionBack;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -58,11 +63,11 @@ public class MusicFragment extends BaseFragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MusicFragment.
+     * @return A new instance of fragment MusicLocalFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MusicFragment newInstance(String param1, String param2) {
-        MusicFragment fragment = new MusicFragment();
+    public static MusicLocalFragment newInstance(String param1, String param2) {
+        MusicLocalFragment fragment = new MusicLocalFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -70,7 +75,7 @@ public class MusicFragment extends BaseFragment {
         return fragment;
     }
 
-    public MusicFragment() {
+    public MusicLocalFragment() {
         // Required empty public constructor
     }
 
@@ -87,8 +92,9 @@ public class MusicFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view  = inflater.inflate(R.layout.fragment_local, container, false);
+        View view  = inflater.inflate(R.layout.fragment_music_local, container, false);
         mListView = (ListView) view.findViewById(R.id.home_listview);
+        actionBack = (ImageView) view.findViewById(R.id.fragment_music_local_back);
         mAdapter = new HomeListViewAdapter(mActivity);
         return view;
     }
@@ -96,6 +102,7 @@ public class MusicFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        actionBack.setOnClickListener(this);
         getData();
     }
 
@@ -135,6 +142,7 @@ public class MusicFragment extends BaseFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mActivity = activity;
+        mInfointerface = (Infointerface) activity;
         try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
@@ -164,6 +172,15 @@ public class MusicFragment extends BaseFragment {
         SoundWaveView view = (SoundWaveView) mAdapter.getItem(0);
         if(view != null){
             view.start();
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch(view.getId()){
+            case R.id.fragment_music_local_back:
+                MusicLocalFragment.this.getFragmentManager().popBackStack();
+                break;
         }
     }
 }

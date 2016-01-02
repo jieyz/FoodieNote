@@ -26,15 +26,17 @@ import com.yaozu.listener.activity.BaseActivity;
 import com.yaozu.listener.activity.MusicLyricActivity;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.fragment.HomeFragment;
-import com.yaozu.listener.fragment.music.MusicFragment;
+import com.yaozu.listener.fragment.music.MusicLocalFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.playlist.model.SongList;
 import com.yaozu.listener.service.MusicService;
 
 import org.json.JSONObject;
 
+import java.util.List;
 
-public class HomeMainActivity extends BaseActivity implements View.OnClickListener, OnFragmentInteractionListener {
+
+public class HomeMainActivity extends BaseActivity implements View.OnClickListener, OnFragmentInteractionListener, Infointerface {
     private RadioButton mRadioFirst, mRadioSecond, mRadioThird, mRadioFour;
     private FragmentManager mFragmentManager;
     private String mCurrentFragmentTag;
@@ -48,7 +50,8 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private RelativeLayout mShowController;
     private ImageView mMusicPhoto;
     private ImageView mActionbarShadow;
-
+    private FragmentTransaction mFragmentTransaction;
+    private Fragment mCurrentFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,11 +61,12 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         findViewByIds();
         setOnclickLisener();
 
-        FragmentTransaction tr = mFragmentManager.beginTransaction();
-        Fragment mCurrentFragment = new HomeFragment();
-        tr.add(R.id.main_fragment_container, mCurrentFragment, MusicFragment.class.getSimpleName());
-        tr.commit();
-
+        mFragmentTransaction = mFragmentManager.beginTransaction();
+        Fragment currentFragment = new HomeFragment();
+        mFragmentTransaction.add(R.id.main_fragment_container, currentFragment, MusicLocalFragment.class.getSimpleName());
+        mFragmentTransaction.addToBackStack(null);
+        mFragmentTransaction.commit();
+        mCurrentFragment = currentFragment;
 /*        MusicService service = app.getMusicService();
         if (service == null) {
             Intent intent = new Intent(this, MusicService.class);
@@ -107,7 +111,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
                     intent.putExtra(IntentKey.MEDIA_FILE_SONG_SINGER, service.getmCurrentSong().getSinger());
                 }
                 startActivity(intent);
-                overridePendingTransition(R.anim.music_lyric_bottom_in,R.anim.music_lyric_out);
+                overridePendingTransition(R.anim.music_lyric_bottom_in, R.anim.music_lyric_out);
                 break;
         }
     }
@@ -138,6 +142,24 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Override
+    public void repalace(Fragment mFragment) {
+        mFragmentTransaction = mFragmentManager.beginTransaction();
+        if(mCurrentFragment != mFragment){
+            mFragmentTransaction.hide(mCurrentFragment);
+        }
+        mFragmentTransaction.add(R.id.main_fragment_container, mFragment);
+        mFragmentTransaction.addToBackStack(null);
+        mFragmentTransaction.commit();
+    }
+
+    public void showTopFragment(){
+        List<Fragment> fragments = mFragmentManager.getFragments();
+        for (Fragment fragment : fragments) {
+            mFragmentTransaction.show(fragment);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (app != null && app.getMusicService() != null) {
@@ -158,9 +180,14 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            moveTaskToBack(false);
-            return true;
+        System.out.println("=============count============>" + getSupportFragmentManager().getBackStackEntryCount());
+        if (this.getSupportFragmentManager().getBackStackEntryCount() == 1) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                moveTaskToBack(false);
+                return true;
+            }
+        } else {
+            return super.onKeyDown(keyCode, event);
         }
         return super.onKeyDown(keyCode, event);
     }

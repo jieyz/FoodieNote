@@ -24,15 +24,15 @@
 
     <RelativeLayout
         android:id="@+id/main_play_layout"
-        android:background="#ffffffff"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="#ffffffff">
 
         <RelativeLayout
+            style="@style/RippleBackground"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            style="@style/RippleBackground">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/main_music_photo"

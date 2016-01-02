@@ -14,7 +14,8 @@ import android.widget.RadioGroup;
 
 import com.yaozu.listener.R;
 import com.yaozu.listener.adapter.HomeViewPagerAdapter;
-import com.yaozu.listener.fragment.music.MusicFragment;
+import com.yaozu.listener.fragment.music.MusicHomeFragment;
+import com.yaozu.listener.fragment.music.MusicLocalFragment;
 import com.yaozu.listener.fragment.social.SocialFragment;
 
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class HomeFragment extends BaseFragment {
             }
         });
         ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-        fragments.add(new MusicFragment());
+        fragments.add(new MusicHomeFragment());
         fragments.add(new SocialFragment());
         viewpager.setAdapter(new HomeViewPagerAdapter(((FragmentActivity) getActivity()).getSupportFragmentManager(), fragments));
 
