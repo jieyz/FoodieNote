@@ -42,6 +42,8 @@ import com.yaozu.listener.utils.FileUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -200,9 +202,6 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
             return;
         } else {
             utils.ReadLRC(file, lyricData);
-            for (int i = 0; i < lyricData.size(); i++) {
-                System.out.println("=============>" + lyricData.get(i).getLrcString());
-            }
             addEmptyDatatolyricData(lyricData, true);
             mAdapter = new LyricAdapter();
             mShowLyricView.setAdapter(mAdapter);
@@ -213,43 +212,48 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     File file = null;
 
     private void downLoadLyric() {
-        final String url = downloadUrl + "?songname=" + name + "&singer=" + singer;
-        //创建歌词目录(以歌手名为目录名)
-        fileUtil.creatSDDir(singer.trim());
         try {
-            file = fileUtil.creatSDFile(singer + File.separator + name + ".lrc");
-        } catch (IOException e) {
+            final String url = downloadUrl + "?songname=" + URLEncoder.encode(name, "UTF-8") + "&singer=" + URLEncoder.encode(singer, "UTF-8");
+            Log.d(TAG,"====url====>"+url);
+            //创建歌词目录(以歌手名为目录名)
+            fileUtil.creatSDDir(singer.trim());
+            try {
+                file = fileUtil.creatSDFile(singer + File.separator + name + ".lrc");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    DownLoadUtil.download(fileUtil, url, file);
+                    String downLrcUrl = null;
+                    if (getFileSize(file) <= 0) {
+                        file.delete();
+                        Log.d(TAG, "=======文件大小为0，已删除=======>");
+                        //&title=我是一只鱼$$任贤齐$$$$"
+                        String url = baiduGetLrcIdUrl + "&title=" + name + "$$" + singer + "$$$$";
+                        String lrcid = DownLoadUtil.baiduDownLoadLrc(url);
+                        if (TextUtils.isEmpty(lrcid)) {
+                            Log.d(TAG, "=======获取的歌词为空!=======>");
+                            return;
+                        }
+                        downLrcUrl = baiduDownLoadLrc + Integer.parseInt(lrcid) / 100 + "/" + lrcid + ".lrc";
+                        Log.d(TAG, "======downLrcUrl=======>" + downLrcUrl);
+                    }
+                    DownLoadUtil.download(fileUtil, downLrcUrl, file);
+                    if (getFileSize(file) <= 0) {
+                        file.delete();
+                        Log.d(TAG, "=======从百度上下载的文件大小为0，已删除=======>");
+                    }
+                    Message msg = mHandler.obtainMessage();
+                    msg.what = FILE_DOWNLOAD;
+                    msg.obj = file;
+                    mHandler.sendMessage(msg);
+                }
+            }).start();
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                DownLoadUtil.download(fileUtil, url, file);
-                String downLrcUrl = null;
-                if (getFileSize(file) <= 0) {
-                    file.delete();
-                    Log.d(TAG, "=======文件大小为0，已删除=======>");
-                    //&title=我是一只鱼$$任贤齐$$$$"
-                    String url = baiduGetLrcIdUrl + "&title=" + name + "$$" + singer + "$$$$";
-                    String lrcid = DownLoadUtil.baiduDownLoadLrc(url);
-                    if (TextUtils.isEmpty(lrcid)) {
-                        Log.d(TAG, "=======获取的歌词为空!=======>");
-                        return;
-                    }
-                    downLrcUrl = baiduDownLoadLrc + Integer.parseInt(lrcid) / 100 + "/" + lrcid + ".lrc";
-                    Log.d(TAG, "======downLrcUrl=======>" + downLrcUrl);
-                }
-                DownLoadUtil.download(fileUtil, downLrcUrl, file);
-                if (getFileSize(file) <= 0) {
-                    file.delete();
-                    Log.d(TAG, "=======从百度上下载的文件大小为0，已删除=======>");
-                }
-                Message msg = mHandler.obtainMessage();
-                msg.what = FILE_DOWNLOAD;
-                msg.obj = file;
-                mHandler.sendMessage(msg);
-            }
-        }).start();
     }
 
 
@@ -331,7 +335,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            if(mService != null){
+            if (mService != null) {
                 int pos = (int) (((float) seekBar.getProgress() / 1000f) * mService.getDuration());
                 mService.seekto(pos);
             }

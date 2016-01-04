@@ -17,7 +17,6 @@ import com.yaozu.listener.Infointerface;
 import com.yaozu.listener.R;
 import com.yaozu.listener.adapter.HomeListViewAdapter;
 import com.yaozu.listener.fragment.BaseFragment;
-import com.yaozu.listener.fragment.HomeFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.playlist.provider.AudioProvider;

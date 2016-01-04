@@ -29,9 +29,9 @@ public class SongInfoDao {
     public void add(Song songinfo) {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
-            db.execSQL("insert into songinfo (songid,fileName,title,duration,singer,album,type,size,downloadurl,albumid) values (?,?,?,?,?,?,?,?,?,?,?)",
+            db.execSQL("insert into songinfo (songid,fileName,title,duration,singer,album,type,size,fileurl,downloadurl,albumid) values (?,?,?,?,?,?,?,?,?,?,?)",
                     new Object[] { songinfo.getId(), songinfo.getFileName(),songinfo.getTitle(),songinfo.getDuration(),songinfo.getSinger(),
-                            songinfo.getAlbum(),songinfo.getType(),songinfo.getSize(),songinfo.getDownloadurl(),(int)songinfo.getAlbumid()});
+                            songinfo.getAlbum(),songinfo.getType(),songinfo.getSize(),songinfo.getFileUrl(),songinfo.getDownloadurl(),(int)songinfo.getAlbumid()});
         }
         db.close();
     }
@@ -63,6 +63,7 @@ public class SongInfoDao {
                 String album = cursor.getString(cursor.getColumnIndex("album"));
                 String type = cursor.getString(cursor.getColumnIndex("type"));
                 String  size = cursor.getString(cursor.getColumnIndex("size"));
+                String  fileurl = cursor.getString(cursor.getColumnIndex("fileurl"));
                 String  downloadurl = cursor.getString(cursor.getColumnIndex("downloadurl"));
                 int  albumid = cursor.getInt(cursor.getColumnIndex("albumid"));
 
@@ -74,6 +75,7 @@ public class SongInfoDao {
                 info.setAlbum(album);
                 info.setType(type);
                 info.setSize(size);
+                info.setFileUrl(fileurl);
                 info.setDownloadurl(downloadurl);
                 info.setAlbumid(albumid);
 
@@ -86,14 +88,14 @@ public class SongInfoDao {
 
     /**
      * is have this song
-     * @param songid
+     * @param fileName
      * @return
      */
-    public boolean isHaveSong(String songid){
+    public boolean isHaveSong(String fileName){
         boolean have = false;
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
-            Cursor cursor = db.rawQuery("select * from songinfo where songid = ?",new String[]{songid});
+            Cursor cursor = db.rawQuery("select * from songinfo where fileName = ?",new String[]{fileName});
             if (cursor.moveToFirst()) {
                 have = true;
             }

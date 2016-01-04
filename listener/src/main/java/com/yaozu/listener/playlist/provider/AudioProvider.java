@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 
+import com.yaozu.listener.db.dao.SongInfoDao;
 import com.yaozu.listener.playlist.model.Song;
 
 import java.io.FileDescriptor;
@@ -27,9 +28,10 @@ import java.util.List;
  */
 public class AudioProvider {
     private Context context;
-
+    private SongInfoDao mSongInfoDao;
     public AudioProvider(Context context) {
         this.context = context;
+        mSongInfoDao = new SongInfoDao(context);
     }
 
     private static final Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
@@ -37,6 +39,7 @@ public class AudioProvider {
 
     /**
      * 获取指定目录下的音频信息
+     *
      * @param path
      * @return
      */
@@ -91,6 +94,11 @@ public class AudioProvider {
                                     .getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
                     Song song = new Song(id, title, album, artist, path,
                             displayName, mimeType, duration, size + "", albumid);
+                    //插入数据库
+                    if(!mSongInfoDao.isHaveSong(displayName)){
+                        System.out.println("====artist=====>"+artist+"  ==id==>"+id);
+                        //mSongInfoDao.add(song);
+                    }
                     list.add(song);
                 }
                 cursor.close();
@@ -192,13 +200,19 @@ public class AudioProvider {
         return album_art;
     }
 
-    public Bitmap getImage(Context context,int album_id){
-        String albumArt = getAlbumArt(context,album_id);
+    public Bitmap getImage(Context context, int album_id) {
+        String albumArt = getAlbumArt(context, album_id);
         Bitmap bm = null;
         if (albumArt == null) {
         } else {
             bm = BitmapFactory.decodeFile(albumArt);
         }
         return bm;
+    }
+
+    private static boolean isChinese(char paramChar)
+    {
+        Character.UnicodeBlock localUnicodeBlock = Character.UnicodeBlock.of(paramChar);
+        return (localUnicodeBlock == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS) || (localUnicodeBlock == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS) || (localUnicodeBlock == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A) || (localUnicodeBlock == Character.UnicodeBlock.GENERAL_PUNCTUATION) || (localUnicodeBlock == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION) || (localUnicodeBlock == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS);
     }
 }

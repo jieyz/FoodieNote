@@ -21,6 +21,7 @@ public class SongDbHelper extends SQLiteOpenHelper {
 				"                         album varchar(16), " +
 				"                         type varchar(512), " +
 				"                         size varchar(32)," +
+				"                         fileurl varchar(32)," +
 				"                         downloadurl varchar(32)," +
 				"                         albumid integer)");
 	}

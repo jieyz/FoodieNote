@@ -52,6 +52,12 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private ImageView mActionbarShadow;
     private FragmentTransaction mFragmentTransaction;
     private Fragment mCurrentFragment;
+
+    static{
+        System.loadLibrary("TestJni");
+    }
+    public native String fromC();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +67,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         findViewByIds();
         setOnclickLisener();
 
+        Toast.makeText(this, fromC(), Toast.LENGTH_LONG).show();
         mFragmentTransaction = mFragmentManager.beginTransaction();
         Fragment currentFragment = new HomeFragment();
         mFragmentTransaction.add(R.id.main_fragment_container, currentFragment, MusicLocalFragment.class.getSimpleName());
