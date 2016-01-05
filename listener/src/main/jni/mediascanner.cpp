@@ -3,8 +3,16 @@
 //
 #include <stdio.h>
 #include <stdlib.h>
-#include "config/oscl_types.h"
-#include "config/oscl_utf8conv.h"
+#include "oscl_config/oscl_types.h"
+#include "oscl_config/oscl_utf8conv.h"
+#include "oscl_config/oscl_stdstring.h"
+#include "oscl_config/oscl_mem.h"
+#include "oscl_config/oscl_string_containers.h"
+#include "oscl_config/oscl_string_utf8.h"
+
+#define MAX_BUFF_SIZE   1024
+#define MAX_STR_LEN    1000
+
 static PVMFStatus parseMP3(const char *filename)
 {
     PVID3ParCom pvId3Param;
@@ -14,7 +22,7 @@ static PVMFStatus parseMP3(const char *filename)
 
     if (iFs.Connect() != 0)
     {
-        LOGE("iFs.Connect failed\n");
+        //LOGE("iFs.Connect failed\n");
         return PVMFFailure;
     }
 
@@ -22,7 +30,7 @@ static PVMFStatus parseMP3(const char *filename)
     oscl_UTF8ToUnicode((const char *)filename, oscl_strlen((const char *)filename), (oscl_wchar *)output, MAX_BUFF_SIZE);
     if (0 != fileHandle.Open((oscl_wchar *)output, Oscl_File::MODE_READ | Oscl_File::MODE_BINARY, iFs) )
     {
-        LOGE("Could not open the input file for reading(Test: parse id3).\n");
+        //LOGE("Could not open the input file for reading(Test: parse id3).\n");
         return PVMFFailure;
     }
 
@@ -72,7 +80,7 @@ static PVMFStatus parseMP3(const char *filename)
             uint32 valid_chars;
             if (oscl_str_is_valid_utf8((const uint8 *)value, valid_chars)) {
                 // utf8 can be passed through directly
-                if (!client.handleStringTag(key, value)) goto failure;
+                //if (!client.handleStringTag(key, value)) goto failure;
             } else {
                 // treat as ISO-8859-1 if UTF-8 fails
                 isIso88591 = true;
@@ -95,7 +103,7 @@ static PVMFStatus parseMP3(const char *filename)
                     } else *dest++ = uch;
                 }
                 *dest = 0;
-                if (!client.addStringTag(key, temp)) goto failure;
+                //if (!client.addStringTag(key, temp)) goto failure;
             }
         }
 
@@ -112,12 +120,12 @@ static PVMFStatus parseMP3(const char *filename)
             char* dest = (char *)alloca(destLen);
 
             if (oscl_UnicodeToUTF8(src, oscl_strlen(src), dest, destLen) > 0) {
-                if (!client.addStringTag(key, dest)) goto failure;
+                //if (!client.addStringTag(key, dest)) goto failure;
             }
         } else if (oscl_strncmp(type, KVP_VALTYPE_UINT32, KVP_VALTYPE_UINT32_LEN) == 0) {
             char temp[20];
             snprintf(temp, sizeof(temp), "%d", (int)framevector[i]->value.uint32_value);
-            if (!client.addStringTag(key, temp)) goto failure;
+            //if (!client.addStringTag(key, temp)) goto failure;
         } else {
             //LOGE("unknown tag type %s for key %s\n", type, key);
         }
@@ -129,19 +137,19 @@ static PVMFStatus parseMP3(const char *filename)
         MP3ErrorType    err;
         IMpeg3File mp3File(mp3filename, err);
         if (err != MP3_SUCCESS) {
-            LOGE("IMpeg3File constructor returned %d for %s\n", err, filename);
+            //LOGE("IMpeg3File constructor returned %d for %s\n", err, filename);
             return err;
         }
         err = mp3File.ParseMp3File();
         if (err != MP3_SUCCESS) {
-            LOGE("IMpeg3File::ParseMp3File returned %d for %s\n", err, filename);
+            //LOGE("IMpeg3File::ParseMp3File returned %d for %s\n", err, filename);
             return err;
         }
 
         char buffer[20];
         duration = mp3File.GetDuration();
         sprintf(buffer, "%d", duration);
-        if (!client.addStringTag("duration", buffer)) goto failure;
+        //if (!client.addStringTag("duration", buffer)) goto failure;
     }
 
     return PVMFSuccess;
