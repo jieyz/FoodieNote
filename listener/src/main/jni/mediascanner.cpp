@@ -9,9 +9,11 @@
 #include "oscl_config/oscl_mem.h"
 #include "oscl_config/oscl_string_containers.h"
 #include "oscl_config/oscl_string_utf8.h"
+#include "oscl_config/oscl_file_io.h"
 
 #define MAX_BUFF_SIZE   1024
 #define MAX_STR_LEN    1000
+
 
 static PVMFStatus parseMP3(const char *filename)
 {
