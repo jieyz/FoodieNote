@@ -33,6 +33,7 @@ import com.yaozu.listener.service.MusicService;
 
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 
@@ -54,9 +55,9 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private Fragment mCurrentFragment;
 
     static{
-        System.loadLibrary("TestJni");
+        System.loadLibrary("mediascanner");
     }
-    public native String fromC();
+    public native String fromC(String path);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +68,11 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         findViewByIds();
         setOnclickLisener();
 
-        Toast.makeText(this, fromC(), Toast.LENGTH_LONG).show();
+        try {
+            Toast.makeText(this, fromC(new String("/storage/emulated/0/KuwoMusic/music/Roly-Poly-T-ara.mp3".getBytes("ISO-8859-1"),"UTF-8")), Toast.LENGTH_LONG).show();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         mFragmentTransaction = mFragmentManager.beginTransaction();
         Fragment currentFragment = new HomeFragment();
         mFragmentTransaction.add(R.id.main_fragment_container, currentFragment, MusicLocalFragment.class.getSimpleName());

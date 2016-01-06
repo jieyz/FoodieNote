@@ -96,7 +96,7 @@ public class AudioProvider {
                             displayName, mimeType, duration, size + "", albumid);
                     //插入数据库
                     if(!mSongInfoDao.isHaveSong(displayName)){
-                        System.out.println("====artist=====>"+artist+"  ==id==>"+id);
+                        System.out.println("====path=====>"+path+"  =id=>"+id+"  =albumid=>"+albumid);
                         //mSongInfoDao.add(song);
                     }
                     list.add(song);
