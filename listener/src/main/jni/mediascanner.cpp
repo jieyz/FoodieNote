@@ -2,6 +2,7 @@
 // Created by jieyz on 2016/1/5.
 //
 #include "mediascanner.h"
+//#include "iconv/iconv.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "oscl_config/oscl_types.h"
@@ -96,7 +97,7 @@ namespace android {
                 uint32 valid_chars;
                 if (oscl_str_is_valid_utf8((const uint8 *) value, valid_chars)) {
                     // utf8 can be passed through directly
-                    LOGD("c---> key = %s  ; value = %s",key,value);
+                    LOGD("c---> key(utf8) = %s  ; value = %s",key,value);
                     //if (!client.handleStringTag(key, value)) goto failure;
                 } else {
                     // treat as ISO-8859-1 if UTF-8 fails
@@ -120,7 +121,7 @@ namespace android {
                         } else *dest++ = uch;
                     }
                     *dest = 0;
-                    LOGD("c---> key = %s  ; value = %s",key,temp);
+                    LOGD("c---> key(iso) = %s  ; value = %s",key,temp);
                     //if (!client.addStringTag(key, temp)) goto failure;
                 }
             }
@@ -139,13 +140,13 @@ namespace android {
                 char *dest = (char *) alloca(destLen);
 
                 if (oscl_UnicodeToUTF8(src, oscl_strlen(src), dest, destLen) > 0) {
-                    LOGD("c---> key = %s  ; value = %s",key,dest);
+                    LOGD("c---> key(!utf8 && !iso) = %s  ; value = %s",key,dest);
                     //if (!client.addStringTag(key, dest)) goto failure;
                 }
             } else if (oscl_strncmp(type, KVP_VALTYPE_UINT32, KVP_VALTYPE_UINT32_LEN) == 0) {
                 char temp[20];
                 snprintf(temp, sizeof(temp), "%d", (int) framevector[i]->value.uint32_value);
-                LOGD("c---> key = %s  ; value = %s",key,temp);
+                LOGD("c---> key() = %s  ; value = %s",key,temp);
                 //if (!client.addStringTag(key, temp)) goto failure;
             } else {
                 //LOGE("unknown tag type %s for key %s\n", type, key);
