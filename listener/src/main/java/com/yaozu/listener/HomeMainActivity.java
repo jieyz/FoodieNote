@@ -69,7 +69,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         setOnclickLisener();
 
         try {
-            Toast.makeText(this, fromC(new String("/storage/emulated/0/KuwoMusic/music/yifuzhiming.mp3".getBytes("ISO-8859-1"),"UTF-8")), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, fromC(new String("/storage/emulated/0/qqmusic/song/半兽人-周杰伦.mp3".getBytes(),"UTF-8")), Toast.LENGTH_LONG).show();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -192,7 +192,6 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        System.out.println("=============count============>" + getSupportFragmentManager().getBackStackEntryCount());
         if (this.getSupportFragmentManager().getBackStackEntryCount() == 1) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 moveTaskToBack(false);

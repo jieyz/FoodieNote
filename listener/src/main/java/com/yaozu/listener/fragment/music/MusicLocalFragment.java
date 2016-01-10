@@ -16,10 +16,11 @@ import android.widget.ListView;
 import com.yaozu.listener.Infointerface;
 import com.yaozu.listener.R;
 import com.yaozu.listener.adapter.HomeListViewAdapter;
+import com.yaozu.listener.db.dao.SongInfoDao;
 import com.yaozu.listener.fragment.BaseFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.playlist.model.Song;
-import com.yaozu.listener.playlist.provider.AudioProvider;
+import com.yaozu.listener.playlist.provider.JavaMediaScanner;
 import com.yaozu.listener.widget.SoundWaveView;
 
 import java.io.File;
@@ -47,8 +48,9 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
     private Infointerface mInfointerface;
     private ListView mListView;
     private HomeListViewAdapter mAdapter;
-    private AudioProvider mProvider;
+    private JavaMediaScanner mMediaScanner;
     private ImageView actionBack;
+    private SongInfoDao mSongInfoDao;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -102,6 +104,7 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         actionBack.setOnClickListener(this);
+        mSongInfoDao = new SongInfoDao(mActivity);
         getData();
     }
 
@@ -121,12 +124,14 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
     }
 
     private void getData(){
-        mProvider = new AudioProvider(this.getActivity());
+        mMediaScanner = new JavaMediaScanner(this.getActivity());
         String path = Environment.getExternalStorageDirectory().getPath();
         path = path + File.separator + "KuwoMusic" + File.separator + "music";
 /*        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
         mListView.setLayoutManager(linearLayoutManager);*/
-        mAdapter.setSongData((ArrayList<Song>) mProvider.getList());
+        //mAdapter.setSongData((ArrayList<Song>) mMediaScanner.scannerMedia());
+        mMediaScanner.scannerMedia();
+        mAdapter.setSongData((ArrayList<Song>) mSongInfoDao.findAllSongInfo());
         mListView.setAdapter(mAdapter);
     }
 

@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
@@ -78,6 +79,22 @@ public class HomeListViewAdapter extends BaseAdapter {
             view = convertView;
             holder = (ViewHolder) view.getTag();
         }
+        final Song song = songs.get(position);
+        //判断文件是否存在
+        File file = new File(song.getFileUrl());
+        final boolean exist = file.exists();
+
+        holder.songName.setText(song.getTitle());
+        holder.singer.setText(song.getSinger() + "-" + song.getAlbum());
+        //如果不存在把颜色置灰
+        if(!exist){
+            holder.songName.setTextColor(Color.parseColor("#EAEAEA"));
+            holder.singer.setTextColor(Color.parseColor("#EAEAEA"));
+        }else{
+            holder.songName.setTextColor(Color.parseColor("#363636"));
+            holder.singer.setTextColor(Color.parseColor("#7F7F7F"));
+        }
+         //音乐播放时的波浪示意
         if (mCurrentPlayingPos == position) {
             holder.indicate.setVisibility(View.VISIBLE);
             holder.soundWaveView.setVisibility(View.VISIBLE);
@@ -91,13 +108,15 @@ public class HomeListViewAdapter extends BaseAdapter {
             holder.soundWaveView.setVisibility(View.GONE);
             holder.soundWaveView.stop();
         }
-        final Song song = songs.get(position);
-        holder.songName.setText(song.getTitle());
-        holder.singer.setText(song.getSinger() + "-" + song.getAlbum());
+
         final int currentPosition = position;
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!exist){
+                    Toast.makeText(mContext,"文件不存在！",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 setCurrentPlayingPos(position);
                 MusicService service = YaozuApplication.getIntance().getMusicService();
                 if (service == null) {

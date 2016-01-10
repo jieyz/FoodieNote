@@ -2,7 +2,6 @@
 // Created by jieyz on 2016/1/5.
 //
 #include "mediascanner.h"
-//#include "iconv/iconv.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "oscl_config/oscl_types.h"
@@ -16,7 +15,9 @@
 #include "pvmi/pv_id3_parcom_constants.h"
 #include "pvmi/pv_id3_parcom.h"
 #include "pvmi/imp3ff.h"
+#include "iconv/iconv.h"
 #include <android/log.h>
+
 #define LOG_TAG "System.out"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
@@ -29,14 +30,34 @@ namespace android {
     MediaScanner::~MediaScanner() {
     }
 
-    static PVMFStatus parseMP3(const char *filename) {
+    int ChangeCode(const char *pFromCode,
+                   const char *pToCode,
+                   const char *pInBuf,
+                   size_t *iInLen,
+                   char *pOutBuf,
+                   size_t *iOutLen) {
+        int iRet;
+        //打开字符集转换
+        iconv_t hIconv = iconv_open(pToCode, pFromCode);
+        if (-1 == (int) hIconv) {
+            LOGD("c---> 打开失败，可能不支持的字符集");
+            return -1;//打开失败，可能不支持的字符集
+        }
+        //开始转换
+        iRet = iconv(hIconv, (char **) (&pInBuf), iInLen, (char **) (&pOutBuf), iOutLen);
+        //关闭字符集转换
+        iconv_close(hIconv);
+        return iRet;
+    }
+
+    static PVMFStatus parseMP3(const char *filename,MediaScannerClient& client) {
         PVID3ParCom pvId3Param;
         PVFile fileHandle;
         Oscl_FileServer iFs;
         uint32 duration;
-        LOGD("c---> filename 好的 = %s",filename);
+        //LOGD("c---> filename 好的 = %s", filename);
         if (iFs.Connect() != 0) {
-            //LOGE("iFs.Connect failed\n");
+            LOGD("=======iFs.Connect failed========>\n");
             return PVMFFailure;
         }
 
@@ -97,17 +118,27 @@ namespace android {
                 uint32 valid_chars;
                 if (oscl_str_is_valid_utf8((const uint8 *) value, valid_chars)) {
                     // utf8 can be passed through directly
-                    LOGD("c---> key(utf8) = %s  ; value = %s",key,value);
-                    //if (!client.handleStringTag(key, value)) goto failure;
+                    //LOGD("c---> key(utf8) = %s  ; value = %s", key, value);
+                    if (!client.handleStringTag(key, value)) goto failure;
                 } else {
                     // treat as ISO-8859-1 if UTF-8 fails
                     isIso88591 = true;
                 }
             }
 
+            if (isIso88591) {
+                size_t iInLen = strlen(value);
+                char sOutBuf[100];
+                size_t iOutLen = 100;
+                memset(sOutBuf, 0x00, 100);
+                ChangeCode("GBK", "UTF-8", value, &iInLen, sOutBuf, &iOutLen);
+                //LOGD("c---> key(gbk) = %s  ; value = %s", key, sOutBuf);
+                if (!client.handleStringTag(key, sOutBuf)) goto failure;
+            }
+
             // treat it as iso-8859-1 and our native encoding detection will try to
             // figure out what it is
-            if (isIso88591) {
+/*            if (isIso88591) {
                 // convert ISO-8859-1 to utf8, worse case is 2x inflation
                 const unsigned char *src = (const unsigned char *) value;
                 char *temp = (char *) alloca(strlen(value) * 2 + 1);
@@ -121,10 +152,10 @@ namespace android {
                         } else *dest++ = uch;
                     }
                     *dest = 0;
-                    LOGD("c---> key(iso) = %s  ; value = %s",key,temp);
+                    LOGD("c---> key(iso) = %s  ; value = %s", key, temp);
                     //if (!client.addStringTag(key, temp)) goto failure;
                 }
-            }
+            }*/
 
             // not UTF-8 or ISO-8859-1, try wide char formats
             if (!isUtf8 && !isIso88591 &&
@@ -140,14 +171,14 @@ namespace android {
                 char *dest = (char *) alloca(destLen);
 
                 if (oscl_UnicodeToUTF8(src, oscl_strlen(src), dest, destLen) > 0) {
-                    LOGD("c---> key(!utf8 && !iso) = %s  ; value = %s",key,dest);
-                    //if (!client.addStringTag(key, dest)) goto failure;
+                    //LOGD("c---> key(!utf8 && !iso) = %s  ; value = %s", key, dest);
+                    if (!client.handleStringTag(key, dest)) goto failure;
                 }
             } else if (oscl_strncmp(type, KVP_VALTYPE_UINT32, KVP_VALTYPE_UINT32_LEN) == 0) {
                 char temp[20];
                 snprintf(temp, sizeof(temp), "%d", (int) framevector[i]->value.uint32_value);
-                LOGD("c---> key() = %s  ; value = %s",key,temp);
-                //if (!client.addStringTag(key, temp)) goto failure;
+                //LOGD("c---> key() = %s  ; value = %s", key, temp);
+                if (!client.handleStringTag(key, temp)) goto failure;
             } else {
                 //LOGE("unknown tag type %s for key %s\n", type, key);
             }
@@ -171,7 +202,7 @@ namespace android {
             char buffer[20];
             duration = mp3File.GetDuration();
             sprintf(buffer, "%d", duration);
-            LOGD("c---> duration = %s","duration");
+            LOGD("c---> duration = %s", "duration");
             //if (!client.addStringTag("duration", buffer)) goto failure;
         }
 
@@ -182,7 +213,7 @@ namespace android {
     }
 
     void MediaScanner::processFile(
-            const char *path){
-        parseMP3(path);
+            const char *path,MediaScannerClient& client) {
+        parseMP3(path,client);
     }
 }

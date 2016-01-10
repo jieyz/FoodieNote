@@ -19,17 +19,16 @@ import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by 揭耀祖 on 2015/11/1.
  */
-public class AudioProvider {
+public class JavaMediaScanner {
     private Context context;
     private SongInfoDao mSongInfoDao;
-    public AudioProvider(Context context) {
+    public JavaMediaScanner(Context context) {
         this.context = context;
         mSongInfoDao = new SongInfoDao(context);
     }
@@ -45,26 +44,35 @@ public class AudioProvider {
      */
     public List<Song> getSongListFromPath(String path) {
         List<Song> pathList = new ArrayList<>();
-        List<Song> list = (List<Song>) getList();
+/*        List<Song> list = (List<Song>) scannerMedia();
         for (int i = 0; i < list.size(); i++) {
             Song song = list.get(i);
             if (song.getFileUrl().contains(path)) {
                 pathList.add(song);
             }
-        }
+        }*/
         return pathList;
     }
 
+    /**
+     * 首先从系统提供的MediaStore中获取媒体文件的信息
+     * 为了防止乱码然后再通过NativeMediaScanner去解析媒体文件中的title、album、artist信息
+     * @return
+     */
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    public List<?> getList() {
-        List<Song> list = null;
+    public void scannerMedia() {
         if (context != null) {
             Cursor cursor = context.getContentResolver().query(
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null,
                     null, null);
             if (cursor != null) {
-                list = new ArrayList<Song>();
                 while (cursor.moveToNext()) {
+                    String displayName = cursor
+                            .getString(cursor
+                                    .getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
+                    if(mSongInfoDao.isHaveSong(displayName)){
+                        continue;
+                    }
                     int id = cursor.getInt(cursor
                             .getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
                     String title = cursor
@@ -80,9 +88,6 @@ public class AudioProvider {
                     String path = cursor
                             .getString(cursor
                                     .getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-                    String displayName = cursor
-                            .getString(cursor
-                                    .getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
                     String mimeType = cursor
                             .getString(cursor
                                     .getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE));
@@ -96,15 +101,19 @@ public class AudioProvider {
                             displayName, mimeType, duration, size + "", albumid);
                     //插入数据库
                     if(!mSongInfoDao.isHaveSong(displayName)){
-                        System.out.println("====path=====>"+path+"  =id=>"+id+"  =albumid=>"+albumid);
-                        //mSongInfoDao.add(song);
+                        if(path.endsWith(".mp3")){
+                            NativeMediaScanner scanner = new NativeMediaScanner();
+                            scanner.processFile(path, scanner);
+                            song.setTitle(scanner.getmTitle());
+                            song.setSinger(scanner.getmArtist());
+                            song.setAlbum(scanner.getmAlbum());
+                        }
+                        mSongInfoDao.add(song);
                     }
-                    list.add(song);
                 }
                 cursor.close();
             }
         }
-        return list;
     }
 
     public static Bitmap getArtwork(Context context, long song_id, long album_id) {
