@@ -139,7 +139,7 @@ public class MusicService extends Service {
                 intent.putExtra(IntentKey.MEDIA_FILE_SONG_NAME, mCurrentSong.getTitle());
                 intent.putExtra(IntentKey.MEDIA_FILE_SONG_SINGER, mCurrentSong.getSinger());
                 intent.putExtra(IntentKey.MEDIA_CURRENT_INDEX, mCurrentIndex);
-                intent.putExtra(IntentKey.MEDIA_FILE_SONG_ID, (long) mCurrentSong.getId());
+                intent.putExtra(IntentKey.MEDIA_FILE_SONG_ALBUMID,mCurrentSong.getAlbumid());
                 //intent.putExtra(IntentKey.MEDIA_FILE_SONG_ALBUM, mCurrentSong.getAlbum());
                 LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(app);
                 localBroadcastManager.sendBroadcast(intent);

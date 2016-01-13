@@ -7,19 +7,24 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import com.yaozu.listener.db.dao.SongInfoDao;
 import com.yaozu.listener.playlist.model.Song;
+import com.yaozu.listener.utils.EncodingConvert;
 
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,6 +33,7 @@ import java.util.List;
 public class JavaMediaScanner {
     private Context context;
     private SongInfoDao mSongInfoDao;
+
     public JavaMediaScanner(Context context) {
         this.context = context;
         mSongInfoDao = new SongInfoDao(context);
@@ -57,6 +63,7 @@ public class JavaMediaScanner {
     /**
      * 首先从系统提供的MediaStore中获取媒体文件的信息
      * 为了防止乱码然后再通过NativeMediaScanner去解析媒体文件中的title、album、artist信息
+     *
      * @return
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -70,7 +77,7 @@ public class JavaMediaScanner {
                     String displayName = cursor
                             .getString(cursor
                                     .getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
-                    if(mSongInfoDao.isHaveSong(displayName)){
+                    if (mSongInfoDao.isHaveSong(displayName)) {
                         continue;
                     }
                     int id = cursor.getInt(cursor
@@ -99,14 +106,32 @@ public class JavaMediaScanner {
                                     .getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
                     Song song = new Song(id, title, album, artist, path,
                             displayName, mimeType, duration, size + "", albumid);
+/*                    try {
+                        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+                        mmr.setDataSource(path);
+                        String _album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+                        if (_album != null) {
+                            byte[] bs = _album.getBytes("iso-8859-1");
+                            System.out.println("===bs====>" + Arrays.toString(bs));
+                            System.out.println("======_album====>" + _album);
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }*/
                     //插入数据库
-                    if(!mSongInfoDao.isHaveSong(displayName)){
-                        if(path.endsWith(".mp3")){
+                    if (!mSongInfoDao.isHaveSong(displayName)) {
+                        if (path.endsWith(".mp3")) {
                             NativeMediaScanner scanner = new NativeMediaScanner();
                             scanner.processFile(path, scanner);
-                            song.setTitle(scanner.getmTitle());
-                            song.setSinger(scanner.getmArtist());
-                            song.setAlbum(scanner.getmAlbum());
+                            if(TextUtils.isEmpty(scanner.getmTitle().trim())){
+                                parserMediaMetaByRetriever(path, song);
+                            }else{
+                                song.setTitle(scanner.getmTitle());
+                                song.setSinger(scanner.getmArtist());
+                                song.setAlbum(scanner.getmAlbum());
+                            }
+                        } else {
+                            parserMediaMetaByRetriever(path, song);
                         }
                         mSongInfoDao.add(song);
                     }
@@ -116,81 +141,18 @@ public class JavaMediaScanner {
         }
     }
 
-    public static Bitmap getArtwork(Context context, long song_id, long album_id) {
-        if (album_id < 0) {
-            // This is something that is not in the database, so get the album art directly
-            // from the file.
-            if (song_id >= 0) {
-                Bitmap bm = getArtworkFromFile(context, song_id, -1);
-                if (bm != null) {
-                    return bm;
-                }
-            }
-            return null;
-        }
-
-        ContentResolver res = context.getContentResolver();
-        Uri uri = ContentUris.withAppendedId(sArtworkUri, album_id);
-        if (uri != null) {
-            InputStream in = null;
-            try {
-                in = res.openInputStream(uri);
-                return BitmapFactory.decodeStream(in, null, sBitmapOptions);
-            } catch (FileNotFoundException e) {
-                // The album art thumbnail does not actually exist. Maybe the user deleted it, or
-                // maybe it never existed to begin with.
-                Bitmap bm = getArtworkFromFile(context, song_id, album_id);
-                if (bm != null) {
-                    if (bm.getConfig() == null) {
-                        bm = bm.copy(Bitmap.Config.RGB_565, false);
-                    }
-                }
-                return bm;
-
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private static Bitmap getArtworkFromFile(Context context, long songid, long albumid) {
-        Bitmap bm = null;
-        byte[] art = null;
-        String path = null;
-        if (albumid < 0 && songid < 0) {
-            throw new IllegalArgumentException("Must specify an album or a song id");
-        }
-
-        try {
-            if (albumid < 0) {
-                Uri uri = Uri.parse("content://media/external/audio/media/" + songid + "/albumart");
-                ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
-                if (pfd != null) {
-                    FileDescriptor fd = pfd.getFileDescriptor();
-                    bm = BitmapFactory.decodeFileDescriptor(fd);
-                }
-            } else {
-                Uri uri = ContentUris.withAppendedId(sArtworkUri, albumid);
-                ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
-                if (pfd != null) {
-                    FileDescriptor fd = pfd.getFileDescriptor();
-                    bm = BitmapFactory.decodeFileDescriptor(fd);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (bm != null) {
-            //mCachedBit = bm;
-        }
-        return bm;
+    private void parserMediaMetaByRetriever(String path,Song song){
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(path);
+        String _artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+        String _title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        String _album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+        _artist = EncodingConvert.toUtf(_artist);
+        _title = EncodingConvert.toUtf(_title);
+        _album = EncodingConvert.toUtf(_album);
+        song.setTitle(_title);
+        song.setSinger(_artist);
+        song.setAlbum(_album);
     }
 
     private String getAlbumArt(Context context, int album_id) {
@@ -213,14 +175,14 @@ public class JavaMediaScanner {
         String albumArt = getAlbumArt(context, album_id);
         Bitmap bm = null;
         if (albumArt == null) {
+
         } else {
             bm = BitmapFactory.decodeFile(albumArt);
         }
         return bm;
     }
 
-    private static boolean isChinese(char paramChar)
-    {
+    private static boolean isChinese(char paramChar) {
         Character.UnicodeBlock localUnicodeBlock = Character.UnicodeBlock.of(paramChar);
         return (localUnicodeBlock == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS) || (localUnicodeBlock == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS) || (localUnicodeBlock == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A) || (localUnicodeBlock == Character.UnicodeBlock.GENERAL_PUNCTUATION) || (localUnicodeBlock == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION) || (localUnicodeBlock == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS);
     }

@@ -93,6 +93,9 @@ public class SongInfoDao {
      */
     public boolean isHaveSong(String fileName){
         boolean have = false;
+        if(fileName == null){
+            return true;
+        }
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
             Cursor cursor = db.rawQuery("select * from songinfo where fileName = ?",new String[]{fileName});

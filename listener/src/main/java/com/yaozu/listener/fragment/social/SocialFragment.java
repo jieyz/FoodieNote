@@ -80,7 +80,7 @@ public class SocialFragment extends BaseFragment {
     }
 
     @Override
-    public void notifyCurrentSongMsg(String name, String singer, int currentPos) {
+    public void notifyCurrentSongMsg(String name, String singer,long album_id, int currentPos) {
 
     }
 

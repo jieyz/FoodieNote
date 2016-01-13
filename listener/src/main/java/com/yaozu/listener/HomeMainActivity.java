@@ -1,6 +1,7 @@
 package com.yaozu.listener;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,7 @@ import com.yaozu.listener.fragment.HomeFragment;
 import com.yaozu.listener.fragment.music.MusicLocalFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.playlist.model.SongList;
+import com.yaozu.listener.playlist.provider.JavaMediaScanner;
 import com.yaozu.listener.service.MusicService;
 
 import org.json.JSONObject;
@@ -53,6 +55,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private ImageView mActionbarShadow;
     private FragmentTransaction mFragmentTransaction;
     private Fragment mCurrentFragment;
+    private JavaMediaScanner mMediaScanner;
 
     static{
         System.loadLibrary("mediascanner");
@@ -79,6 +82,14 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         mFragmentTransaction.addToBackStack(null);
         mFragmentTransaction.commit();
         mCurrentFragment = currentFragment;
+
+        mMediaScanner = new JavaMediaScanner(this);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mMediaScanner.scannerMedia();
+            }
+        }).start();
 /*        MusicService service = app.getMusicService();
         if (service == null) {
             Intent intent = new Intent(this, MusicService.class);
@@ -204,9 +215,10 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Override
-    public void notifyCurrentSongMsg(String name, String singer, int currentPos) {
+    public void notifyCurrentSongMsg(String name, String singer, long album_id,int currentPos) {
         mCurrentSongName.setText(name);
         mCurrentSinger.setText(singer);
+        //Bitmap bitmap = mMediaScanner.getImage(this, (int) album_id);
     }
 
     @Override

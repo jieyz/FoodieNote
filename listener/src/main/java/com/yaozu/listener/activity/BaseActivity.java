@@ -76,8 +76,9 @@ public abstract class BaseActivity extends FragmentActivity {
             if (IntentKey.NOTIFY_CURRENT_SONG_MSG.equals(intent.getAction())) {
                 mSongName = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_NAME);
                 mSinger = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_SINGER);
+                long album_id = intent.getLongExtra(IntentKey.MEDIA_FILE_SONG_ALBUMID,0);
                 int currentPos = intent.getIntExtra(IntentKey.MEDIA_CURRENT_INDEX, -1);
-                notifyCurrentSongMsg(mSongName,mSinger,currentPos);
+                notifyCurrentSongMsg(mSongName,mSinger,album_id,currentPos);
             } else if (IntentKey.NOTIFY_SONG_PLAYING.equals(intent.getAction())) {
                 notifySongPlaying();
             } else if (IntentKey.NOTIFY_SONG_PAUSE.equals(intent.getAction())) {
@@ -87,7 +88,7 @@ public abstract class BaseActivity extends FragmentActivity {
 
     }
 
-    public abstract void notifyCurrentSongMsg(String name,String singer,int currentPos);
+    public abstract void notifyCurrentSongMsg(String name,String singer,long album_id,int currentPos);
     public abstract void notifySongPlaying();
     public abstract void notifySongPause();
 }

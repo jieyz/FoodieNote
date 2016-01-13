@@ -67,7 +67,7 @@ public class MusicHomeFragment extends BaseFragment implements View.OnClickListe
     }
 
     @Override
-    public void notifyCurrentSongMsg(String name, String singer, int currentPos) {
+    public void notifyCurrentSongMsg(String name, String singer,long album_id, int currentPos) {
 
     }
 

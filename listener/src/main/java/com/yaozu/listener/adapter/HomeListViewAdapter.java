@@ -85,7 +85,7 @@ public class HomeListViewAdapter extends BaseAdapter {
         final boolean exist = file.exists();
 
         holder.songName.setText(song.getTitle());
-        holder.singer.setText(song.getSinger() + "-" + song.getAlbum());
+        holder.singer.setText(song.getSinger() + " -- " + song.getAlbum());
         //如果不存在把颜色置灰
         if(!exist){
             holder.songName.setTextColor(Color.parseColor("#EAEAEA"));

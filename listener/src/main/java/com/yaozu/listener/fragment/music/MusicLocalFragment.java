@@ -15,12 +15,14 @@ import android.widget.ListView;
 
 import com.yaozu.listener.Infointerface;
 import com.yaozu.listener.R;
+import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.adapter.HomeListViewAdapter;
 import com.yaozu.listener.db.dao.SongInfoDao;
 import com.yaozu.listener.fragment.BaseFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.playlist.provider.JavaMediaScanner;
+import com.yaozu.listener.service.MusicService;
 import com.yaozu.listener.widget.SoundWaveView;
 
 import java.io.File;
@@ -48,16 +50,16 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
     private Infointerface mInfointerface;
     private ListView mListView;
     private HomeListViewAdapter mAdapter;
-    private JavaMediaScanner mMediaScanner;
     private ImageView actionBack;
     private SongInfoDao mSongInfoDao;
 
-    private Handler mHandler = new Handler(){
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
         }
     };
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -93,7 +95,7 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view  = inflater.inflate(R.layout.fragment_music_local, container, false);
+        View view = inflater.inflate(R.layout.fragment_music_local, container, false);
         mListView = (ListView) view.findViewById(R.id.home_listview);
         actionBack = (ImageView) view.findViewById(R.id.fragment_music_local_back);
         mAdapter = new HomeListViewAdapter(mActivity);
@@ -105,11 +107,15 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
         super.onViewCreated(view, savedInstanceState);
         actionBack.setOnClickListener(this);
         mSongInfoDao = new SongInfoDao(mActivity);
+        MusicService service = YaozuApplication.getIntance().getMusicService();
+        if (service != null) {
+            highLightPlayingItem(service.getmCurrentIndex());
+        }
         getData();
     }
 
     @Override
-    public void notifyCurrentSongMsg(String name, String singer, int currentPos) {
+    public void notifyCurrentSongMsg(String name, String singer, long album_id, int currentPos) {
         highLightPlayingItem(currentPos);
     }
 
@@ -123,14 +129,9 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
         pause();
     }
 
-    private void getData(){
-        mMediaScanner = new JavaMediaScanner(this.getActivity());
-        String path = Environment.getExternalStorageDirectory().getPath();
-        path = path + File.separator + "KuwoMusic" + File.separator + "music";
-/*        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
-        mListView.setLayoutManager(linearLayoutManager);*/
-        //mAdapter.setSongData((ArrayList<Song>) mMediaScanner.scannerMedia());
-        mMediaScanner.scannerMedia();
+    private void getData() {
+/*        String path = Environment.getExternalStorageDirectory().getPath();
+        path = path + File.separator + "KuwoMusic" + File.separator + "music";*/
         mAdapter.setSongData((ArrayList<Song>) mSongInfoDao.findAllSongInfo());
         mListView.setAdapter(mAdapter);
     }
@@ -161,27 +162,27 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
         mListener = null;
     }
 
-    public void highLightPlayingItem(int pos){
+    public void highLightPlayingItem(int pos) {
         mAdapter.setCurrentPlayingPos(pos);
     }
 
-    public void pause(){
+    public void pause() {
         SoundWaveView view = (SoundWaveView) mAdapter.getItem(0);
-        if(view != null){
+        if (view != null) {
             view.stop();
         }
     }
 
-    public void start(){
+    public void start() {
         SoundWaveView view = (SoundWaveView) mAdapter.getItem(0);
-        if(view != null){
+        if (view != null) {
             view.start();
         }
     }
 
     @Override
     public void onClick(View view) {
-        switch(view.getId()){
+        switch (view.getId()) {
             case R.id.fragment_music_local_back:
                 MusicLocalFragment.this.getFragmentManager().popBackStack();
                 break;

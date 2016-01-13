@@ -100,7 +100,8 @@ public abstract class BaseFragment extends Fragment {
                 String mSongName = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_NAME);
                 String mSinger = intent.getStringExtra(IntentKey.MEDIA_FILE_SONG_SINGER);
                 int currentPos = intent.getIntExtra(IntentKey.MEDIA_CURRENT_INDEX, -1);
-                notifyCurrentSongMsg(mSongName, mSinger, currentPos);
+                long album_id = intent.getLongExtra(IntentKey.MEDIA_FILE_SONG_ALBUMID, 0);
+                notifyCurrentSongMsg(mSongName, mSinger, album_id, currentPos);
             } else if (IntentKey.NOTIFY_SONG_PLAYING.equals(intent.getAction())) {
                 notifySongPlaying();
             } else if (IntentKey.NOTIFY_SONG_PAUSE.equals(intent.getAction())) {
@@ -110,7 +111,9 @@ public abstract class BaseFragment extends Fragment {
 
     }
 
-    public abstract void notifyCurrentSongMsg(String name,String singer,int currentPos);
+    public abstract void notifyCurrentSongMsg(String name, String singer, long album_id, int currentPos);
+
     public abstract void notifySongPlaying();
+
     public abstract void notifySongPause();
 }
