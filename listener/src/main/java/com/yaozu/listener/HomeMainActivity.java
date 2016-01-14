@@ -1,7 +1,11 @@
 package com.yaozu.listener;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -31,6 +35,7 @@ import com.yaozu.listener.fragment.music.MusicLocalFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.playlist.model.SongList;
 import com.yaozu.listener.playlist.provider.JavaMediaScanner;
+import com.yaozu.listener.playlist.provider.NativeMediaScanner;
 import com.yaozu.listener.service.MusicService;
 
 import org.json.JSONObject;
@@ -60,7 +65,6 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     static{
         System.loadLibrary("mediascanner");
     }
-    public native String fromC(String path);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +74,11 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         mFragmentManager = getSupportFragmentManager();
         findViewByIds();
         setOnclickLisener();
-
+        //注册监听耳机拔除的广播
+        registerHeadsetPlugReceiver();
         try {
-            Toast.makeText(this, fromC(new String("/storage/emulated/0/qqmusic/song/半兽人-周杰伦.mp3".getBytes(),"UTF-8")), Toast.LENGTH_LONG).show();
+            NativeMediaScanner scanner = new NativeMediaScanner();
+            scanner.processFile(new String("/storage/emulated/0/KuwoMusic/music/红日(Live)-李克勤_谭咏麟.mp3".getBytes(), "UTF-8"), scanner);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -213,6 +219,29 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         }
         return super.onKeyDown(keyCode, event);
     }
+
+    /**
+     * 监听耳机的拔除的广播
+     */
+    private void registerHeadsetPlugReceiver() {
+        IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        registerReceiver(headsetPlugReceiver, intentFilter);
+    }
+
+    private BroadcastReceiver headsetPlugReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
+                MusicService service = app.getMusicService();
+                if(service.isPlaying()){
+                    service.pause();
+                }
+            }
+        }
+
+    };
 
     @Override
     public void notifyCurrentSongMsg(String name, String singer, long album_id,int currentPos) {

@@ -10,6 +10,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import android.util.Log;
 
@@ -56,12 +59,31 @@ public class LRCUtils {
                 is.close();
                 Collections.sort(lrclist, new Sort());
 
-//                for (int i = 0; i < lrclist.size(); i++) {
-//                    Log.d(TAG, "time = " + lrclist.get(i).getTimePoint() + "   string = " + lrclist.get(i).getLrcString());
-//                }
+                //去除重复的歌词
+                removeRepeatLrc(lrclist);
+/*                for (int i = 0; i < lrclist.size(); i++) {
+                    Log.d(TAG, "time = " + lrclist.get(i).getTimePoint() + "   string = " + lrclist.get(i).getLrcString());
+                }*/
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 去除重复的歌词
+     * @param listdata
+     */
+    private void removeRepeatLrc(ArrayList<timelrc> listdata) {
+        //去除重复的歌词
+        for (int i = (listdata.size() - 1); i >= 0; i--) {
+            int timePoint = listdata.get(i).getTimePoint();
+            if (timePoint != 999999 && timePoint != 0) {
+                int preTimePoint = (i + 1) < listdata.size() ? listdata.get(i + 1).getTimePoint() : 999999;
+                if (timePoint == preTimePoint) {
+                    listdata.remove(i);
+                }
+            }
         }
     }
 

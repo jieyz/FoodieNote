@@ -39,6 +39,8 @@ import com.yaozu.listener.service.MusicService;
 import com.yaozu.listener.utils.DownLoadUtil;
 import com.yaozu.listener.utils.FileUtil;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -213,6 +215,9 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
 
     private void downLoadLyric() {
         try {
+            if(TextUtils.isEmpty(name) || TextUtils.isEmpty(singer)){
+                return;
+            }
             final String url = downloadUrl + "?songname=" + URLEncoder.encode(name, "UTF-8") + "&singer=" + URLEncoder.encode(singer, "UTF-8");
             Log.d(TAG,"====url====>"+url);
             //创建歌词目录(以歌手名为目录名)
@@ -516,7 +521,11 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
 
     public void notifyCurrentSongMsg(String name, String singer, int currentPos) {
         lyricTitle.setText(name);
+        this.name = name;
         lyricSinger.setText(singer);
+        this.singer = singer;
+
+        lyricData.clear();
         showMusicLyric(name);
     }
 
