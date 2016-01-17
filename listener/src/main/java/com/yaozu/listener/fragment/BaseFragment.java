@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.yaozu.listener.R;
 import com.yaozu.listener.constant.IntentKey;
+import com.yaozu.listener.db.model.ChatListInfo;
 
 /**
  * Created by 耀祖 on 2015/11/28.
@@ -65,6 +66,7 @@ public abstract class BaseFragment extends Fragment {
             filter.addAction(IntentKey.NOTIFY_CURRENT_SONG_MSG);
             filter.addAction(IntentKey.NOTIFY_SONG_PAUSE);
             filter.addAction(IntentKey.NOTIFY_SONG_PLAYING);
+            filter.addAction(IntentKey.NOTIFY_CHAT_LIST_INFO);
             localBroadcastManager = LocalBroadcastManager.getInstance(this.getActivity());
             localBroadcastManager.registerReceiver(musicServiceBroadcastReceiver, filter);
         }
@@ -106,6 +108,10 @@ public abstract class BaseFragment extends Fragment {
                 notifySongPlaying();
             } else if (IntentKey.NOTIFY_SONG_PAUSE.equals(intent.getAction())) {
                 notifySongPause();
+            } else if (IntentKey.NOTIFY_CHAT_LIST_INFO.equals(intent.getAction())) {
+                Bundle bundle = intent.getBundleExtra(IntentKey.SEND_BUNDLE);
+                ChatListInfo chatListInfo = (ChatListInfo) bundle.getSerializable(IntentKey.SEND_BUNDLE_CHATLISTINFO);
+                updateChatListInfo(chatListInfo);
             }
         }
 
@@ -116,4 +122,8 @@ public abstract class BaseFragment extends Fragment {
     public abstract void notifySongPlaying();
 
     public abstract void notifySongPause();
+
+    public void updateChatListInfo(ChatListInfo info) {
+
+    }
 }

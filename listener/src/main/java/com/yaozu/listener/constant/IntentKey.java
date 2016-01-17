@@ -12,6 +12,8 @@ public class IntentKey {
     public static String MEDIA_FILE_SONG_ID = "media_file_song_id";
     public static String MEDIA_FILE_SONG_ALBUMID = "media_file_song_albumid";
     public static String MEDIA_FILE_SONG_ALBUM = "media_file_song_album";
+    public static String SEND_BUNDLE = "send_bundle";
+    public static String SEND_BUNDLE_CHATLISTINFO = "send_bundle_chatlistinfo";
 
     /**
      * 广播Action
@@ -19,4 +21,5 @@ public class IntentKey {
     public static String NOTIFY_CURRENT_SONG_MSG = "notify.current.song.msg";
     public static String NOTIFY_SONG_PLAYING = "notify.current.song.playing";
     public static String NOTIFY_SONG_PAUSE = "notify.current.song.pause";
+    public static String NOTIFY_CHAT_LIST_INFO = "notify.chat.list.info";
 }

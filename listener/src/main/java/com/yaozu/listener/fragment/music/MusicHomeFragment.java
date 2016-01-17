@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,11 @@ import com.yaozu.listener.R;
 import com.yaozu.listener.fragment.BaseFragment;
 
 import java.io.File;
+
+import io.rong.imkit.RongIM;
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.Conversation;
+import io.rong.message.TextMessage;
 
 /**
  * Created by 耀祖 on 2016/1/2.
@@ -91,6 +97,19 @@ public class MusicHomeFragment extends BaseFragment implements View.OnClickListe
                 systemScan();
                 break;
             case R.id.fragment_music_home_favorite_rl:
+                String userid = "jieyaozu";
+                RongIM.getInstance().getRongIMClient().sendMessage(Conversation.ConversationType.PRIVATE, userid, TextMessage.obtain("哈哈哈哈！"), "","", new RongIMClient.SendMessageCallback() {
+                    @Override
+                    public void onError(Integer messageId, RongIMClient.ErrorCode e) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Integer integer) {
+
+                        Log.d("MusicHomeFragment","=========onSuccess==========>"+integer);
+                    }
+                },null);
                 break;
         }
     }

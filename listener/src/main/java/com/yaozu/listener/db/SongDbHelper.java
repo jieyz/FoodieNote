@@ -24,6 +24,12 @@ public class SongDbHelper extends SQLiteOpenHelper {
 				"                         fileurl varchar(32)," +
 				"                         downloadurl varchar(32)," +
 				"                         albumid integer)");
+
+		db.execSQL("create table chatlistinfo (_id integer primary key autoincrement," +
+				"                         userid varchar(32), " +
+				"                         username varchar(32), " +
+				"                         lastchatcontent varchar(32), " +
+				"                         iconcacheurl varchar(32))");
 	}
 
 	@Override

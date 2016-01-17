@@ -8,9 +8,12 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -33,6 +36,8 @@ import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.fragment.HomeFragment;
 import com.yaozu.listener.fragment.music.MusicLocalFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
+import com.yaozu.listener.listener.MyReceiveMessageListener;
+import com.yaozu.listener.listener.MySendMessageListener;
 import com.yaozu.listener.playlist.model.SongList;
 import com.yaozu.listener.playlist.provider.JavaMediaScanner;
 import com.yaozu.listener.playlist.provider.NativeMediaScanner;
@@ -42,6 +47,9 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+
+import io.rong.imkit.RongIM;
+import io.rong.imlib.RongIMClient;
 
 
 public class HomeMainActivity extends BaseActivity implements View.OnClickListener, OnFragmentInteractionListener, Infointerface {
@@ -62,6 +70,18 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private Fragment mCurrentFragment;
     private JavaMediaScanner mMediaScanner;
 
+    private String token1 = "ZeOpNKgIS6NVsPnNIGS6NGxP7Qfd0jcFN0C5Ibqjpg328zglcxril0v4m4zETCFHBA68rgPUDVEw2+rmhAQNLnLfI1nmn0oY";
+    private String token2 = "AIzXjXl8KRobJnxbd8fhVnmGXj2xfWz1oFuzCcWFVHZb5axaA1K5spIaquTmp5+CVWLWAFPNoO6C8oPLXaCzITuX9Xew5d0E";
+    private String token3 = "v8XjNiu5BYSQ21+pn93xunmGXj2xfWz1oFuzCcWFVHZb5axaA1K5sgrVvM+PHxVHKxvRo5TOSReC8oPLXaCzITe1/77+nlZ3";
+
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            io.rong.imlib.model.Message message = (io.rong.imlib.model.Message) msg.obj;
+            Toast.makeText(HomeMainActivity.this,message.getSenderUserId()+"  "+new String(message.getContent().encode()),Toast.LENGTH_LONG).show();
+        }
+    };
     static{
         System.loadLibrary("mediascanner");
     }
@@ -70,6 +90,13 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         app = YaozuApplication.getIntance();
+
+        /**
+         *  设置接收消息的监听器。
+         */
+        RongIM.setOnReceiveMessageListener(new MyReceiveMessageListener(this,mHandler));
+        connect(token2);
+
         setContentView(R.layout.activity_home_main);
         mFragmentManager = getSupportFragmentManager();
         findViewByIds();
@@ -102,6 +129,54 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
             startService(intent);
         }*/
     }
+
+    /**
+     * 建立与融云服务器的连接
+     *
+     * @param token
+     */
+    private void connect(String token) {
+
+        if (getApplicationInfo().packageName.equals(YaozuApplication.getCurProcessName(getApplicationContext()))) {
+
+            /**
+             * IMKit SDK调用第二步,建立与服务器的连接
+             */
+            RongIM.connect(token, new RongIMClient.ConnectCallback() {
+
+                /**
+                 * Token 错误，在线上环境下主要是因为 Token 已经过期，您需要向 App Server 重新请求一个新的 Token
+                 */
+                @Override
+                public void onTokenIncorrect() {
+
+                    Log.d("LoginActivity", "--onTokenIncorrect");
+                }
+
+                /**
+                 * 连接融云成功
+                 * @param userid 当前 token
+                 */
+                @Override
+                public void onSuccess(String userid) {
+                    //设置自己发出的消息监听器。
+                    RongIM.getInstance().setSendMessageListener(new MySendMessageListener());
+                    Log.d("HomeMainActivity", "--onSuccess" + userid);
+                }
+
+                /**
+                 * 连接融云失败
+                 * @param errorCode 错误码，可到官网 查看错误码对应的注释
+                 */
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+
+                    Log.d("LoginActivity", "--onError" + errorCode);
+                }
+            });
+        }
+    }
+
 
     private void findViewByIds() {
         mPlayPause = (ImageView) findViewById(R.id.mediaplay_play_pause);

@@ -34,7 +34,6 @@ public abstract class BaseActivity extends FragmentActivity {
      * @author
      * @date 2013-10-28 jieyaozu 10:30:27
      */
-
     protected void registerPushReceiver() {
         if (musicServiceBroadcastReceiver == null) {
             musicServiceBroadcastReceiver = new MusicServiceBroadcastReceiver();

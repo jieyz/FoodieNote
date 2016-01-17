@@ -41,4 +41,5 @@ dependencies {
     compile 'com.github.traex.rippleeffect:library:1.3'
     compile 'me.imid.swipebacklayout.lib:library:1.0.0'
     compile project(':volley')
+    compile project(':IMKit')
 }
