@@ -14,6 +14,8 @@ public class IntentKey {
     public static String MEDIA_FILE_SONG_ALBUM = "media_file_song_album";
     public static String SEND_BUNDLE = "send_bundle";
     public static String SEND_BUNDLE_CHATLISTINFO = "send_bundle_chatlistinfo";
+    public static String SEND_BUNDLE_CHATDETAILINFO = "send_bundle_chatdetailinfo";
+    public static String CHAT_USERID = "chat_userid";
 
     /**
      * 广播Action

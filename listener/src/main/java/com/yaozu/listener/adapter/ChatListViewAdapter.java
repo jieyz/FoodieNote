@@ -1,6 +1,7 @@
 package com.yaozu.listener.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -8,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yaozu.listener.R;
+import com.yaozu.listener.activity.ChatDetailActivity;
+import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.model.ChatListInfo;
 import com.yaozu.listener.widget.SoundWaveView;
 
@@ -67,9 +70,17 @@ public class ChatListViewAdapter extends BaseAdapter {
             view = convertView;
             holder = (ViewHolder) view.getTag();
         }
-        ChatListInfo chatListInfo = mChatlists.get(i);
+        final ChatListInfo chatListInfo = mChatlists.get(i);
         holder.username.setText(chatListInfo.getUserid());
         holder.lastcontent.setText(chatListInfo.getLastchatcontent());
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, ChatDetailActivity.class);
+                intent.putExtra(IntentKey.CHAT_USERID,chatListInfo.getUserid());
+                mContext.startActivity(intent);
+            }
+        });
         return view;
     }
 

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/appthemecolor"
+    android:fitsSystemWindows="true">
+
+    <RelativeLayout
+        android:id="@+id/chatdetail_actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/appthemecolor">
+
+        <ImageView
+            android:id="@+id/fragment_music_local_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/actionbar_back" />
+
+        <TextView
+            android:id="@+id/activity_chatdetail_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/fragment_music_local_back"
+            android:text="user"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/activity_social_chatdetail_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffffff"
+        android:layout_above="@+id/bottom_rl"
+        android:layout_below="@+id/chatdetail_actionbar" />
+
+    <RelativeLayout
+        android:id="@+id/bottom_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffffff"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/activity_social_chatdetail_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/activity_social_chatdetail_send" />
+
+        <Button
+            android:id="@+id/activity_social_chatdetail_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="发送" />
+    </RelativeLayout>
+</RelativeLayout>

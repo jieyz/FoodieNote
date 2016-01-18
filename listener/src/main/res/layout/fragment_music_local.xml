@@ -26,7 +26,6 @@
             android:textSize="18dp"
             android:layout_marginLeft="5dp"
             android:layout_centerVertical="true"/>
-
     </RelativeLayout>
         <ListView
             android:id="@+id/home_listview"

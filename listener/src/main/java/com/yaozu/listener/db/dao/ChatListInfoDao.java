@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.yaozu.listener.db.SongDbHelper;
+import com.yaozu.listener.db.AppDbHelper;
 import com.yaozu.listener.db.model.ChatListInfo;
 
 import java.util.ArrayList;
@@ -14,12 +14,12 @@ import java.util.List;
  * Created by 耀祖 on 2016/1/17.
  */
 public class ChatListInfoDao {
-    private SongDbHelper helper;
+    private AppDbHelper helper;
     private Context context;
 
     public ChatListInfoDao(Context context) {
         this.context = context;
-        helper = new SongDbHelper(context);
+        helper = new AppDbHelper(context);
     }
 
     /**

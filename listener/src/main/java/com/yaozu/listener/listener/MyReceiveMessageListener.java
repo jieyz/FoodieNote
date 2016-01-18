@@ -8,8 +8,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.yaozu.listener.constant.IntentKey;
+import com.yaozu.listener.db.dao.ChatDetailInfoDao;
 import com.yaozu.listener.db.dao.ChatListInfoDao;
+import com.yaozu.listener.db.model.ChatDetailInfo;
 import com.yaozu.listener.db.model.ChatListInfo;
+
+import java.util.Date;
 
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
@@ -22,11 +26,13 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
     private Context mContext;
     private Handler mHandler;
     private ChatListInfoDao chatListInfoDao;
+    private ChatDetailInfoDao mChatDetailInfoDao;
 
     public MyReceiveMessageListener(Context context, Handler handler) {
         mContext = context;
         mHandler = handler;
         chatListInfoDao = new ChatListInfoDao(mContext);
+        mChatDetailInfoDao = new ChatDetailInfoDao(mContext);
     }
 
     /**
@@ -47,12 +53,18 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
         } else {
             chatListInfoDao.add(chatListInfo);
         }
+
+        //更新或者插入聊天详情记录
+        ChatDetailInfo chatdetailInfo = inserChatDetaildb(message);
+
         Intent playingintent = new Intent(IntentKey.NOTIFY_CHAT_LIST_INFO);
         Bundle bundle = new Bundle();
-        bundle.putSerializable(IntentKey.SEND_BUNDLE_CHATLISTINFO,chatListInfo);
-        playingintent.putExtra(IntentKey.SEND_BUNDLE,bundle);
+        bundle.putSerializable(IntentKey.SEND_BUNDLE_CHATLISTINFO, chatListInfo);
+        bundle.putSerializable(IntentKey.SEND_BUNDLE_CHATDETAILINFO, chatdetailInfo);
+        playingintent.putExtra(IntentKey.SEND_BUNDLE, bundle);
         LocalBroadcastManager playinglocalBroadcastManager = LocalBroadcastManager.getInstance(mContext);
         playinglocalBroadcastManager.sendBroadcast(playingintent);
+
         //开发者根据自己需求自行处理
         Log.d(TAG, "=======onReceived=========>" + new String(message.getContent().encode()));
         android.os.Message msg = mHandler.obtainMessage();
@@ -61,4 +73,13 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
         return false;
     }
 
+    private ChatDetailInfo inserChatDetaildb(Message message) {
+        ChatDetailInfo chatdetailInfo = new ChatDetailInfo();
+        chatdetailInfo.setUserid(message.getSenderUserId());
+        chatdetailInfo.setChatcontent(new String(message.getContent().encode()));
+        chatdetailInfo.setTime((new Date().getTime()) + "");
+        chatdetailInfo.setIssender("true");
+        mChatDetailInfoDao.add(chatdetailInfo);
+        return chatdetailInfo;
+    }
 }

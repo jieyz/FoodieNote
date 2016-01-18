@@ -39,6 +39,11 @@
             android:name=".activity.MusicLyricActivity"
             android:theme="@style/MusicLyricTheme" />
 
+        <activity
+            android:name=".activity.ChatDetailActivity"
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/MusicLyricTheme" />
+
         <service
             android:name="com.yaozu.listener.service.MusicService"
             android:enabled="true"

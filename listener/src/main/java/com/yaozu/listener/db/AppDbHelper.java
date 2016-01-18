@@ -4,9 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class SongDbHelper extends SQLiteOpenHelper {
+public class AppDbHelper extends SQLiteOpenHelper {
 
-	public SongDbHelper(Context context){
+	public AppDbHelper(Context context){
 		super(context, "song.db", null,1);
 	}
 	
@@ -30,6 +30,13 @@ public class SongDbHelper extends SQLiteOpenHelper {
 				"                         username varchar(32), " +
 				"                         lastchatcontent varchar(32), " +
 				"                         iconcacheurl varchar(32))");
+
+		db.execSQL("create table chatdetailinfo (_id integer primary key autoincrement," +
+				"                         userid varchar(32), " +
+				"                         username varchar(32), " +
+				"                         chatcontent varchar(32), " +
+				"                         time varchar(16), " +
+				"                         issender varchar(16))");
 	}
 
 	@Override
