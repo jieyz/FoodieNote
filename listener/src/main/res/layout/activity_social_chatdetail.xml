@@ -12,7 +12,7 @@
         android:background="@color/appthemecolor">
 
         <ImageView
-            android:id="@+id/fragment_music_local_back"
+            android:id="@+id/activity_chat_detail_back"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
@@ -26,26 +26,34 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@+id/fragment_music_local_back"
+            android:layout_toRightOf="@+id/activity_chat_detail_back"
             android:text="user"
             android:textColor="@color/white"
             android:textSize="18dp" />
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/activity_social_chatdetail_listview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#ffffffff"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/bottom_rl"
-        android:layout_below="@+id/chatdetail_actionbar" />
+        android:background="#ffffffff"
+        android:layout_below="@+id/chatdetail_actionbar">
+
+        <ListView
+            android:id="@+id/activity_social_chatdetail_listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#11000000"
+            android:divider="@null"
+            android:listSelector="@android:color/transparent" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/bottom_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ffffffff"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="#ffffffff">
 
         <EditText
             android:id="@+id/activity_social_chatdetail_edittext"

@@ -74,14 +74,6 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private String token2 = "AIzXjXl8KRobJnxbd8fhVnmGXj2xfWz1oFuzCcWFVHZb5axaA1K5spIaquTmp5+CVWLWAFPNoO6C8oPLXaCzITuX9Xew5d0E";
     private String token3 = "v8XjNiu5BYSQ21+pn93xunmGXj2xfWz1oFuzCcWFVHZb5axaA1K5sgrVvM+PHxVHKxvRo5TOSReC8oPLXaCzITe1/77+nlZ3";
 
-    private Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            io.rong.imlib.model.Message message = (io.rong.imlib.model.Message) msg.obj;
-            Toast.makeText(HomeMainActivity.this,message.getSenderUserId()+"  "+new String(message.getContent().encode()),Toast.LENGTH_LONG).show();
-        }
-    };
     static{
         System.loadLibrary("mediascanner");
     }
@@ -94,8 +86,8 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         /**
          *  设置接收消息的监听器。
          */
-        RongIM.setOnReceiveMessageListener(new MyReceiveMessageListener(this,mHandler));
-        connect(token2);
+        RongIM.setOnReceiveMessageListener(new MyReceiveMessageListener(this));
+        connect(token1);
 
         setContentView(R.layout.activity_home_main);
         mFragmentManager = getSupportFragmentManager();

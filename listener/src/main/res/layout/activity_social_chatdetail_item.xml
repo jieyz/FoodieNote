@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/chat_detail_sender_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_marginRight="70dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/activity_chatdetail_item_sender_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:id="@+id/chat_detail_sendercontent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/activity_chatdetail_item_sender_icon"
+            android:layout_centerVertical="true"
+            android:background="@drawable/chat_sender_bg"
+            android:padding="8dp"
+            android:text="你好啊!dsdafdafdadadafdsadsadsafdsafdsafdsafdafadadafdsafdsa" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/chat_detail_myself_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_marginLeft="70dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/activity_chatdetail_item_myself_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:id="@+id/chat_detail_myselfcontent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/activity_chatdetail_item_myself_icon"
+            android:layout_centerVertical="true"
+            android:background="@drawable/chat_myself_normal_bg"
+            android:padding="8dp"
+            android:text="你好啊!" />
+    </RelativeLayout>
+</RelativeLayout>

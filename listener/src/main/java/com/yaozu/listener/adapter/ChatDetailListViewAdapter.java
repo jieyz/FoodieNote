@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yaozu.listener.R;
@@ -47,13 +48,23 @@ public class ChatDetailListViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
-        TextView view = new TextView(mContext);
+        View view  = View.inflate(mContext,R.layout.activity_social_chatdetail_item,null);
+        RelativeLayout senderrl = (RelativeLayout) view.findViewById(R.id.chat_detail_sender_rl);
+        RelativeLayout myselfrl = (RelativeLayout) view.findViewById(R.id.chat_detail_myself_rl);
+        TextView sendercontent = (TextView) view.findViewById(R.id.chat_detail_sendercontent);
+        TextView myselfcontent = (TextView) view.findViewById(R.id.chat_detail_myselfcontent);
+
         ChatDetailInfo info = mChatDetaillists.get(i);
-        view.setText(info.getChatcontent());
         if ("true".equals(info.getIssender())) {
-            view.setTextColor(Color.BLACK);
+            senderrl.setVisibility(View.VISIBLE);
+            myselfrl.setVisibility(View.GONE);
+
+            sendercontent.setText(info.getChatcontent());
         } else {
-            view.setTextColor(Color.GREEN);
+            senderrl.setVisibility(View.GONE);
+            myselfrl.setVisibility(View.VISIBLE);
+
+            myselfcontent.setText(info.getChatcontent());
         }
         return view;
     }

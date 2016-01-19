@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.dao.ChatDetailInfoDao;
 import com.yaozu.listener.db.dao.ChatListInfoDao;
@@ -24,13 +26,11 @@ import io.rong.imlib.model.Message;
 public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageListener {
     private String TAG = this.getClass().getSimpleName();
     private Context mContext;
-    private Handler mHandler;
     private ChatListInfoDao chatListInfoDao;
     private ChatDetailInfoDao mChatDetailInfoDao;
 
-    public MyReceiveMessageListener(Context context, Handler handler) {
+    public MyReceiveMessageListener(Context context) {
         mContext = context;
-        mHandler = handler;
         chatListInfoDao = new ChatListInfoDao(mContext);
         mChatDetailInfoDao = new ChatDetailInfoDao(mContext);
     }
@@ -47,7 +47,8 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
         //更新或者插入聊天列表
         ChatListInfo chatListInfo = new ChatListInfo();
         chatListInfo.setUserid(message.getSenderUserId());
-        chatListInfo.setLastchatcontent(new String(message.getContent().encode()));
+        JSONObject object = JSON.parseObject(new String(message.getContent().encode()));
+        chatListInfo.setLastchatcontent(object.getString("content"));
         if (chatListInfoDao.find(chatListInfo.getUserid())) {
             chatListInfoDao.updateChatListInfoByid(chatListInfo.getLastchatcontent(), chatListInfo.getUserid());
         } else {
@@ -67,16 +68,14 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
 
         //开发者根据自己需求自行处理
         Log.d(TAG, "=======onReceived=========>" + new String(message.getContent().encode()));
-        android.os.Message msg = mHandler.obtainMessage();
-        msg.obj = message;
-        mHandler.sendMessage(msg);
         return false;
     }
 
     private ChatDetailInfo inserChatDetaildb(Message message) {
         ChatDetailInfo chatdetailInfo = new ChatDetailInfo();
         chatdetailInfo.setUserid(message.getSenderUserId());
-        chatdetailInfo.setChatcontent(new String(message.getContent().encode()));
+        JSONObject object = JSON.parseObject(new String(message.getContent().encode()));
+        chatdetailInfo.setChatcontent(object.getString("content"));
         chatdetailInfo.setTime((new Date().getTime()) + "");
         chatdetailInfo.setIssender("true");
         mChatDetailInfoDao.add(chatdetailInfo);
