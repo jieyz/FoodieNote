@@ -29,6 +29,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
 				"                         userid varchar(32), " +
 				"                         username varchar(32), " +
 				"                         lastchatcontent varchar(32), " +
+				"                         unreadcount varchar(16), " +
 				"                         iconcacheurl varchar(32))");
 
 		db.execSQL("create table chatdetailinfo (_id integer primary key autoincrement," +

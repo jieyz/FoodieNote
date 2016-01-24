@@ -13,8 +13,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.yaozu.listener.R;
 import com.yaozu.listener.adapter.ChatDetailListViewAdapter;
 import com.yaozu.listener.constant.IntentKey;
@@ -57,6 +55,30 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
         user.setText(mUserId);
 
         mListView.setSelection(mListAdapter.getCount() - 1);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        makeUnreadTohadread();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        makeUnreadTohadread();
+    }
+
+    /**
+     * 把未读置为已读
+     */
+    private void makeUnreadTohadread(){
+        chatListInfoDao.updateChatListUnreadsByid("0", mUserId);
+        ChatListInfo chatListInfo = new ChatListInfo();
+        chatListInfo.setUserid(mUserId);
+        chatListInfo.setUnreadcount("0");
+        chatListInfo.setLastchatcontent(((ChatDetailInfo)mListAdapter.getItem(mListAdapter.getCount() - 1)).getChatcontent());
+        sendBroadCastToupdateChatlist(chatListInfo, null);
     }
 
     private void findViews() {
@@ -104,6 +126,8 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
                 break;
         }
     }
+
+
 
     private void sendMessage() {
         final String msg = mEditText.getText().toString().trim();

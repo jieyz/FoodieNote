@@ -2,6 +2,7 @@ package com.yaozu.listener.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -23,20 +24,22 @@ import java.util.List;
 public class ChatListViewAdapter extends BaseAdapter {
     private List<ChatListInfo> mChatlists = new ArrayList<ChatListInfo>();
     private Context mContext;
-    public ChatListViewAdapter(Context context,List<ChatListInfo> chatlists){
+
+    public ChatListViewAdapter(Context context, List<ChatListInfo> chatlists) {
         mContext = context;
         mChatlists = chatlists;
     }
 
-    public void updateData(ChatListInfo info){
+    public void updateData(ChatListInfo info) {
         boolean isHave = false;
-        for(ChatListInfo chatListInfo:mChatlists){
-            if(chatListInfo.getUserid().equals(info.getUserid())){
+        for (ChatListInfo chatListInfo : mChatlists) {
+            if (chatListInfo.getUserid().equals(info.getUserid())) {
                 chatListInfo.setLastchatcontent(info.getLastchatcontent());
+                chatListInfo.setUnreadcount(info.getUnreadcount());
                 isHave = true;
             }
         }
-        if(!isHave){
+        if (!isHave) {
             mChatlists.add(info);
         }
     }
@@ -60,11 +63,12 @@ public class ChatListViewAdapter extends BaseAdapter {
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         View view = null;
         ViewHolder holder = null;
-        if(convertView == null){
+        if (convertView == null) {
             holder = new ViewHolder();
             view = View.inflate(mContext, R.layout.list_chatlist_item, null);
             holder.username = (TextView) view.findViewById(R.id.chat_list_name);
             holder.lastcontent = (TextView) view.findViewById(R.id.chat_list_lastchatcontent);
+            holder.unreads = (TextView) view.findViewById(R.id.chat_list_unreads);
             view.setTag(holder);
         } else {
             view = convertView;
@@ -73,11 +77,19 @@ public class ChatListViewAdapter extends BaseAdapter {
         final ChatListInfo chatListInfo = mChatlists.get(i);
         holder.username.setText(chatListInfo.getUserid());
         holder.lastcontent.setText(chatListInfo.getLastchatcontent());
+
+        if (!TextUtils.isEmpty(chatListInfo.getUnreadcount()) & !"0".equals(chatListInfo.getUnreadcount())) {
+            holder.unreads.setVisibility(View.VISIBLE);
+            holder.unreads.setText(chatListInfo.getUnreadcount());
+        } else {
+            holder.unreads.setVisibility(View.GONE);
+        }
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, ChatDetailActivity.class);
-                intent.putExtra(IntentKey.CHAT_USERID,chatListInfo.getUserid());
+                intent.putExtra(IntentKey.CHAT_USERID, chatListInfo.getUserid());
                 mContext.startActivity(intent);
             }
         });
@@ -87,6 +99,7 @@ public class ChatListViewAdapter extends BaseAdapter {
     public class ViewHolder {
         public TextView username;
         public TextView lastcontent;
+        public TextView unreads;
         public ImageView icon;
     }
 }

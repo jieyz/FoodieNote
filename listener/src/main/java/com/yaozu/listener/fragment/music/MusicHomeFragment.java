@@ -97,7 +97,17 @@ public class MusicHomeFragment extends BaseFragment implements View.OnClickListe
                 systemScan();
                 break;
             case R.id.fragment_music_home_favorite_rl:
+                RongIM.getInstance().getRongIMClient().sendMessage(Conversation.ConversationType.PRIVATE, "jieyaozu", TextMessage.obtain("bvvcf"), "", "", new RongIMClient.SendMessageCallback() {
+                    @Override
+                    public void onError(Integer messageId, RongIMClient.ErrorCode e) {
 
+                    }
+
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        Log.d("MusicHomeFragment", "=========onSuccess==========>" + integer);
+                    }
+                }, null);
                 break;
         }
     }

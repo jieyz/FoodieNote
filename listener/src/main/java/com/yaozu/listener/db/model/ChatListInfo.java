@@ -10,6 +10,15 @@ public class ChatListInfo implements Serializable{
     private String username;
     private String lastchatcontent;
     private String iconcacheurl;
+    private String unreadcount;
+
+    public String getUnreadcount() {
+        return unreadcount;
+    }
+
+    public void setUnreadcount(String unreadcount) {
+        this.unreadcount = unreadcount;
+    }
 
     public String getUserid() {
         return userid;

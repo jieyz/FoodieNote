@@ -30,8 +30,8 @@ public class ChatListInfoDao {
     public void add(ChatListInfo info) {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
-            db.execSQL("insert into chatlistinfo (userid,username,lastchatcontent,iconcacheurl) values (?,?,?,?)",
-                    new Object[]{info.getUserid(), info.getUsername(), info.getLastchatcontent(), info.getIconcacheurl()});
+            db.execSQL("insert into chatlistinfo (userid,username,lastchatcontent,unreadcount,iconcacheurl) values (?,?,?,?,?)",
+                    new Object[]{info.getUserid(), info.getUsername(), info.getLastchatcontent(), info.getUnreadcount(), info.getIconcacheurl()});
         }
         db.close();
     }
@@ -57,6 +57,30 @@ public class ChatListInfoDao {
         db.close();
     }
 
+    public void updateChatListUnreadsByid(String unreadcount, String userid) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        if (db.isOpen()) {
+            db.execSQL("update chatlistinfo set unreadcount=? where userid=?",
+                    new Object[]{unreadcount, userid});
+        }
+        db.close();
+    }
+
+    public String getChatListUnreadsByid(String userid) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        String unreadcount = null;
+        if (db.isOpen()) {
+            Cursor cursor = db.rawQuery(
+                    "select * from chatlistinfo where userid=?",
+                    new String[]{userid});
+            while(cursor.moveToNext()){
+                 unreadcount = cursor.getString(cursor.getColumnIndex("unreadcount"));
+            }
+        }
+        db.close();
+        return unreadcount;
+    }
+
     /**
      * 查询一条是否存在
      *
@@ -69,7 +93,7 @@ public class ChatListInfoDao {
         if (db.isOpen()) {
             Cursor cursor = db.rawQuery(
                     "select * from chatlistinfo where userid=?",
-                    new String[] { userid });
+                    new String[]{userid});
             if (cursor.moveToNext()) {
                 result = true;
             }
@@ -89,11 +113,13 @@ public class ChatListInfoDao {
                 String userid = cursor.getString(cursor.getColumnIndex("userid"));
                 String username = cursor.getString(cursor.getColumnIndex("username"));
                 String lastchatcontent = cursor.getString(cursor.getColumnIndex("lastchatcontent"));
+                String unreadcount = cursor.getString(cursor.getColumnIndex("unreadcount"));
                 String iconcacheurl = cursor.getString(cursor.getColumnIndex("iconcacheurl"));
 
                 info.setUserid(userid);
                 info.setUsername(username);
                 info.setLastchatcontent(lastchatcontent);
+                info.setUnreadcount(unreadcount);
                 info.setIconcacheurl(iconcacheurl);
 
                 chatlistinfos.add(info);
