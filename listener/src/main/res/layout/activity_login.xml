@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="7dp">
+
+        <EditText
+            android:id="@+id/login_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="账号"
+            android:text="jieyaozu"/>
+
+        <EditText
+            android:id="@+id/login_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="密码"/>
+
+        <Button
+            android:id="@+id/login_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/appthemecolor"
+            android:text="登 录"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"/>
+    </LinearLayout>
+</LinearLayout>

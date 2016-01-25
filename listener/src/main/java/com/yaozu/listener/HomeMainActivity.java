@@ -87,7 +87,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
          *  设置接收消息的监听器。
          */
         RongIM.setOnReceiveMessageListener(new MyReceiveMessageListener(this));
-        connect(token2);
+        connect(getIntent().getStringExtra("token"));
 
         setContentView(R.layout.activity_home_main);
         mFragmentManager = getSupportFragmentManager();
