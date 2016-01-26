@@ -1,15 +1,20 @@
 package com.yaozu.listener.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yaozu.listener.HomeMainActivity;
 import com.yaozu.listener.R;
+import com.yaozu.listener.constant.Constant;
+import com.yaozu.listener.utils.User;
 
 /**
  * Created by 耀祖 on 2016/1/25.
@@ -21,7 +26,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private String token1 = "ZeOpNKgIS6NVsPnNIGS6NGxP7Qfd0jcFN0C5Ibqjpg328zglcxril0v4m4zETCFHBA68rgPUDVEw2+rmhAQNLnLfI1nmn0oY";
     private String token2 = "AIzXjXl8KRobJnxbd8fhVnmGXj2xfWz1oFuzCcWFVHZb5axaA1K5spIaquTmp5+CVWLWAFPNoO6C8oPLXaCzITuX9Xew5d0E";
     private String token3 = "v8XjNiu5BYSQ21+pn93xunmGXj2xfWz1oFuzCcWFVHZb5axaA1K5sgrVvM+PHxVHKxvRo5TOSReC8oPLXaCzITe1/77+nlZ3";
-
+    private SharedPreferences sp;
+    private User mUser;
+    private TextView registerTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,8 +36,21 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mAccout = (EditText) findViewById(R.id.login_account);
         mPassword = (EditText) findViewById(R.id.login_password);
         mLogin = (Button) findViewById(R.id.login_login);
+        registerTextView = (TextView) findViewById(R.id.activity_login_register);
 
+        sp = this.getSharedPreferences(Constant.LOGIN_MSG, Context.MODE_PRIVATE);
         mLogin.setOnClickListener(this);
+        registerTextView.setOnClickListener(this);
+
+        mUser = new User(this);
+
+        boolean islogin = mUser.isLogining();
+        if(islogin){
+            Intent intent = new Intent(this, HomeMainActivity.class);
+            intent.putExtra("token", mUser.getUserToken());
+            startActivity(intent);
+            finish();
+        }
     }
 
     @Override
@@ -75,9 +95,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 } else if ("jieyaozu3".equals(account)) {
                     token = token3;
                 }
-                intent.putExtra("token",token);
+                intent.putExtra("token", token);
                 startActivity(intent);
+
+                mUser.storeLoginUserInfo(true,account,account,token);
+
                 finish();
+                break;
+            case R.id.activity_login_register:
+                Intent registerIntent = new Intent(this,RegisterActivity.class);
+                startActivity(registerIntent);
                 break;
         }
     }

@@ -85,7 +85,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
         mListView = (ListView) findViewById(R.id.activity_social_chatdetail_listview);
         user = (TextView) findViewById(R.id.activity_chatdetail_user);
         mEditText = (EditText) findViewById(R.id.activity_social_chatdetail_edittext);
-        back = (ImageView) findViewById(R.id.activity_chat_detail_back);
+        back = (ImageView) findViewById(R.id.activity_register_back);
         mSend = (Button) findViewById(R.id.activity_social_chatdetail_send);
         mSend.setOnClickListener(this);
         back.setOnClickListener(this);
@@ -121,7 +121,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
             case R.id.activity_social_chatdetail_send:
                 sendMessage();
                 break;
-            case R.id.activity_chat_detail_back:
+            case R.id.activity_register_back:
                 finish();
                 break;
         }

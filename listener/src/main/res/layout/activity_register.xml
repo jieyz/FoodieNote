@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/appthemecolor"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/chatdetail_actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/appthemecolor">
+
+        <ImageView
+            android:id="@+id/activity_register_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/actionbar_back" />
+
+        <TextView
+            android:id="@+id/activity_chatdetail_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/activity_register_back"
+            android:text="填写手机号"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:padding="7dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingLeft="5dp"
+                android:paddingRight="10dp"
+                android:text="昵称"
+                android:textColor="#363636"
+                android:textSize="16dp" />
+
+            <EditText
+                android:id="@+id/register_nickname"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:paddingLeft="60dp"
+                android:hint="例如：刘邦"
+                android:textSize="15dp"
+                android:textColorHint="@color/gray_white"
+                android:text="" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_alignParentBottom="true"
+                android:background="@color/appthemecolor" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingLeft="5dp"
+                android:paddingRight="10dp"
+                android:text="+86"
+                android:textColor="#363636"
+                android:textSize="16dp" />
+
+            <EditText
+                android:id="@+id/register_phonenumber"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:paddingLeft="60dp"
+                android:hint="你的手机号码"
+                android:textSize="15dp"
+                android:textColorHint="@color/gray_white"
+                android:text="" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_alignParentBottom="true"
+                android:background="@color/appthemecolor" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingLeft="5dp"
+                android:paddingRight="10dp"
+                android:text="密码"
+                android:textColor="#363636"
+                android:textSize="16dp" />
+
+            <EditText
+                android:id="@+id/register_password"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:paddingLeft="60dp"
+                android:textSize="15dp"
+                android:textColorHint="@color/gray_white"
+                android:hint="密码" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_alignParentBottom="true"
+                android:background="@color/appthemecolor" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/register_register"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_background"
+            android:text="注 册"
+            android:textColor="@color/white"
+            android:textSize="20dp" />
+    </LinearLayout>
+</LinearLayout>
