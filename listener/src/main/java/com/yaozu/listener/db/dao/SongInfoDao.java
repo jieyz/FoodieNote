@@ -48,6 +48,21 @@ public class SongInfoDao {
         db.close();
     }
 
+    /**
+     * 查询数据的总条数
+     * @return
+     */
+    public int queryTotalCount(){
+        SQLiteDatabase db = helper.getReadableDatabase();
+        int count = 0;
+        if (db.isOpen()) {
+            Cursor cursor = db.rawQuery("select * from songinfo",null);
+            count = cursor.getCount();
+        }
+        db.close();
+        return count;
+    }
+
     public List<Song> findAllSongInfo(){
         List<Song> songinfos = new ArrayList<Song>();
         SQLiteDatabase db = helper.getReadableDatabase();

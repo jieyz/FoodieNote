@@ -14,9 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.yaozu.listener.Infointerface;
 import com.yaozu.listener.R;
+import com.yaozu.listener.db.dao.SongInfoDao;
 import com.yaozu.listener.fragment.BaseFragment;
 
 import java.io.File;
@@ -36,6 +38,8 @@ public class MusicHomeFragment extends BaseFragment implements View.OnClickListe
     private FragmentTransaction mFragmentTransaction;
     private RelativeLayout local, recently, favorate;
     private Infointerface mInfointerface;
+    private SongInfoDao mSongInfoDao;
+    private TextView frgment_music_home_local_count;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,7 @@ public class MusicHomeFragment extends BaseFragment implements View.OnClickListe
         local = (RelativeLayout) view.findViewById(R.id.fragment_music_home_local_rl);
         recently = (RelativeLayout) view.findViewById(R.id.fragment_music_home_recently_rl);
         favorate = (RelativeLayout) view.findViewById(R.id.fragment_music_home_favorite_rl);
+        frgment_music_home_local_count = (TextView) view.findViewById(R.id.frgment_music_home_local_count);
 
         local.setOnClickListener(this);
         recently.setOnClickListener(this);
@@ -64,6 +69,8 @@ public class MusicHomeFragment extends BaseFragment implements View.OnClickListe
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mSongInfoDao = new SongInfoDao(getActivity());
+        frgment_music_home_local_count.setText("("+mSongInfoDao.queryTotalCount()+")");
     }
 
     @Override

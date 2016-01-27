@@ -141,7 +141,7 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/button_background"
+            android:background="@drawable/button_background_selector"
             android:text="注 册"
             android:textColor="@color/white"
             android:textSize="20dp" />

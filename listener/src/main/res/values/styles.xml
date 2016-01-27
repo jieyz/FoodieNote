@@ -10,7 +10,7 @@
         <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item>
     </style>
     <style name="RippleBackground">
-         <item name="android:background">#ffffffff</item>
+         <item name="android:background">@android:color/transparent</item>
     </style>
 
     <style name="MusicLyricTheme" parent="AppTheme">

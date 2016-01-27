@@ -11,14 +11,14 @@
 
         <RelativeLayout
             android:id="@+id/fragment_music_home_local_rl"
-            style="@style/RippleBackground"
             android:layout_width="match_parent"
-            android:layout_height="55dp">
+            android:layout_height="55dp"
+            android:background="@drawable/main_listview_selector">
 
             <RelativeLayout
+                style="@style/RippleBackground"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/main_listview_selector">
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:id="@+id/frgment_music_home_local"
@@ -28,6 +28,7 @@
                     android:src="@drawable/music_icn_local" />
 
                 <TextView
+                    android:id="@+id/frgment_music_home_local_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -35,6 +36,17 @@
                     android:text="本地音乐"
                     android:textColor="#363636"
                     android:textSize="17dp" />
+
+                <TextView
+                    android:id="@+id/frgment_music_home_local_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/frgment_music_home_local_tv"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/gray_white"
+                    android:textSize="14dp"
+                    android:text="(0)"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -47,14 +59,14 @@
 
         <RelativeLayout
             android:id="@+id/fragment_music_home_recently_rl"
-            style="@style/RippleBackground"
             android:layout_width="match_parent"
-            android:layout_height="55dp">
+            android:layout_height="55dp"
+            android:background="@drawable/main_listview_selector">
 
             <RelativeLayout
+                style="@style/RippleBackground"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/main_listview_selector">
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:id="@+id/frgment_music_home_recently"
@@ -83,15 +95,14 @@
 
         <RelativeLayout
             android:id="@+id/fragment_music_home_favorite_rl"
-            style="@style/RippleBackground"
             android:layout_width="match_parent"
-            android:layout_height="55dp">
+            android:layout_height="55dp"
+            android:background="@drawable/main_listview_selector">
 
             <RelativeLayout
                 style="@style/RippleBackground"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/main_listview_selector">
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:id="@+id/frgment_music_home_favorite"
