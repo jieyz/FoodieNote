@@ -16,4 +16,7 @@
     <style name="MusicLyricTheme" parent="AppTheme">
         <item name="android:windowIsTranslucent">true</item>
     </style>
+    <style name="NobackDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
 </resources>

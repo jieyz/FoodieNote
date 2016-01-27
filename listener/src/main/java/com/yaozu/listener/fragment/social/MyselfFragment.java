@@ -31,7 +31,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
     private User mUser;
     private TextView mAccount_view;
     private RelativeLayout userInfoRl;
-    private AlertDialog dialog;
+    private Dialog dialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
     }
 
     private void showDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        dialog = new Dialog(this.getActivity(), R.style.NobackDialog);
         View view = View.inflate(getActivity(),R.layout.quit_dialog,null);
         LinearLayout quitAccount = (LinearLayout) view.findViewById(R.id.quit_dialog_quitaccount);
         LinearLayout quitApp = (LinearLayout) view.findViewById(R.id.quit_dialog_quitapp);
@@ -84,8 +84,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                 dialog.dismiss();
             }
         });
-        builder.setView(view);
-        dialog = builder.create();
+        dialog.setContentView(view);
         dialog.show();
     }
 
