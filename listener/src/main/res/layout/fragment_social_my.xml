@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             style="@style/RippleBackground">
 
-            <ImageView
+            <com.yaozu.listener.widget.RoundCornerImageView
                 android:id="@+id/fragment_social_mine_usericon"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
@@ -25,6 +25,14 @@
                 android:layout_marginLeft="10dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/usericon" />
+
+            <ImageView
+                android:id="@+id/fragment_social_mine_usericon_onclick"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/transparent_bg_selector"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -59,6 +67,13 @@
                     android:text=""
                     android:textSize="14dp" />
             </LinearLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/right_arrow"/>
         </RelativeLayout>
     </RelativeLayout>
 

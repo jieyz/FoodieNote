@@ -16,6 +16,7 @@ public class IntentKey {
     public static String SEND_BUNDLE_CHATLISTINFO = "send_bundle_chatlistinfo";
     public static String SEND_BUNDLE_CHATDETAILINFO = "send_bundle_chatdetailinfo";
     public static String CHAT_USERID = "chat_userid";
+    public static String USER_ICON_PATH = "user_icon_path";
 
     /**
      * 广播Action

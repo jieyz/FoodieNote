@@ -1,16 +1,16 @@
 package com.yaozu.listener.fragment.social;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -21,13 +21,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yaozu.listener.R;
 import com.yaozu.listener.activity.LoginActivity;
+import com.yaozu.listener.activity.UserIconDetail;
 import com.yaozu.listener.constant.Constant;
+import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.fragment.BaseFragment;
 import com.yaozu.listener.utils.FileUtil;
 import com.yaozu.listener.utils.User;
+import com.yaozu.listener.widget.RoundCornerImageView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,14 +46,29 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
     //昵称
     private RelativeLayout nickName;
     private SharedPreferences sp;
-    private ImageView userIcon;
+    private RoundCornerImageView userIcon;
+    private ImageView fragment_social_mine_usericon_onclick;
     private User mUser;
     private TextView mAccount_view;
     private RelativeLayout userInfoRl;
     private Dialog dialog;
     private static final int ACTIVITY_RESULT_GALRY = 0;
     private static String ICON_PATH = FileUtil.getSDPath() + File.separator + "ListenerMusic" + File.separator+"icon.jpg";
+    private static String CP_ICON_PATH = FileUtil.getSDPath() + File.separator + "ListenerMusic" + File.separator+"cp_icon.jpg";
 
+    public Handler handler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1000:
+                    Bitmap localBitmap = (Bitmap) msg.obj;
+                    userIcon.setImageBitmap(localBitmap);
+                    userIcon.invalidate();
+                    break;
+            }
+        }
+    };
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +81,8 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
         mAccount_view = (TextView) view.findViewById(R.id.fragment_social_mine_account);
         userInfoRl = (RelativeLayout) view.findViewById(R.id.fragment_social_mine_userinfo_rl);
         nickName = (RelativeLayout) view.findViewById(R.id.fragment_social_mine_nickname_rl);
-        userIcon = (ImageView) view.findViewById(R.id.fragment_social_mine_usericon);
+        userIcon = (RoundCornerImageView) view.findViewById(R.id.fragment_social_mine_usericon);
+        fragment_social_mine_usericon_onclick = (ImageView) view.findViewById(R.id.fragment_social_mine_usericon_onclick);
         initData();
     }
 
@@ -72,8 +92,9 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
         mQuit.setOnClickListener(this);
         userInfoRl.setOnClickListener(this);
         nickName.setOnClickListener(this);
+        fragment_social_mine_usericon_onclick.setOnClickListener(this);
 
-        Bitmap bitmap = BitmapFactory.decodeFile(ICON_PATH);
+        Bitmap bitmap = BitmapFactory.decodeFile(CP_ICON_PATH);
         if(bitmap != null){
             userIcon.setImageBitmap(bitmap);
         }
@@ -119,7 +140,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
         localIntent1.setType("image/*");
         localIntent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //EffectActivity localCaricatureCreatorActivity = CaricatureSurfaceView.this.m_activity;
-        String str = this.getString(R.string.ChooseFile);//2130968579 = Choose File��
+        String str = this.getString(R.string.ChooseFile);//2130968579 = Choose File
         Intent localIntent3 = Intent.createChooser(localIntent1, str);
         this.startActivityForResult(localIntent3, ACTIVITY_RESULT_GALRY);
     }
@@ -135,10 +156,28 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                 Uri localUri = data.getData();
                 ContentResolver resolver = getActivity().getContentResolver();
                 try {
-                    Bitmap bm = MediaStore.Images.Media.getBitmap(resolver, localUri);
-                    userIcon.setImageBitmap(bm);
-                    //保存到本地
-                    saveOutput(bm);
+                    final Bitmap bm = MediaStore.Images.Media.getBitmap(resolver, localUri);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //保存到本地
+                            saveOutput(bm, ICON_PATH);
+                            //压缩小的图片
+                            Bitmap smallBitmap = compressUserIcon(200,ICON_PATH);
+                            //保存压缩后的图片
+                            saveOutput(smallBitmap,CP_ICON_PATH);
+
+                            //压缩大的图片
+                            Bitmap bigBitmap = compressUserIcon(600,ICON_PATH);
+                            //保存大的图片到本地
+                            saveOutput(bigBitmap,ICON_PATH);
+
+                            Message msg = handler.obtainMessage();
+                            msg.obj = smallBitmap;
+                            msg.what = 1000;
+                            handler.sendMessage(msg);
+                        }
+                    }).start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -150,18 +189,15 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
      * 保存到本地
      * @param croppedImage
      */
-    private void saveOutput(Bitmap croppedImage) {
-        File file = new File(ICON_PATH);
-
+    private void saveOutput(Bitmap croppedImage,String path) {
+        File file = new File(path);
         if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-
                 e.printStackTrace();
             }
         }
-
         OutputStream outStream;
         try {
             outStream = new FileOutputStream(file);
@@ -172,6 +208,24 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private BitmapFactory.Options localOptions;
+    /**
+     * 压缩图片
+     */
+    private Bitmap compressUserIcon(int maxWidth,String srcpath){
+        localOptions = new BitmapFactory.Options();
+        localOptions.inJustDecodeBounds = true;
+        localOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        BitmapFactory.decodeFile(srcpath, localOptions);
+        if (localOptions.outWidth > maxWidth)
+        {
+            int j = localOptions.outWidth / (maxWidth/2);
+            localOptions.inSampleSize = j;
+        }
+        localOptions.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(srcpath, localOptions);
     }
 
     @Override
@@ -199,7 +253,11 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                 showDialog();
                 break;
             case R.id.fragment_social_mine_nickname_rl:
-
+                break;
+            case R.id.fragment_social_mine_usericon_onclick:
+                Intent intent = new Intent(getActivity(), UserIconDetail.class);
+                intent.putExtra(IntentKey.USER_ICON_PATH,ICON_PATH);
+                startActivity(intent);
                 break;
         }
     }

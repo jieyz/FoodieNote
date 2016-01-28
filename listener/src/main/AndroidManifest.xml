@@ -46,6 +46,9 @@
         <activity
             android:name=".activity.MusicLyricActivity"
             android:theme="@style/MusicLyricTheme" />
+        <activity
+            android:name=".activity.UserIconDetail"
+            android:theme="@style/MusicLyricTheme" />
 
         <activity
             android:name=".activity.ChatDetailActivity"
