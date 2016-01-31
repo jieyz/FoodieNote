@@ -1,11 +1,14 @@
 package com.yaozu.listener;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,30 +21,39 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.yaozu.listener.activity.BaseActivity;
+import com.yaozu.listener.activity.LoginActivity;
 import com.yaozu.listener.activity.MusicLyricActivity;
+import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.fragment.HomeFragment;
 import com.yaozu.listener.fragment.music.MusicLocalFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.listener.MyReceiveMessageListener;
+import com.yaozu.listener.listener.MyReceivePushMessageListener;
 import com.yaozu.listener.listener.MySendMessageListener;
 import com.yaozu.listener.playlist.model.SongList;
 import com.yaozu.listener.playlist.provider.JavaMediaScanner;
 import com.yaozu.listener.playlist.provider.NativeMediaScanner;
 import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.utils.NetUtil;
+import com.yaozu.listener.utils.PhoneInfoUtil;
+import com.yaozu.listener.utils.User;
 
 import org.json.JSONObject;
 
@@ -53,6 +65,7 @@ import io.rong.imlib.RongIMClient;
 
 
 public class HomeMainActivity extends BaseActivity implements View.OnClickListener, OnFragmentInteractionListener, Infointerface {
+    private String TAG = this.getClass().getSimpleName();
     private RadioButton mRadioFirst, mRadioSecond, mRadioThird, mRadioFour;
     private FragmentManager mFragmentManager;
     private String mCurrentFragmentTag;
@@ -69,25 +82,46 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private FragmentTransaction mFragmentTransaction;
     private Fragment mCurrentFragment;
     private JavaMediaScanner mMediaScanner;
-
+    private final int HAS_OTHERLOGIN = 1;
+    private final int NOT_OTHERLOGIN = 0;
     private String token1 = "ZeOpNKgIS6NVsPnNIGS6NGxP7Qfd0jcFN0C5Ibqjpg328zglcxril0v4m4zETCFHBA68rgPUDVEw2+rmhAQNLnLfI1nmn0oY";
     private String token2 = "AIzXjXl8KRobJnxbd8fhVnmGXj2xfWz1oFuzCcWFVHZb5axaA1K5spIaquTmp5+CVWLWAFPNoO6C8oPLXaCzITuX9Xew5d0E";
     private String token3 = "v8XjNiu5BYSQ21+pn93xunmGXj2xfWz1oFuzCcWFVHZb5axaA1K5sgrVvM+PHxVHKxvRo5TOSReC8oPLXaCzITe1/77+nlZ3";
+    private Dialog dialog;
+    private User mUser;
 
-    static{
+    static {
         System.loadLibrary("mediascanner");
     }
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case HAS_OTHERLOGIN:
+                    showLoginOutDialog();
+                    break;
+                case NOT_OTHERLOGIN:
+                    /**
+                     *  设置接收消息的监听器。
+                     */
+                    RongIM.setOnReceiveMessageListener(new MyReceiveMessageListener(HomeMainActivity.this));
+                    /**
+                     * 设置接收 push 消息的监听器。
+                     */
+                    RongIM.setOnReceivePushMessageListener(new MyReceivePushMessageListener(HomeMainActivity.this));
+                    connect(getIntent().getStringExtra("token"));
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         app = YaozuApplication.getIntance();
-
-        /**
-         *  设置接收消息的监听器。
-         */
-        RongIM.setOnReceiveMessageListener(new MyReceiveMessageListener(this));
-        connect(getIntent().getStringExtra("token"));
+        mUser = new User(this);
 
         setContentView(R.layout.activity_home_main);
         mFragmentManager = getSupportFragmentManager();
@@ -115,12 +149,67 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
                 mMediaScanner.scannerMedia();
             }
         }).start();
-/*        MusicService service = app.getMusicService();
-        if (service == null) {
-            Intent intent = new Intent(this, MusicService.class);
-            startService(intent);
-        }*/
+
+        /////////动态注册广播
+        IntentFilter mFilter = new IntentFilter();
+        mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(myNetReceiver, mFilter);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (dialog == null || (dialog != null && !dialog.isShowing())) {
+            //先从服务器上去判断是不是在另一台设备上登录
+            isOtherLogin(mUser.getUserAccount());
+        }
+    }
+
+    private ConnectivityManager mConnectivityManager;
+
+    private NetworkInfo netInfo;
+
+    /////////////监听网络状态变化的广播接收器
+    private BroadcastReceiver myNetReceiver = new BroadcastReceiver() {
+        private int count = 0;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String action = intent.getAction();
+            if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+
+                mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                netInfo = mConnectivityManager.getActiveNetworkInfo();
+                if (netInfo != null && netInfo.isAvailable()) {
+                    Log.d(TAG, "========网络连接=========>");
+                    if (count != 0) {
+                        isOtherLogin(mUser.getUserAccount());
+                    }
+                    count++;
+                    /////////////网络连接
+                    String name = netInfo.getTypeName();
+                    if (netInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                        /////WiFi网络
+
+                    } else if (netInfo.getType() == ConnectivityManager.TYPE_ETHERNET) {
+                        /////有线网络
+
+                    } else if (netInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                        /////////3g网络
+                    }
+                } else {
+                    ////////网络断开
+                    Log.d(TAG, "========网络断开=========>");
+                }
+            }
+        }
+    };
 
     /**
      * 建立与融云服务器的连接
@@ -169,6 +258,40 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
+    /**
+     * 弹出登出对话框
+     */
+    private void showLoginOutDialog() {
+        if (dialog != null && dialog.isShowing()) {
+            return;
+        }
+        dialog = new Dialog(this, R.style.NobackDialog);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
+                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_SEARCH) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+        View view = View.inflate(this, R.layout.loginout_dialog, null);
+        LinearLayout quitApp = (LinearLayout) view.findViewById(R.id.loginout_dialog_quitapp);
+        quitApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                mUser.quitLogin();
+                Intent intent = new Intent(HomeMainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        dialog.setContentView(view);
+        dialog.show();
+    }
 
     private void findViewByIds() {
         mPlayPause = (ImageView) findViewById(R.id.mediaplay_play_pause);
@@ -240,7 +363,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     @Override
     public void repalace(Fragment mFragment) {
         mFragmentTransaction = mFragmentManager.beginTransaction();
-        if(mCurrentFragment != mFragment){
+        if (mCurrentFragment != mFragment) {
             mFragmentTransaction.hide(mCurrentFragment);
         }
         mFragmentTransaction.add(R.id.main_fragment_container, mFragment);
@@ -248,30 +371,73 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         mFragmentTransaction.commit();
     }
 
-    public void showTopFragment(){
+    public void showTopFragment() {
         List<Fragment> fragments = mFragmentManager.getFragments();
         for (Fragment fragment : fragments) {
             mFragmentTransaction.show(fragment);
         }
     }
 
+    /**
+     * 是否是在另一台设备上登录
+     */
+    private boolean isOtherLogin(String userid) {
+        boolean isOtherLogin = false;
+        PhoneInfoUtil phoneInfoUtil = new PhoneInfoUtil(this);
+        RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
+        String url = DataInterface.getIsOtherLoginUrl() + "?userid=" + userid + "&deviceid=" + phoneInfoUtil.getDeviceId();
+        Log.d(TAG, "isOtherLogin url : " + url);
+        Request request = new JsonObjectRequest(Request.Method.GET,
+                url,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "response : " + response.toString());
+                        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                        int code = jsonObject.getIntValue("code");
+                        if (code == HAS_OTHERLOGIN) {
+                            Log.d(TAG, "已在其它设备上登录过了，需要重新登录");
+                            Message msg = mHandler.obtainMessage();
+                            msg.what = HAS_OTHERLOGIN;
+                            mHandler.sendMessage(msg);
+                        } else {
+                            Log.d(TAG, "没有在其它设备上登录过");
+                            Message msg = mHandler.obtainMessage();
+                            msg.what = NOT_OTHERLOGIN;
+                            mHandler.sendMessage(msg);
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("Error: ", error.getMessage());
+                Toast.makeText(HomeMainActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                Message msg = mHandler.obtainMessage();
+                msg.what = NOT_OTHERLOGIN;
+                mHandler.sendMessage(msg);
+            }
+        });
+        request.setRetryPolicy(new DefaultRetryPolicy(10000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        mQueue.add(request);
+        mQueue.start();
+        return isOtherLogin;
+    }
+
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (app != null && app.getMusicService() != null) {
             app.getMusicService().killMyself();
             app.cleanMusicService();
         }
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
+        if (myNetReceiver != null) {
+            unregisterReceiver(myNetReceiver);
+        }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+        if (headsetPlugReceiver != null) {
+            unregisterReceiver(headsetPlugReceiver);
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -302,7 +468,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
             String action = intent.getAction();
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
                 MusicService service = app.getMusicService();
-                if(service.isPlaying()){
+                if (service.isPlaying()) {
                     service.pause();
                 }
             }
@@ -311,7 +477,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     };
 
     @Override
-    public void notifyCurrentSongMsg(String name, String singer, long album_id,int currentPos) {
+    public void notifyCurrentSongMsg(String name, String singer, long album_id, int currentPos) {
         mCurrentSongName.setText(name);
         mCurrentSinger.setText(singer);
         //Bitmap bitmap = mMediaScanner.getImage(this, (int) album_id);

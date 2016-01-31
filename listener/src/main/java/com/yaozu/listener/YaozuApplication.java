@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 
+import com.yaozu.listener.listener.MyConnectionStatusListener;
 import com.yaozu.listener.service.MusicService;
 
 import java.util.HashMap;
@@ -29,13 +30,11 @@ public class YaozuApplication extends Application {
          */
         if (getApplicationInfo().packageName.equals(getCurProcessName(getApplicationContext())) ||
                 "io.rong.push".equals(getCurProcessName(getApplicationContext()))) {
-
             /**
              * IMKit SDK调用第一步 初始化
              */
             RongIM.init(this);
         }
-
     }
 
     public static YaozuApplication getIntance() {

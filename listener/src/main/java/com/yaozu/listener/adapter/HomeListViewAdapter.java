@@ -138,7 +138,7 @@ public class HomeListViewAdapter extends BaseAdapter {
         holder.uploadFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NetUtil.uploadFile(mContext,new File(song.getFileUrl()));
+                NetUtil.uploadFile(mContext,new File(song.getFileUrl()),null);
             }
         });
         return view;

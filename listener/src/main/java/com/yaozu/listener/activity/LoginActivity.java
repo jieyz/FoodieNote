@@ -5,16 +5,33 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.yaozu.listener.HomeMainActivity;
 import com.yaozu.listener.R;
 import com.yaozu.listener.constant.Constant;
+import com.yaozu.listener.constant.DataInterface;
+import com.yaozu.listener.fragment.social.MyselfFragment;
+import com.yaozu.listener.listener.DownLoadListener;
+import com.yaozu.listener.utils.NetUtil;
+import com.yaozu.listener.utils.PhoneInfoUtil;
 import com.yaozu.listener.utils.User;
+
+import org.json.JSONObject;
+
+import java.io.File;
 
 /**
  * Created by 耀祖 on 2016/1/25.
@@ -29,6 +46,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private SharedPreferences sp;
     private User mUser;
     private TextView registerTextView;
+    private String TAG = this.getClass().getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,14 +59,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         sp = this.getSharedPreferences(Constant.LOGIN_MSG, Context.MODE_PRIVATE);
         mLogin.setOnClickListener(this);
-        registerTextView.setOnClickListener(this);
-
         mUser = new User(this);
 
         boolean islogin = mUser.isLogining();
-        if(islogin){
+        if (islogin) {
             Intent intent = new Intent(this, HomeMainActivity.class);
             intent.putExtra("token", mUser.getUserToken());
+            registerTextView.setOnClickListener(this);
+
             startActivity(intent);
             finish();
         }
@@ -78,34 +97,79 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     Toast.makeText(this, "账号不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (!"jieyaozu".equals(account) && !"jieyaozu2".equals(account) && !"jieyaozu3".equals(account)) {
-                    Toast.makeText(this, "账号不存在", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(password)) {
+                    Toast.makeText(this, "密码不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (!"yuanwang44".equals(password)) {
-                    Toast.makeText(this, "密码不正确", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                Intent intent = new Intent(this, HomeMainActivity.class);
-                String token = null;
-                if ("jieyaozu".equals(account)) {
-                    token = token1;
-                } else if ("jieyaozu2".equals(account)) {
-                    token = token2;
-                } else if ("jieyaozu3".equals(account)) {
-                    token = token3;
-                }
-                intent.putExtra("token", token);
-                startActivity(intent);
-
-                mUser.storeLoginUserInfo(true,account,account,token);
-
-                finish();
+                PhoneInfoUtil phoneInfoUtil = new PhoneInfoUtil(this);
+                loginRequest(account, password, phoneInfoUtil.getDeviceId());
                 break;
             case R.id.activity_login_register:
-                Intent registerIntent = new Intent(this,RegisterActivity.class);
+                Intent registerIntent = new Intent(this, RegisterActivity.class);
                 startActivity(registerIntent);
                 break;
+        }
+    }
+
+    /**
+     * 向服务器发送登录请求
+     *
+     * @param userid
+     * @param password
+     * @param deviceid
+     */
+    private void loginRequest(final String userid, String password, String deviceid) {
+        RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
+        String url = DataInterface.getLoginUrl() + "?userid=" + userid + "&password=" + password + "&deviceid=" + deviceid;
+        mQueue.add(new JsonObjectRequest(Request.Method.GET,
+                url,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "response : " + response.toString());
+                        Intent intent = new Intent(LoginActivity.this, HomeMainActivity.class);
+                        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                        int code = jsonObject.getIntValue("code");
+                        String msg = jsonObject.getString("message");
+                        String token = jsonObject.getString("token");
+                        String username = jsonObject.getString("username");
+                        String iconurl = jsonObject.getString("iconurl");
+                        Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        if (code == 1) {
+                            NetUtil.downLoadUserIcon(iconurl, new MyDownLoadListener());
+                            intent.putExtra("token", jsonObject.getString("token"));
+                            startActivity(intent);
+                            mUser.storeLoginUserInfo(true, userid, username, token);
+                            finish();
+                        } else {
+                            return;
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(LoginActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+            }
+        }));
+        mQueue.start();
+    }
+
+    public class MyDownLoadListener implements DownLoadListener {
+
+        @Override
+        public void downLoadSuccess() {
+            Log.d(TAG, "=============downLoadSuccess==================>");
+            Toast.makeText(LoginActivity.this,"下载头像成功！",Toast.LENGTH_SHORT).show();
+            File cpIconPath = new File(MyselfFragment.CP_ICON_PATH);
+            if(cpIconPath.exists()){
+                cpIconPath.delete();
+            }
+        }
+
+        @Override
+        public void downLoadFailed() {
+            Log.d(TAG, "=============downLoadFailed==================>");
+            Toast.makeText(LoginActivity.this,"下载头像失败！",Toast.LENGTH_SHORT).show();
         }
     }
 }

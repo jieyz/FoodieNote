@@ -55,7 +55,7 @@
                     android:paddingLeft="60dp"
                     android:textSize="15dp"
                     android:textColorHint="@color/gray_white"
-                    android:text="jieyaozu" />
+                    android:text="x25115" />
             </RelativeLayout>
 
             <RelativeLayout
