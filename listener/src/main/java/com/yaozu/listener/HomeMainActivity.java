@@ -51,9 +51,9 @@ import com.yaozu.listener.playlist.model.SongList;
 import com.yaozu.listener.playlist.provider.JavaMediaScanner;
 import com.yaozu.listener.playlist.provider.NativeMediaScanner;
 import com.yaozu.listener.service.MusicService;
-import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.PhoneInfoUtil;
 import com.yaozu.listener.utils.User;
+import com.yaozu.listener.utils.VolleyHelper;
 
 import org.json.JSONObject;
 
@@ -384,7 +384,6 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private boolean isOtherLogin(String userid) {
         boolean isOtherLogin = false;
         PhoneInfoUtil phoneInfoUtil = new PhoneInfoUtil(this);
-        RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
         String url = DataInterface.getIsOtherLoginUrl() + "?userid=" + userid + "&deviceid=" + phoneInfoUtil.getDeviceId();
         Log.d(TAG, "isOtherLogin url : " + url);
         Request request = new JsonObjectRequest(Request.Method.GET,
@@ -418,8 +417,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
             }
         });
         request.setRetryPolicy(new DefaultRetryPolicy(10000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        mQueue.add(request);
-        mQueue.start();
+        VolleyHelper.getRequestQueue().add(request);
         return isOtherLogin;
     }
 

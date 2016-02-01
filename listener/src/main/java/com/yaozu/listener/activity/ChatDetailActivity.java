@@ -40,19 +40,19 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
     private ChatDetailListViewAdapter mListAdapter;
     private ChatDetailInfoDao mChatDetailDao;
     private ChatListInfoDao chatListInfoDao;
-    private String mUserId;
+    private String mOtherUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_social_chatdetail);
-        mUserId = getIntent().getStringExtra(IntentKey.CHAT_USERID);
+        mOtherUserId = getIntent().getStringExtra(IntentKey.CHAT_USERID);
         findViews();
         mChatDetailDao = new ChatDetailInfoDao(this);
         chatListInfoDao = new ChatListInfoDao(this);
-        mListAdapter = new ChatDetailListViewAdapter(this, mChatDetailDao.findAllChatDetailInfoByUserid(mUserId));
+        mListAdapter = new ChatDetailListViewAdapter(this, mOtherUserId, mChatDetailDao.findAllChatDetailInfoByUserid(mOtherUserId));
         mListView.setAdapter(mListAdapter);
-        user.setText(mUserId);
+        user.setText(mOtherUserId);
 
         mListView.setSelection(mListAdapter.getCount() - 1);
     }
@@ -72,12 +72,12 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
     /**
      * 把未读置为已读
      */
-    private void makeUnreadTohadread(){
-        chatListInfoDao.updateChatListUnreadsByid("0", mUserId);
+    private void makeUnreadTohadread() {
+        chatListInfoDao.updateChatListUnreadsByid("0", mOtherUserId);
         ChatListInfo chatListInfo = new ChatListInfo();
-        chatListInfo.setUserid(mUserId);
+        chatListInfo.setUserid(mOtherUserId);
         chatListInfo.setUnreadcount("0");
-        chatListInfo.setLastchatcontent(((ChatDetailInfo)mListAdapter.getItem(mListAdapter.getCount() - 1)).getChatcontent());
+        chatListInfo.setLastchatcontent(((ChatDetailInfo) mListAdapter.getItem(mListAdapter.getCount() - 1)).getChatcontent());
         sendBroadCastToupdateChatlist(chatListInfo, null);
     }
 
@@ -93,7 +93,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void updateChatDetailInfo(ChatDetailInfo chatDetailInfo) {
-        if(chatDetailInfo != null){
+        if (chatDetailInfo != null) {
             mListAdapter.updateAddData(chatDetailInfo);
             mListAdapter.notifyDataSetChanged();
             mListView.smoothScrollToPosition(mListAdapter.getCount() - 1);
@@ -128,7 +128,6 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
     }
 
 
-
     private void sendMessage() {
         final String msg = mEditText.getText().toString().trim();
         if (TextUtils.isEmpty(msg)) {
@@ -136,7 +135,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
             return;
         }
         mEditText.setText("");
-        RongIM.getInstance().getRongIMClient().sendMessage(Conversation.ConversationType.PRIVATE, mUserId, TextMessage.obtain(msg), "", "", new RongIMClient.SendMessageCallback() {
+        RongIM.getInstance().getRongIMClient().sendMessage(Conversation.ConversationType.PRIVATE, mOtherUserId, TextMessage.obtain(msg), "", "", new RongIMClient.SendMessageCallback() {
             @Override
             public void onError(Integer messageId, RongIMClient.ErrorCode e) {
 
@@ -147,7 +146,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
                 Log.d("MusicHomeFragment", "=========onSuccess==========>" + integer);
                 //更新或者插入聊天列表
                 ChatListInfo chatListInfo = new ChatListInfo();
-                chatListInfo.setUserid(mUserId);
+                chatListInfo.setUserid(mOtherUserId);
                 chatListInfo.setLastchatcontent(msg);
                 if (chatListInfoDao.find(chatListInfo.getUserid())) {
                     chatListInfoDao.updateChatListInfoByid(chatListInfo.getLastchatcontent(), chatListInfo.getUserid());
@@ -157,7 +156,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
 
                 //更新或者插入聊天详情记录
                 ChatDetailInfo chatdetailInfo = new ChatDetailInfo();
-                chatdetailInfo.setUserid(mUserId);
+                chatdetailInfo.setUserid(mOtherUserId);
                 chatdetailInfo.setChatcontent(msg);
                 chatdetailInfo.setTime((new Date().getTime()) + "");
                 chatdetailInfo.setIssender("false");
@@ -166,17 +165,18 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
                 updateChatDetailInfo(chatdetailInfo);
 
                 //发送广播更新聊天列表界面
-                sendBroadCastToupdateChatlist(chatListInfo,chatdetailInfo);
+                sendBroadCastToupdateChatlist(chatListInfo, chatdetailInfo);
             }
         }, null);
     }
 
     /**
      * 发送广播更新聊天列表界面
+     *
      * @param chatListInfo
      * @param chatdetailInfo
      */
-    private void sendBroadCastToupdateChatlist(ChatListInfo chatListInfo,ChatDetailInfo chatdetailInfo){
+    private void sendBroadCastToupdateChatlist(ChatListInfo chatListInfo, ChatDetailInfo chatdetailInfo) {
         Intent playingintent = new Intent(IntentKey.NOTIFY_CHAT_LIST_INFO);
         Bundle bundle = new Bundle();
         bundle.putSerializable(IntentKey.SEND_BUNDLE_CHATLISTINFO, chatListInfo);

@@ -13,6 +13,8 @@ import com.yaozu.listener.R;
 import com.yaozu.listener.activity.ChatDetailActivity;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.model.ChatListInfo;
+import com.yaozu.listener.utils.NetUtil;
+import com.yaozu.listener.widget.RoundCornerImageView;
 import com.yaozu.listener.widget.SoundWaveView;
 
 import java.util.ArrayList;
@@ -69,6 +71,7 @@ public class ChatListViewAdapter extends BaseAdapter {
             holder.username = (TextView) view.findViewById(R.id.chat_list_name);
             holder.lastcontent = (TextView) view.findViewById(R.id.chat_list_lastchatcontent);
             holder.unreads = (TextView) view.findViewById(R.id.chat_list_unreads);
+            holder.icon = (RoundCornerImageView) view.findViewById(R.id.chat_list_usericon);
             view.setTag(holder);
         } else {
             view = convertView;
@@ -77,6 +80,7 @@ public class ChatListViewAdapter extends BaseAdapter {
         final ChatListInfo chatListInfo = mChatlists.get(i);
         holder.username.setText(chatListInfo.getUserid());
         holder.lastcontent.setText(chatListInfo.getLastchatcontent());
+        NetUtil.setImageIcon(chatListInfo.getUserid(),holder.icon);
 
         if (!TextUtils.isEmpty(chatListInfo.getUnreadcount()) & !"0".equals(chatListInfo.getUnreadcount())) {
             holder.unreads.setVisibility(View.VISIBLE);
@@ -100,6 +104,6 @@ public class ChatListViewAdapter extends BaseAdapter {
         public TextView username;
         public TextView lastcontent;
         public TextView unreads;
-        public ImageView icon;
+        public RoundCornerImageView icon;
     }
 }

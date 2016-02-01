@@ -3,6 +3,7 @@ package com.yaozu.listener.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,20 +15,19 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.yaozu.listener.HomeMainActivity;
 import com.yaozu.listener.R;
 import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.fragment.social.MyselfFragment;
-import com.yaozu.listener.listener.DownLoadListener;
+import com.yaozu.listener.listener.DownLoadIconListener;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.PhoneInfoUtil;
 import com.yaozu.listener.utils.User;
+import com.yaozu.listener.utils.VolleyHelper;
 
 import org.json.JSONObject;
 
@@ -119,9 +119,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
      * @param deviceid
      */
     private void loginRequest(final String userid, String password, String deviceid) {
-        RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
         String url = DataInterface.getLoginUrl() + "?userid=" + userid + "&password=" + password + "&deviceid=" + deviceid;
-        mQueue.add(new JsonObjectRequest(Request.Method.GET,
+        VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
                 url,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -151,25 +150,29 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 Toast.makeText(LoginActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
             }
         }));
-        mQueue.start();
     }
 
-    public class MyDownLoadListener implements DownLoadListener {
+    public class MyDownLoadListener implements DownLoadIconListener {
 
         @Override
-        public void downLoadSuccess() {
+        public void downLoadSuccess(Bitmap bitmap) {
             Log.d(TAG, "=============downLoadSuccess==================>");
-            Toast.makeText(LoginActivity.this,"下载头像成功！",Toast.LENGTH_SHORT).show();
-            File cpIconPath = new File(MyselfFragment.CP_ICON_PATH);
-            if(cpIconPath.exists()){
-                cpIconPath.delete();
+            if (bitmap != null) {
+                Toast.makeText(LoginActivity.this, "下载头像成功！", Toast.LENGTH_SHORT).show();
+                MyselfFragment.saveOutput(bitmap, MyselfFragment.ICON_PATH);
+                File cpIconPath = new File(MyselfFragment.CP_ICON_PATH);
+                if (cpIconPath.exists()) {
+                    cpIconPath.delete();
+                }
+            } else {
+                Toast.makeText(LoginActivity.this, "下载的头像为空的！", Toast.LENGTH_SHORT).show();
             }
         }
 
         @Override
         public void downLoadFailed() {
             Log.d(TAG, "=============downLoadFailed==================>");
-            Toast.makeText(LoginActivity.this,"下载头像失败！",Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "下载头像失败！", Toast.LENGTH_SHORT).show();
         }
     }
 }

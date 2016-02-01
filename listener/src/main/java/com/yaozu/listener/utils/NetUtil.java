@@ -1,16 +1,18 @@
 package com.yaozu.listener.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.fragment.social.MyselfFragment;
-import com.yaozu.listener.listener.DownLoadListener;
+import com.yaozu.listener.listener.DownLoadIconListener;
 import com.yaozu.listener.listener.UploadListener;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -25,13 +27,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
  * Created by 耀祖 on 2015/12/22.
  */
 public class NetUtil {
+    public static String USERS_ICON_PATH = FileUtil.getSDPath() + File.separator + "ListenerMusic" + File.separator + "usericons";
+
     /**
      * 上传文件到服务器
      *
@@ -124,7 +127,7 @@ public class NetUtil {
         }
     }
 
-    public static void downLoadUserIcon(final String iconUrl, final DownLoadListener downLoadListener) {
+    public static void downLoadUserIcon(final String iconUrl, final DownLoadIconListener downLoadListener) {
         final int SUCCESS = 1;
         final int FAILED = 0;
         final Handler handler = new Handler() {
@@ -134,7 +137,8 @@ public class NetUtil {
                 switch (msg.what) {
                     case SUCCESS:
                         if (downLoadListener != null) {
-                            downLoadListener.downLoadSuccess();
+                            Bitmap bmp = (Bitmap) msg.obj;
+                            downLoadListener.downLoadSuccess(bmp);
                         }
                         break;
                     case FAILED:
@@ -160,24 +164,13 @@ public class NetUtil {
                         msg.what = FAILED;
                         handler.sendMessage(msg);
                     } else {
-                        // 保存文件到sd卡
-                        File file = new File(MyselfFragment.ICON_PATH);
-                        if (!file.exists()) {
-                            file.createNewFile();
-                        }
-                        FileOutputStream fos = new FileOutputStream(file);
-                        byte[] bytes = new byte[1024];
-                        int len = -1;
-                        while ((len = is.read(bytes)) != -1) {
-                            fos.write(bytes, 0, len);
-                        }
-                        is.close();
-                        fos.close();
                         Message msg = handler.obtainMessage();
                         msg.what = SUCCESS;
+                        msg.obj = BitmapFactory.decodeStream(is);
                         handler.sendMessage(msg);
+                        is.close();
                     }
-                }catch (IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                     Message msg = handler.obtainMessage();
                     msg.what = FAILED;
@@ -186,6 +179,49 @@ public class NetUtil {
             }
         };
         new Thread(runnable).start();
+    }
+
+    /**
+     * 设置头像
+     * 先是从本地取，如果本地没有的话，就从服务器上取，取完之后
+     * 再保存到本地，然后再设置头像
+     * @param userid
+     * @param imageView
+     */
+    public static void setImageIcon(String userid, final ImageView imageView) {
+        final String filePath = USERS_ICON_PATH + File.separator + userid + "_icon";
+        Bitmap localbitmap = getLocalOtherUserIcon(userid);
+        if (localbitmap != null) {
+            imageView.setImageBitmap(localbitmap);
+        } else {
+            downLoadUserIcon(DataInterface.getUserIconUrl(userid), new DownLoadIconListener() {
+                @Override
+                public void downLoadSuccess(Bitmap bitmap) {
+                    if (bitmap != null) {
+                        imageView.setImageBitmap(bitmap);
+                        //保存到本地
+                        File dir = new File(USERS_ICON_PATH);
+                        if (!dir.exists()) {
+                            dir.mkdirs();
+                        }
+                        FileUtil.saveOutput(bitmap, filePath);
+                        Bitmap smallBitmap = FileUtil.compressUserIcon(200, filePath);
+                        FileUtil.saveOutput(smallBitmap, filePath);
+                    }
+                }
+
+                @Override
+                public void downLoadFailed() {
+
+                }
+            });
+        }
+    }
+
+    public static Bitmap getLocalOtherUserIcon(String userid){
+        final String filePath = USERS_ICON_PATH + File.separator + userid + "_icon";
+        Bitmap localbitmap = BitmapFactory.decodeFile(filePath);
+        return localbitmap;
     }
 
     /**

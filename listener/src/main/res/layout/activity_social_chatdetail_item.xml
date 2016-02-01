@@ -13,16 +13,19 @@
         android:layout_marginRight="70dp"
         android:visibility="gone">
 
-        <ImageView
+        <com.yaozu.listener.widget.RoundCornerImageView
             android:id="@+id/activity_chatdetail_item_sender_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="5dp"
+            android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher" />
 
         <TextView
             android:id="@+id/chat_detail_sendercontent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/activity_chatdetail_item_sender_icon"
             android:layout_centerVertical="true"
             android:background="@drawable/chat_sender_bg"
@@ -39,11 +42,13 @@
         android:layout_marginLeft="70dp"
         android:visibility="gone">
 
-        <ImageView
+        <com.yaozu.listener.widget.RoundCornerImageView
             android:id="@+id/activity_chatdetail_item_myself_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher" />
 
         <TextView
@@ -51,6 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/activity_chatdetail_item_myself_icon"
+            android:layout_marginRight="5dp"
             android:layout_centerVertical="true"
             android:background="@drawable/chat_myself_normal_bg"
             android:padding="8dp"

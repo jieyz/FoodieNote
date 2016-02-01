@@ -16,4 +16,8 @@ public class DataInterface {
     public static String getUploadIconUrl(){
         return APP_HOST+"TestServers/servlet/UploadIconServlet";
     }
+
+    public static String getUserIconUrl(String userid){
+        return APP_HOST+"/TestServers/usericon/"+userid+"_icon";
+    }
 }

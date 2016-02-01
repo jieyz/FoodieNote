@@ -1,5 +1,7 @@
 package com.yaozu.listener.utils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 
@@ -105,6 +107,48 @@ public class FileUtil {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    /**
+     * 压缩图片
+     */
+    public static  Bitmap compressUserIcon(int maxWidth, String srcpath) {
+        BitmapFactory.Options localOptions = new BitmapFactory.Options();
+        localOptions.inJustDecodeBounds = true;
+        localOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        BitmapFactory.decodeFile(srcpath, localOptions);
+        if (localOptions.outWidth > maxWidth) {
+            int j = localOptions.outWidth / (maxWidth / 2);
+            localOptions.inSampleSize = j;
+        }
+        localOptions.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(srcpath, localOptions);
+    }
+
+    /**
+     * 保存到本地
+     *
+     * @param croppedImage
+     */
+    public static void saveOutput(Bitmap croppedImage, String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        OutputStream outStream;
+        try {
+            outStream = new FileOutputStream(file);
+            croppedImage.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+            outStream.flush();
+            outStream.close();
+            Log.i("CropImage", "bitmap saved tosd,path:" + file.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

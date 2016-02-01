@@ -6,6 +6,7 @@ import android.content.Context;
 
 import com.yaozu.listener.listener.MyConnectionStatusListener;
 import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.utils.VolleyHelper;
 
 import java.util.HashMap;
 
@@ -24,6 +25,7 @@ public class YaozuApplication extends Application {
     public void onCreate() {
         super.onCreate();
         app = this;
+        VolleyHelper.init(this);
         /**
          * OnCreate 会被多个进程重入，这段保护代码，确保只有您需要使用 RongIM 的进程和 Push 进程执行了 init。
          * io.rong.push 为融云 push 进程名称，不可修改。

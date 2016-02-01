@@ -37,11 +37,11 @@ public class ChatDetailInfoDao {
         db.close();
     }
 
-    public List<ChatDetailInfo> findAllChatDetailInfoByUserid(String userid) {
+    public List<ChatDetailInfo> findAllChatDetailInfoByUserid(String otherUserid) {
         List<ChatDetailInfo> chatDetailinfos = new ArrayList<ChatDetailInfo>();
         SQLiteDatabase db = helper.getReadableDatabase();
         if (db.isOpen()) {
-            Cursor cursor = db.rawQuery("select * from chatdetailinfo where userid=?", new String[] { userid });
+            Cursor cursor = db.rawQuery("select * from chatdetailinfo where userid=?", new String[] { otherUserid });
             while (cursor.moveToNext()) {
                 ChatDetailInfo info = new ChatDetailInfo();
                 String username = cursor.getString(cursor.getColumnIndex("username"));
@@ -49,7 +49,7 @@ public class ChatDetailInfoDao {
                 String time = cursor.getString(cursor.getColumnIndex("time"));
                 String issender = cursor.getString(cursor.getColumnIndex("issender"));
 
-                info.setUserid(userid);
+                info.setUserid(otherUserid);
                 info.setUsername(username);
                 info.setChatcontent(chatcontent);
                 info.setTime(time);

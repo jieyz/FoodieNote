@@ -220,7 +220,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
      *
      * @param croppedImage
      */
-    private void saveOutput(Bitmap croppedImage, String path) {
+    public static void saveOutput(Bitmap croppedImage, String path) {
         File file = new File(path);
         if (!file.exists()) {
             try {

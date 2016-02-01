@@ -11,6 +11,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.model.ChatDetailInfo;
 import com.yaozu.listener.db.model.ChatListInfo;
+import com.yaozu.listener.utils.VolleyHelper;
 
 /**
  * Created by 耀祖 on 2015/12/5.
@@ -29,6 +30,7 @@ public abstract class BaseActivity extends FragmentActivity {
     protected void onDestroy() {
         super.onDestroy();
         unRegisterPushRecevier();
+        VolleyHelper.getRequestQueue().cancelAll(this);
     }
 
     /**
