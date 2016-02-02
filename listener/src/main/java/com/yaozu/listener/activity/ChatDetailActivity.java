@@ -53,7 +53,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
         mListAdapter = new ChatDetailListViewAdapter(this, mOtherUserId, mChatDetailDao.findAllChatDetailInfoByUserid(mOtherUserId));
         mListView.setAdapter(mListAdapter);
         user.setText(mOtherUserId);
-
+        RongIM.getInstance().getRongIMClient().clearConversations(Conversation.ConversationType.PRIVATE);
         mListView.setSelection(mListAdapter.getCount() - 1);
     }
 

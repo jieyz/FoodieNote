@@ -79,7 +79,7 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
 
         //开发者根据自己需求自行处理
         Log.d(TAG, "=======onReceived=========>" + new String(message.getContent().encode()));
-        return false;
+        return true;
     }
 
     private ChatDetailInfo inserChatDetaildb(Message message) {

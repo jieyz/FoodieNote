@@ -188,17 +188,24 @@ public class NetUtil {
      * @param userid
      * @param imageView
      */
-    public static void setImageIcon(String userid, final ImageView imageView) {
+    public static void setImageIcon(String userid, final ImageView imageView,boolean isGetfromLocal) {
         final String filePath = USERS_ICON_PATH + File.separator + userid + "_icon";
-        Bitmap localbitmap = getLocalOtherUserIcon(userid);
+        Bitmap localbitmap = null;
+        if(isGetfromLocal){
+            localbitmap = getLocalOtherUserIcon(userid);
+        }
         if (localbitmap != null) {
-            imageView.setImageBitmap(localbitmap);
+            if(imageView != null){
+                imageView.setImageBitmap(localbitmap);
+            }
         } else {
             downLoadUserIcon(DataInterface.getUserIconUrl(userid), new DownLoadIconListener() {
                 @Override
                 public void downLoadSuccess(Bitmap bitmap) {
                     if (bitmap != null) {
-                        imageView.setImageBitmap(bitmap);
+                        if(imageView != null){
+                            imageView.setImageBitmap(bitmap);
+                        }
                         //保存到本地
                         File dir = new File(USERS_ICON_PATH);
                         if (!dir.exists()) {

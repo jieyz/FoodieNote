@@ -1,9 +1,7 @@
 package com.yaozu.listener;
 
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
@@ -16,12 +14,12 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,14 +35,12 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.yaozu.listener.activity.BaseActivity;
-import com.yaozu.listener.activity.LoginActivity;
 import com.yaozu.listener.activity.MusicLyricActivity;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.fragment.HomeFragment;
 import com.yaozu.listener.fragment.music.MusicLocalFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
-import com.yaozu.listener.listener.MyConnectionStatusListener;
 import com.yaozu.listener.listener.MyReceiveMessageListener;
 import com.yaozu.listener.listener.MyReceivePushMessageListener;
 import com.yaozu.listener.listener.MySendMessageListener;
@@ -88,8 +84,6 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private String token1 = "ZeOpNKgIS6NVsPnNIGS6NGxP7Qfd0jcFN0C5Ibqjpg328zglcxril0v4m4zETCFHBA68rgPUDVEw2+rmhAQNLnLfI1nmn0oY";
     private String token2 = "AIzXjXl8KRobJnxbd8fhVnmGXj2xfWz1oFuzCcWFVHZb5axaA1K5spIaquTmp5+CVWLWAFPNoO6C8oPLXaCzITuX9Xew5d0E";
     private String token3 = "v8XjNiu5BYSQ21+pn93xunmGXj2xfWz1oFuzCcWFVHZb5axaA1K5sgrVvM+PHxVHKxvRo5TOSReC8oPLXaCzITe1/77+nlZ3";
-    private Dialog dialog;
-    private User mUser;
     //是否已连接到融云服务器上
     private boolean hasConnectToRongIM = false;
 
@@ -103,7 +97,9 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
             super.handleMessage(msg);
             switch (msg.what) {
                 case HAS_OTHERLOGIN:
-                    showLoginOutDialog();
+                    Intent loginOutIntent = new Intent(IntentKey.NOTIFY_LOGIN_OUT);
+                    LocalBroadcastManager playinglocalBroadcastManager = LocalBroadcastManager.getInstance(app);
+                    playinglocalBroadcastManager.sendBroadcast(loginOutIntent);
                     break;
                 case NOT_OTHERLOGIN:
                     if (!hasConnectToRongIM) {
@@ -128,7 +124,6 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         app = YaozuApplication.getIntance();
-        mUser = new User(this);
 
         setContentView(R.layout.activity_home_main);
         mFragmentManager = getSupportFragmentManager();
@@ -171,10 +166,8 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onResume() {
         super.onResume();
-        if (dialog == null || !dialog.isShowing()) {
-            //先从服务器上去判断是不是在另一台设备上登录
-            isOtherLogin(mUser.getUserAccount());
-        }
+        //先从服务器上去判断是不是在另一台设备上登录
+        isOtherLogin(mUser.getUserAccount());
     }
 
     private ConnectivityManager mConnectivityManager;
@@ -263,41 +256,6 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
                 }
             });
         }
-    }
-
-    /**
-     * 弹出登出对话框
-     */
-    private void showLoginOutDialog() {
-        if (dialog != null && dialog.isShowing()) {
-            return;
-        }
-        dialog = new Dialog(this, R.style.NobackDialog);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
-                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_SEARCH) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-        View view = View.inflate(this, R.layout.loginout_dialog, null);
-        LinearLayout quitApp = (LinearLayout) view.findViewById(R.id.loginout_dialog_quitapp);
-        quitApp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-                mUser.quitLogin();
-                Intent intent = new Intent(HomeMainActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-        dialog.setContentView(view);
-        dialog.show();
     }
 
     private void findViewByIds() {

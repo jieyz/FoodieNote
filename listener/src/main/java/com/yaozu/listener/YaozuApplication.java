@@ -3,15 +3,21 @@ package com.yaozu.listener;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
+import com.yaozu.listener.activity.BaseActivity;
+import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.listener.MyConnectionStatusListener;
 import com.yaozu.listener.service.MusicService;
 import com.yaozu.listener.utils.VolleyHelper;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import io.rong.imkit.RongIM;
 
@@ -23,6 +29,8 @@ public class YaozuApplication extends Application {
 
     private final int MUSIC_SERVICE = 0;
     private HashMap<Integer, MusicService> musicService = new HashMap<>();
+    public static Map<BaseActivity,Boolean> mActivitys = new HashMap<BaseActivity,Boolean>();
+
     private final int CONNECTED = 0;
     private final int DISCONNECTED = 1;
     private final int CONNECTING = 2;
@@ -47,6 +55,9 @@ public class YaozuApplication extends Application {
                     break;
                 case KICKED_OFFLINE_BY_OTHER_CLIENT://用户账户在其他设备登录，本机会被踢掉线
                     Toast.makeText(app, "你已在另一台设备上登录", Toast.LENGTH_SHORT).show();
+                    Intent loginOutIntent = new Intent(IntentKey.NOTIFY_LOGIN_OUT);
+                    LocalBroadcastManager loginOutBroadcastManager = LocalBroadcastManager.getInstance(app);
+                    loginOutBroadcastManager.sendBroadcast(loginOutIntent);
                     break;
             }
         }
@@ -90,6 +101,21 @@ public class YaozuApplication extends Application {
         musicService.put(MUSIC_SERVICE, service);
     }
 
+    /**
+     * 应用是否在前台运行
+     * @return
+     */
+    public static boolean isAppTopRunning(){
+        boolean topRunning = false;
+        Set<Map.Entry<BaseActivity, Boolean>> entries = YaozuApplication.mActivitys.entrySet();
+        for (Map.Entry<BaseActivity, Boolean> entry : entries) {
+            boolean isStart = entry.getValue();
+            if(isStart){
+                topRunning = true;
+            }
+        }
+        return topRunning;
+    }
     /**
      * 获得当前进程的名字
      *

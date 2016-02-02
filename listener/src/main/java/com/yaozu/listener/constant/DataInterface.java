@@ -9,6 +9,10 @@ public class DataInterface {
         return APP_HOST+"TestServers/servlet/LoginServlet";
     }
 
+    public static String getRegisterUrl(){
+        return APP_HOST+"TestServers/servlet/RegisterServlet";
+    }
+
     public static String getIsOtherLoginUrl(){
         return APP_HOST+"TestServers/servlet/IsOtherLoginServlet";
     }

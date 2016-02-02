@@ -112,6 +112,9 @@ public class ChatListInfoDao {
             while (cursor.moveToNext()) {
                 ChatListInfo info = new ChatListInfo();
                 String userid = cursor.getString(cursor.getColumnIndex("otheruserid"));
+                if(userid.equals(User.getUserAccount())){
+                   continue;
+                }
                 String username = cursor.getString(cursor.getColumnIndex("username"));
                 String lastchatcontent = cursor.getString(cursor.getColumnIndex("lastchatcontent"));
                 String unreadcount = cursor.getString(cursor.getColumnIndex("unreadcount"));

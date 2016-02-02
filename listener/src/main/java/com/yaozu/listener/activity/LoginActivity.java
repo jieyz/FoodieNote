@@ -59,14 +59,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         sp = this.getSharedPreferences(Constant.LOGIN_MSG, Context.MODE_PRIVATE);
         mLogin.setOnClickListener(this);
+        registerTextView.setOnClickListener(this);
         mUser = new User(this);
 
         boolean islogin = mUser.isLogining();
         if (islogin) {
             Intent intent = new Intent(this, HomeMainActivity.class);
             intent.putExtra("token", mUser.getUserToken());
-            registerTextView.setOnClickListener(this);
-
             startActivity(intent);
             finish();
         }

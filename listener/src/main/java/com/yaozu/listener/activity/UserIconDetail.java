@@ -13,7 +13,7 @@ import com.yaozu.listener.constant.IntentKey;
 /**
  * Created by 耀祖 on 2016/1/28.
  */
-public class UserIconDetail extends Activity implements View.OnClickListener {
+public class UserIconDetail extends BaseActivity implements View.OnClickListener {
     private String iconPath;
     private ImageView imageView;
     @Override
@@ -32,6 +32,21 @@ public class UserIconDetail extends Activity implements View.OnClickListener {
                 return true;
             }
         });
+    }
+
+    @Override
+    public void notifyCurrentSongMsg(String name, String singer, long album_id, int currentPos) {
+
+    }
+
+    @Override
+    public void notifySongPlaying() {
+
+    }
+
+    @Override
+    public void notifySongPause() {
+
     }
 
     @Override

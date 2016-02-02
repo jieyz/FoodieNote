@@ -13,6 +13,9 @@ import com.yaozu.listener.db.dao.ChatListInfoDao;
 import com.yaozu.listener.db.model.ChatListInfo;
 import com.yaozu.listener.fragment.BaseFragment;
 
+import io.rong.imkit.RongIM;
+import io.rong.imlib.model.Conversation;
+
 /**
  * Created by 耀祖 on 2015/12/5.
  */

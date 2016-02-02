@@ -25,4 +25,5 @@ public class IntentKey {
     public static String NOTIFY_SONG_PLAYING = "notify.current.song.playing";
     public static String NOTIFY_SONG_PAUSE = "notify.current.song.pause";
     public static String NOTIFY_CHAT_LIST_INFO = "notify.chat.list.info";
+    public static String NOTIFY_LOGIN_OUT = "notify.loginout";
 }

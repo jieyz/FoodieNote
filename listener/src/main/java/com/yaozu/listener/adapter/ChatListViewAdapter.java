@@ -78,7 +78,7 @@ public class ChatListViewAdapter extends BaseAdapter {
         final ChatListInfo chatListInfo = mChatlists.get(i);
         holder.username.setText(chatListInfo.getOtherUserid());
         holder.lastcontent.setText(chatListInfo.getLastchatcontent());
-        NetUtil.setImageIcon(chatListInfo.getOtherUserid(),holder.icon);
+        NetUtil.setImageIcon(chatListInfo.getOtherUserid(),holder.icon,true);
 
         if (!TextUtils.isEmpty(chatListInfo.getUnreadcount()) & !"0".equals(chatListInfo.getUnreadcount())) {
             holder.unreads.setVisibility(View.VISIBLE);
