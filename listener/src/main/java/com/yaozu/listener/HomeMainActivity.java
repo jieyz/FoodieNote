@@ -44,6 +44,7 @@ import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.fragment.HomeFragment;
 import com.yaozu.listener.fragment.music.MusicLocalFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
+import com.yaozu.listener.listener.MyConnectionStatusListener;
 import com.yaozu.listener.listener.MyReceiveMessageListener;
 import com.yaozu.listener.listener.MyReceivePushMessageListener;
 import com.yaozu.listener.listener.MySendMessageListener;
@@ -89,6 +90,8 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private String token3 = "v8XjNiu5BYSQ21+pn93xunmGXj2xfWz1oFuzCcWFVHZb5axaA1K5sgrVvM+PHxVHKxvRo5TOSReC8oPLXaCzITe1/77+nlZ3";
     private Dialog dialog;
     private User mUser;
+    //是否已连接到融云服务器上
+    private boolean hasConnectToRongIM = false;
 
     static {
         System.loadLibrary("mediascanner");
@@ -103,15 +106,19 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
                     showLoginOutDialog();
                     break;
                 case NOT_OTHERLOGIN:
-                    /**
-                     *  设置接收消息的监听器。
-                     */
-                    RongIM.setOnReceiveMessageListener(new MyReceiveMessageListener(HomeMainActivity.this));
-                    /**
-                     * 设置接收 push 消息的监听器。
-                     */
-                    RongIM.setOnReceivePushMessageListener(new MyReceivePushMessageListener(HomeMainActivity.this));
-                    connect(getIntent().getStringExtra("token"));
+                    if (!hasConnectToRongIM) {
+                        /**
+                         *  设置接收消息的监听器。
+                         */
+                        RongIM.setOnReceiveMessageListener(new MyReceiveMessageListener(HomeMainActivity.this));
+                        /**
+                         * 设置接收 push 消息的监听器。
+                         */
+                        RongIM.setOnReceivePushMessageListener(new MyReceivePushMessageListener(HomeMainActivity.this));
+
+                        connect(getIntent().getStringExtra("token"));
+                        hasConnectToRongIM = true;
+                    }
                     break;
             }
         }
@@ -164,7 +171,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onResume() {
         super.onResume();
-        if (dialog == null || (dialog != null && !dialog.isShowing())) {
+        if (dialog == null || !dialog.isShowing()) {
             //先从服务器上去判断是不是在另一台设备上登录
             isOtherLogin(mUser.getUserAccount());
         }

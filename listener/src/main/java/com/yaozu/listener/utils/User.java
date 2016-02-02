@@ -17,7 +17,7 @@ import io.rong.imkit.RongIM;
 public class User {
     private String mAccount, mUserName, mToken;
     private Context mCotext;
-    private SharedPreferences preferences;
+    private static SharedPreferences preferences;
 
     public static String ICON_PATH = FileUtil.getSDPath() + File.separator + "ListenerMusic" + File.separator + "icon.jpg";
     public static String CP_ICON_PATH = FileUtil.getSDPath() + File.separator + "ListenerMusic" + File.separator + "cp_icon.jpg";
@@ -37,7 +37,7 @@ public class User {
         editor.commit();
     }
 
-    public String getUserAccount() {
+    public static String getUserAccount() {
         return preferences.getString(Constant.USER_ACCOUNT, "");
     }
 

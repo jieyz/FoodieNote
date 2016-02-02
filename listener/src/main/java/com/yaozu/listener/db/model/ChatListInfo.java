@@ -20,11 +20,11 @@ public class ChatListInfo implements Serializable{
         this.unreadcount = unreadcount;
     }
 
-    public String getUserid() {
+    public String getOtherUserid() {
         return userid;
     }
 
-    public void setUserid(String userid) {
+    public void setOtherUserid(String userid) {
         this.userid = userid;
     }
 

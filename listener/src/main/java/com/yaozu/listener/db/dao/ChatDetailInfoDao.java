@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.yaozu.listener.db.AppDbHelper;
 import com.yaozu.listener.db.model.ChatDetailInfo;
-import com.yaozu.listener.db.model.ChatListInfo;
+import com.yaozu.listener.utils.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +31,8 @@ public class ChatDetailInfoDao {
     public void add(ChatDetailInfo info) {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
-            db.execSQL("insert into chatdetailinfo (userid,username,chatcontent,time,issender) values (?,?,?,?,?)",
-                    new Object[]{info.getUserid(), info.getUsername(), info.getChatcontent(), info.getTime(),info.getIssender()});
+            db.execSQL("insert into chatdetailinfo (otheruserid,thisuserid,username,chatcontent,time,issender) values (?,?,?,?,?,?)",
+                    new Object[]{info.getOtherUserid(), User.getUserAccount(), info.getUsername(), info.getChatcontent(), info.getTime(),info.getIssender()});
         }
         db.close();
     }
@@ -41,7 +41,7 @@ public class ChatDetailInfoDao {
         List<ChatDetailInfo> chatDetailinfos = new ArrayList<ChatDetailInfo>();
         SQLiteDatabase db = helper.getReadableDatabase();
         if (db.isOpen()) {
-            Cursor cursor = db.rawQuery("select * from chatdetailinfo where userid=?", new String[] { otherUserid });
+            Cursor cursor = db.rawQuery("select * from chatdetailinfo where otheruserid=? and thisuserid=?", new String[] { otherUserid,User.getUserAccount() });
             while (cursor.moveToNext()) {
                 ChatDetailInfo info = new ChatDetailInfo();
                 String username = cursor.getString(cursor.getColumnIndex("username"));
@@ -49,7 +49,7 @@ public class ChatDetailInfoDao {
                 String time = cursor.getString(cursor.getColumnIndex("time"));
                 String issender = cursor.getString(cursor.getColumnIndex("issender"));
 
-                info.setUserid(otherUserid);
+                info.setOtherUserid(otherUserid);
                 info.setUsername(username);
                 info.setChatcontent(chatcontent);
                 info.setTime(time);

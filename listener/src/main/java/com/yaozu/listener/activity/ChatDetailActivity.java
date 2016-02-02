@@ -75,7 +75,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
     private void makeUnreadTohadread() {
         chatListInfoDao.updateChatListUnreadsByid("0", mOtherUserId);
         ChatListInfo chatListInfo = new ChatListInfo();
-        chatListInfo.setUserid(mOtherUserId);
+        chatListInfo.setOtherUserid(mOtherUserId);
         chatListInfo.setUnreadcount("0");
         chatListInfo.setLastchatcontent(((ChatDetailInfo) mListAdapter.getItem(mListAdapter.getCount() - 1)).getChatcontent());
         sendBroadCastToupdateChatlist(chatListInfo, null);
@@ -146,17 +146,17 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
                 Log.d("MusicHomeFragment", "=========onSuccess==========>" + integer);
                 //更新或者插入聊天列表
                 ChatListInfo chatListInfo = new ChatListInfo();
-                chatListInfo.setUserid(mOtherUserId);
+                chatListInfo.setOtherUserid(mOtherUserId);
                 chatListInfo.setLastchatcontent(msg);
-                if (chatListInfoDao.find(chatListInfo.getUserid())) {
-                    chatListInfoDao.updateChatListInfoByid(chatListInfo.getLastchatcontent(), chatListInfo.getUserid());
+                if (chatListInfoDao.find(chatListInfo.getOtherUserid())) {
+                    chatListInfoDao.updateChatListInfoByid(chatListInfo.getLastchatcontent(), chatListInfo.getOtherUserid());
                 } else {
                     chatListInfoDao.add(chatListInfo);
                 }
 
                 //更新或者插入聊天详情记录
                 ChatDetailInfo chatdetailInfo = new ChatDetailInfo();
-                chatdetailInfo.setUserid(mOtherUserId);
+                chatdetailInfo.setOtherUserid(mOtherUserId);
                 chatdetailInfo.setChatcontent(msg);
                 chatdetailInfo.setTime((new Date().getTime()) + "");
                 chatdetailInfo.setIssender("false");

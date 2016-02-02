@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -21,6 +22,7 @@ import io.rong.notification.PushNotificationMessage;
  * Created by 耀祖 on 2016/1/30.
  */
 public class MyReceivePushMessageListener implements RongIMClient.OnReceivePushMessageListener {
+    private String TAG = this.getClass().getSimpleName();
     private Context mContext;
     private Dialog dialog;
     private User mUser;
@@ -40,6 +42,7 @@ public class MyReceivePushMessageListener implements RongIMClient.OnReceivePushM
     public boolean onReceivePushMessage(PushNotificationMessage pushNotificationMessage) {
         String content = pushNotificationMessage.getPushContent();
         PhoneInfoUtil phoneInfoUtil = new PhoneInfoUtil(mContext);
+        Log.d(TAG,"=====content=====>"+content+"  ===DeviceId===>"+phoneInfoUtil.getDeviceId());
         if (phoneInfoUtil.getDeviceId().equals(content)) {
             //弹出对话框
             showLoginOutDialog();

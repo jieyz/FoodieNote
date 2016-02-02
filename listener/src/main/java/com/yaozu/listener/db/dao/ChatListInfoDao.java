@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.yaozu.listener.db.AppDbHelper;
 import com.yaozu.listener.db.model.ChatListInfo;
+import com.yaozu.listener.utils.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +31,8 @@ public class ChatListInfoDao {
     public void add(ChatListInfo info) {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
-            db.execSQL("insert into chatlistinfo (userid,username,lastchatcontent,unreadcount,iconcacheurl) values (?,?,?,?,?)",
-                    new Object[]{info.getUserid(), info.getUsername(), info.getLastchatcontent(), info.getUnreadcount(), info.getIconcacheurl()});
+            db.execSQL("insert into chatlistinfo (otheruserid,thisuserid,username,lastchatcontent,unreadcount,iconcacheurl) values (?,?,?,?,?,?)",
+                    new Object[]{info.getOtherUserid(), User.getUserAccount(),info.getUsername(), info.getLastchatcontent(), info.getUnreadcount(), info.getIconcacheurl()});
         }
         db.close();
     }
@@ -42,8 +43,8 @@ public class ChatListInfoDao {
     public void deleteChatListById(ChatListInfo info) {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
-            db.execSQL("delete from chatlistinfo where userid = ?",
-                    new Object[]{info.getUserid()});
+            db.execSQL("delete from chatlistinfo where otheruserid=? and thisuserid=?",
+                    new Object[]{info.getOtherUserid(),User.getUserAccount()});
         }
         db.close();
     }
@@ -51,8 +52,8 @@ public class ChatListInfoDao {
     public void updateChatListInfoByid(String lastChatContent, String userid) {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
-            db.execSQL("update chatlistinfo set lastchatcontent=? where userid=?",
-                    new Object[]{lastChatContent, userid});
+            db.execSQL("update chatlistinfo set lastchatcontent=? where otheruserid=? and thisuserid=?",
+                    new Object[]{lastChatContent, userid,User.getUserAccount()});
         }
         db.close();
     }
@@ -60,8 +61,8 @@ public class ChatListInfoDao {
     public void updateChatListUnreadsByid(String unreadcount, String userid) {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
-            db.execSQL("update chatlistinfo set unreadcount=? where userid=?",
-                    new Object[]{unreadcount, userid});
+            db.execSQL("update chatlistinfo set unreadcount=? where otheruserid=? and thisuserid=?",
+                    new Object[]{unreadcount, userid,User.getUserAccount()});
         }
         db.close();
     }
@@ -71,8 +72,8 @@ public class ChatListInfoDao {
         String unreadcount = null;
         if (db.isOpen()) {
             Cursor cursor = db.rawQuery(
-                    "select * from chatlistinfo where userid=?",
-                    new String[]{userid});
+                    "select * from chatlistinfo where otheruserid=? and thisuserid=?",
+                    new String[]{userid,User.getUserAccount()});
             while(cursor.moveToNext()){
                  unreadcount = cursor.getString(cursor.getColumnIndex("unreadcount"));
             }
@@ -92,8 +93,8 @@ public class ChatListInfoDao {
         SQLiteDatabase db = helper.getReadableDatabase();
         if (db.isOpen()) {
             Cursor cursor = db.rawQuery(
-                    "select * from chatlistinfo where userid=?",
-                    new String[]{userid});
+                    "select * from chatlistinfo where otheruserid=? and thisuserid=?",
+                    new String[]{userid,User.getUserAccount()});
             if (cursor.moveToNext()) {
                 result = true;
             }
@@ -107,16 +108,16 @@ public class ChatListInfoDao {
         List<ChatListInfo> chatlistinfos = new ArrayList<ChatListInfo>();
         SQLiteDatabase db = helper.getReadableDatabase();
         if (db.isOpen()) {
-            Cursor cursor = db.rawQuery("select * from chatlistinfo", null);
+            Cursor cursor = db.rawQuery("select * from chatlistinfo where thisuserid=?", new String[]{User.getUserAccount()});
             while (cursor.moveToNext()) {
                 ChatListInfo info = new ChatListInfo();
-                String userid = cursor.getString(cursor.getColumnIndex("userid"));
+                String userid = cursor.getString(cursor.getColumnIndex("otheruserid"));
                 String username = cursor.getString(cursor.getColumnIndex("username"));
                 String lastchatcontent = cursor.getString(cursor.getColumnIndex("lastchatcontent"));
                 String unreadcount = cursor.getString(cursor.getColumnIndex("unreadcount"));
                 String iconcacheurl = cursor.getString(cursor.getColumnIndex("iconcacheurl"));
 
-                info.setUserid(userid);
+                info.setOtherUserid(userid);
                 info.setUsername(username);
                 info.setLastchatcontent(lastchatcontent);
                 info.setUnreadcount(unreadcount);

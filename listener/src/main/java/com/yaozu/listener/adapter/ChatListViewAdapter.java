@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yaozu.listener.R;
@@ -15,7 +14,6 @@ import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.model.ChatListInfo;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.widget.RoundCornerImageView;
-import com.yaozu.listener.widget.SoundWaveView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +33,7 @@ public class ChatListViewAdapter extends BaseAdapter {
     public void updateData(ChatListInfo info) {
         boolean isHave = false;
         for (ChatListInfo chatListInfo : mChatlists) {
-            if (chatListInfo.getUserid().equals(info.getUserid())) {
+            if (chatListInfo.getOtherUserid().equals(info.getOtherUserid())) {
                 chatListInfo.setLastchatcontent(info.getLastchatcontent());
                 chatListInfo.setUnreadcount(info.getUnreadcount());
                 isHave = true;
@@ -78,9 +76,9 @@ public class ChatListViewAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
         final ChatListInfo chatListInfo = mChatlists.get(i);
-        holder.username.setText(chatListInfo.getUserid());
+        holder.username.setText(chatListInfo.getOtherUserid());
         holder.lastcontent.setText(chatListInfo.getLastchatcontent());
-        NetUtil.setImageIcon(chatListInfo.getUserid(),holder.icon);
+        NetUtil.setImageIcon(chatListInfo.getOtherUserid(),holder.icon);
 
         if (!TextUtils.isEmpty(chatListInfo.getUnreadcount()) & !"0".equals(chatListInfo.getUnreadcount())) {
             holder.unreads.setVisibility(View.VISIBLE);
@@ -93,7 +91,7 @@ public class ChatListViewAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, ChatDetailActivity.class);
-                intent.putExtra(IntentKey.CHAT_USERID, chatListInfo.getUserid());
+                intent.putExtra(IntentKey.CHAT_USERID, chatListInfo.getOtherUserid());
                 mContext.startActivity(intent);
             }
         });

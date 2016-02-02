@@ -3,7 +3,6 @@ package com.yaozu.listener.listener;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -47,24 +46,24 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
     public boolean onReceived(Message message, int left) {
         //更新或者插入聊天列表
         ChatListInfo chatListInfo = new ChatListInfo();
-        chatListInfo.setUserid(message.getSenderUserId());
+        chatListInfo.setOtherUserid(message.getSenderUserId());
         JSONObject object = JSON.parseObject(new String(message.getContent().encode()));
         chatListInfo.setLastchatcontent(object.getString("content"));
-        if (chatListInfoDao.find(chatListInfo.getUserid())) {
-            chatListInfoDao.updateChatListInfoByid(chatListInfo.getLastchatcontent(), chatListInfo.getUserid());
+        if (chatListInfoDao.find(chatListInfo.getOtherUserid())) {
+            chatListInfoDao.updateChatListInfoByid(chatListInfo.getLastchatcontent(), chatListInfo.getOtherUserid());
         } else {
             chatListInfoDao.add(chatListInfo);
         }
         //更新未读数
-        String ureads = chatListInfoDao.getChatListUnreadsByid(chatListInfo.getUserid());
+        String ureads = chatListInfoDao.getChatListUnreadsByid(chatListInfo.getOtherUserid());
         if(!TextUtils.isEmpty(ureads)){
             int count = Integer.parseInt(ureads);
             ++count;
             chatListInfo.setUnreadcount(count+"");
-            chatListInfoDao.updateChatListUnreadsByid(count+"",chatListInfo.getUserid());
+            chatListInfoDao.updateChatListUnreadsByid(count+"",chatListInfo.getOtherUserid());
         }else{
             chatListInfo.setUnreadcount("1");
-            chatListInfoDao.updateChatListUnreadsByid("1",chatListInfo.getUserid());
+            chatListInfoDao.updateChatListUnreadsByid("1",chatListInfo.getOtherUserid());
         }
 
         //更新或者插入聊天详情记录
@@ -85,7 +84,7 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
 
     private ChatDetailInfo inserChatDetaildb(Message message) {
         ChatDetailInfo chatdetailInfo = new ChatDetailInfo();
-        chatdetailInfo.setUserid(message.getSenderUserId());
+        chatdetailInfo.setOtherUserid(message.getSenderUserId());
         JSONObject object = JSON.parseObject(new String(message.getContent().encode()));
         chatdetailInfo.setChatcontent(object.getString("content"));
         chatdetailInfo.setTime((new Date().getTime()) + "");

@@ -12,11 +12,11 @@ public class ChatDetailInfo implements Serializable {
     private String time;
     private String issender;
 
-    public String getUserid() {
+    public String getOtherUserid() {
         return userid;
     }
 
-    public void setUserid(String userid) {
+    public void setOtherUserid(String userid) {
         this.userid = userid;
     }
 

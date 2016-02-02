@@ -3,6 +3,9 @@ package com.yaozu.listener;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.widget.Toast;
 
 import com.yaozu.listener.listener.MyConnectionStatusListener;
 import com.yaozu.listener.service.MusicService;
@@ -20,6 +23,34 @@ public class YaozuApplication extends Application {
 
     private final int MUSIC_SERVICE = 0;
     private HashMap<Integer, MusicService> musicService = new HashMap<>();
+    private final int CONNECTED = 0;
+    private final int DISCONNECTED = 1;
+    private final int CONNECTING = 2;
+    private final int NETWORK_UNAVAILABLE = 3;
+    private final int KICKED_OFFLINE_BY_OTHER_CLIENT = 4;
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case CONNECTED://连接成功。
+                    Toast.makeText(app, "连接成功", Toast.LENGTH_SHORT).show();
+                    break;
+                case DISCONNECTED://断开连接。
+                    Toast.makeText(app, "断开连接", Toast.LENGTH_SHORT).show();
+                    break;
+                case CONNECTING://连接中。
+                    Toast.makeText(app, "连接中", Toast.LENGTH_SHORT).show();
+                    break;
+                case NETWORK_UNAVAILABLE://网络不可用。
+                    Toast.makeText(app, "网络不可用", Toast.LENGTH_SHORT).show();
+                    break;
+                case KICKED_OFFLINE_BY_OTHER_CLIENT://用户账户在其他设备登录，本机会被踢掉线
+                    Toast.makeText(app, "你已在另一台设备上登录", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -36,6 +67,10 @@ public class YaozuApplication extends Application {
              * IMKit SDK调用第一步 初始化
              */
             RongIM.init(this);
+            /**
+             * 设置连接状态变化的监听器.
+             */
+            RongIM.getInstance().getRongIMClient().setConnectionStatusListener(new MyConnectionStatusListener(YaozuApplication.getIntance(),mHandler));
         }
     }
 
