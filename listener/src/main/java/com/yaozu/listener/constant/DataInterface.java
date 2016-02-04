@@ -24,4 +24,20 @@ public class DataInterface {
     public static String getUserIconUrl(String userid){
         return APP_HOST+"/TestServers/usericon/"+userid+"_icon";
     }
+
+    /**
+     * 获取用户信息
+     * @return
+     */
+    public static String getCheckUserInfoUrl(){
+        return APP_HOST+"/TestServers/servlet/CheckUserInfoServlet";
+    }
+
+    /**
+     * 更新用户信息
+     * @return
+     */
+    public static String getUpdateUserInfoUrl(){
+        return APP_HOST+"/TestServers/servlet/UpdateUserInfoServlet";
+    }
 }

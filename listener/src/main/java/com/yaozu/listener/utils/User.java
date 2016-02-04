@@ -15,7 +15,7 @@ import io.rong.imkit.RongIM;
  * Created by jieyz on 2016/1/26.
  */
 public class User {
-    private String mAccount, mUserName, mToken;
+    private static String mAccount, mUserName, mToken;
     private Context mCotext;
     private static SharedPreferences preferences;
 
@@ -35,14 +35,39 @@ public class User {
         editor.putString(Constant.USER_ACCOUNT, account);
         editor.putString(Constant.USER_NAME, userName);
         editor.commit();
+        readUserInfoToMemory();
+    }
+
+    /**
+     * 更新用户名
+     * @param userName
+     */
+    public void updateUserName(String userName) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(Constant.USER_NAME, userName);
+        editor.commit();
+        mUserName = userName;
+    }
+
+    /**
+     * 用户信息读到内存中
+     */
+    public static void readUserInfoToMemory() {
+        mAccount = preferences.getString(Constant.USER_ACCOUNT, "");
+        mUserName = preferences.getString(Constant.USER_NAME, "");
+        mToken = preferences.getString(Constant.USER_TOKEN, "");
     }
 
     public static String getUserAccount() {
-        return preferences.getString(Constant.USER_ACCOUNT, "");
+        return mAccount;//preferences.getString(Constant.USER_ACCOUNT, "");
+    }
+
+    public static String getUserName() {
+        return mUserName;//preferences.getString(Constant.USER_NAME, "");
     }
 
     public String getUserToken() {
-        return preferences.getString(Constant.USER_TOKEN, "");
+        return mToken;//preferences.getString(Constant.USER_TOKEN, "");
     }
 
     public static Bitmap getUserIcon() {

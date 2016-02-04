@@ -64,6 +64,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         boolean islogin = mUser.isLogining();
         if (islogin) {
+            User.readUserInfoToMemory();
             Intent intent = new Intent(this, HomeMainActivity.class);
             intent.putExtra("token", mUser.getUserToken());
             startActivity(intent);

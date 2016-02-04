@@ -17,11 +17,13 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.yaozu.listener.HomeMainActivity;
 import com.yaozu.listener.R;
 import com.yaozu.listener.constant.DataInterface;
-import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.PhoneInfoUtil;
 import com.yaozu.listener.utils.VolleyHelper;
 
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Created by jieyz on 2016/1/26.
@@ -80,19 +82,23 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                     return;
                 }
                 PhoneInfoUtil phoneInfo = new PhoneInfoUtil(this);
-                loginRequest(userid, nickname, pwd, phoneInfo.getDeviceId());
+                try {
+                    registerRequest(userid, URLEncoder.encode(nickname, "UTF-8"), pwd, phoneInfo.getDeviceId());
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
 
     /**
-     * 向服务器发送登录请求
+     * 向服务器发送注册请求
      *
      * @param userid
      * @param password
      * @param deviceid
      */
-    private void loginRequest(final String userid, final String username, String password, String deviceid) {
+    private void registerRequest(final String userid, final String username, String password, String deviceid) {
         String url = DataInterface.getRegisterUrl() + "?userid=" + userid + "&username=" + username + "&password=" + password + "&deviceid=" + deviceid;
         VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
                 url,

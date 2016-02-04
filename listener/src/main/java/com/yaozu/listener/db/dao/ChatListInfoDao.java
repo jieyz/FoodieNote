@@ -49,6 +49,20 @@ public class ChatListInfoDao {
         db.close();
     }
 
+    /**
+     * 更新昵称
+     * @param nickname
+     * @param userid
+     */
+    public void updateChatListNameByid(String nickname, String userid) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        if (db.isOpen()) {
+            db.execSQL("update chatlistinfo set username=? where otheruserid=? and thisuserid=?",
+                    new Object[]{nickname, userid,User.getUserAccount()});
+        }
+        db.close();
+    }
+
     public void updateChatListInfoByid(String lastChatContent, String userid) {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {

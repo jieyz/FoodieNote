@@ -13,13 +13,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.yaozu.listener.R;
 import com.yaozu.listener.adapter.ChatDetailListViewAdapter;
+import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.dao.ChatDetailInfoDao;
 import com.yaozu.listener.db.dao.ChatListInfoDao;
 import com.yaozu.listener.db.model.ChatDetailInfo;
 import com.yaozu.listener.db.model.ChatListInfo;
+import com.yaozu.listener.utils.VolleyHelper;
+
+import org.json.JSONObject;
 
 import java.util.Date;
 
@@ -55,6 +64,35 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
         user.setText(mOtherUserId);
         RongIM.getInstance().getRongIMClient().clearConversations(Conversation.ConversationType.PRIVATE);
         mListView.setSelection(mListAdapter.getCount() - 1);
+
+        //获取用户信息
+        requestCheckUserInfo(mOtherUserId);
+    }
+
+    private void requestCheckUserInfo(String userid) {
+        String url = DataInterface.getCheckUserInfoUrl() + "?userid=" + userid;
+        VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
+                url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                int code = jsonObject.getIntValue("code");
+                String msg = jsonObject.getString("message");
+                String token = jsonObject.getString("token");
+                String username = jsonObject.getString("username");
+                String iconurl = jsonObject.getString("iconurl");
+                if (code == 1) {
+                    user.setText(username);
+                    //更新数据库
+                    chatListInfoDao.updateChatListNameByid(username,mOtherUserId);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }));
     }
 
     @Override

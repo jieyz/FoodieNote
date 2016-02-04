@@ -13,32 +13,46 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.yaozu.listener.R;
 import com.yaozu.listener.activity.LoginActivity;
 import com.yaozu.listener.activity.UserIconDetail;
 import com.yaozu.listener.constant.Constant;
+import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.fragment.BaseFragment;
 import com.yaozu.listener.listener.UploadListener;
 import com.yaozu.listener.utils.FileUtil;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.User;
+import com.yaozu.listener.utils.VolleyHelper;
 import com.yaozu.listener.widget.RoundCornerImageView;
+
+import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Created by 耀祖 on 2015/12/5.
@@ -47,9 +61,12 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
     private RelativeLayout mQuit;
     //昵称
     private RelativeLayout nickName;
+    //昵称
+    private TextView nickName1, nickName2;
     private SharedPreferences sp;
     private RoundCornerImageView userIcon;
     private ImageView fragment_social_mine_usericon_onclick;
+    //用户信息
     private User mUser;
     private TextView mAccount_view;
     private RelativeLayout userInfoRl;
@@ -87,6 +104,8 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
         nickName = (RelativeLayout) view.findViewById(R.id.fragment_social_mine_nickname_rl);
         userIcon = (RoundCornerImageView) view.findViewById(R.id.fragment_social_mine_usericon);
         fragment_social_mine_usericon_onclick = (ImageView) view.findViewById(R.id.fragment_social_mine_usericon_onclick);
+        nickName1 = (TextView) view.findViewById(R.id.fragment_social_mine_nickname);
+        nickName2 = (TextView) view.findViewById(R.id.fragment_social_mine_nickname2);
         initData();
     }
 
@@ -97,6 +116,8 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
         userInfoRl.setOnClickListener(this);
         nickName.setOnClickListener(this);
         fragment_social_mine_usericon_onclick.setOnClickListener(this);
+        nickName1.setText(mUser.getUserName());
+        nickName2.setText(mUser.getUserName());
 
         Bitmap bitmap = BitmapFactory.decodeFile(CP_ICON_PATH);
         if (bitmap != null) {
@@ -284,6 +305,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                 showDialog();
                 break;
             case R.id.fragment_social_mine_nickname_rl:
+                showEditNameDialog();
                 break;
             case R.id.fragment_social_mine_usericon_onclick:
                 Intent intent = new Intent(getActivity(), UserIconDetail.class);
@@ -291,5 +313,63 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                 startActivity(intent);
                 break;
         }
+    }
+
+    private void showEditNameDialog() {
+        dialog = new Dialog(this.getActivity(), R.style.NobackDialog);
+        View view = View.inflate(getActivity(), R.layout.dialog_editname, null);
+        final EditText name = (EditText) view.findViewById(R.id.dialog_edit_name);
+        name.setText(mUser.getUserName());
+        TextView dialog_edit_confirm = (TextView) view.findViewById(R.id.dialog_edit_confirm);
+        dialog_edit_confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String userName = name.getText().toString().trim();
+                if (TextUtils.isEmpty(userName)) {
+                    Toast.makeText(MyselfFragment.this.getActivity(), "用户名不能为空", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                dialog.dismiss();
+                requestUpdateUserInfo(mUser.getUserAccount(), userName);
+            }
+        });
+        dialog.setContentView(view);
+        dialog.show();
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param userid
+     */
+    private void requestUpdateUserInfo(String userid, final String username) {
+        String url = null;
+        try {
+            url = DataInterface.getUpdateUserInfoUrl() + "?userid=" + userid + "&username=" + URLEncoder.encode(username, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
+                url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                int code = jsonObject.getIntValue("code");
+                String msg = jsonObject.getString("message");
+                Toast.makeText(MyselfFragment.this.getActivity(), msg, Toast.LENGTH_SHORT).show();
+                if (code == 1) {
+                    //更新本地存储
+                    mUser.updateUserName(username);
+
+                    nickName1.setText(mUser.getUserName());
+                    nickName2.setText(mUser.getUserName());
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }));
     }
 }

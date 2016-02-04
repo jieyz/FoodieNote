@@ -76,7 +76,7 @@ public class ChatListViewAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
         final ChatListInfo chatListInfo = mChatlists.get(i);
-        holder.username.setText(chatListInfo.getOtherUserid());
+        holder.username.setText(chatListInfo.getUsername());
         holder.lastcontent.setText(chatListInfo.getLastchatcontent());
         NetUtil.setImageIcon(chatListInfo.getOtherUserid(),holder.icon,true);
 
