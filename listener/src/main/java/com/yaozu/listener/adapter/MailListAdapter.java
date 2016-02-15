@@ -1,11 +1,13 @@
 package com.yaozu.listener.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.yaozu.listener.R;
+import com.yaozu.listener.activity.SelectMenuActivity;
 
 /**
  * Created by 耀祖 on 2016/2/10.
@@ -34,12 +36,13 @@ public class MailListAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         View view = View.inflate(mContext, R.layout.maillist_list_item,null);
-        view.setOnClickListener(new View.OnClickListener() {
+/*        view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(mContext, SelectMenuActivity.class);
+                mContext.startActivity(intent);
             }
-        });
+        });*/
         return view;
     }
 }

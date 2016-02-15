@@ -19,4 +19,7 @@
     <style name="NobackDialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+    <style name="mypopwindow_anim_style">
+        <item name="android:windowExitAnimation">@anim/popup_dismiss</item>        <!-- 指定消失的动画xml  -->
+    </style>
 </resources>
