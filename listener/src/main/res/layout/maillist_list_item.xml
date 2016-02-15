@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/main_listview_selector"
     android:orientation="vertical">
 
     <RelativeLayout
+        style="@style/RippleBackground"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:background="@color/white">
+        android:layout_height="55dp">
 
         <com.yaozu.listener.widget.RoundCornerImageView
             android:id="@+id/maillist_user_icon"
@@ -25,11 +26,12 @@
             android:layout_toRightOf="@+id/maillist_user_icon"
             android:text="你好"
             android:textSize="16dp" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
+            android:layout_alignParentBottom="true"
             android:layout_marginLeft="15dp"
-            android:background="#447F7F7F"
-            android:layout_alignParentBottom="true"/>
+            android:background="#447F7F7F" />
     </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>
