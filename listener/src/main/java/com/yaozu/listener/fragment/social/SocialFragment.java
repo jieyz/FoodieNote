@@ -16,6 +16,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.yaozu.listener.R;
+import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.fragment.BaseFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.widget.PagerSlidingTabStrip;
@@ -102,7 +103,7 @@ public class SocialFragment extends BaseFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mViewPager = (ViewPager) view.findViewById(R.id.social_viewpager);
         mViewPager.setAdapter(new SocialViewPagerAdapter(((FragmentActivity) getActivity()).getSupportFragmentManager()));
@@ -127,6 +128,7 @@ public class SocialFragment extends BaseFragment {
                         maillist.setTextColor(getResources().getColor(R.color.appthemecolor));
                         my.setTextColor(getResources().getColor(R.color.black));
                         mViewPager.setCurrentItem(1);
+                        Constant.SOCIAL_ACTIONBAR = mRdioGroup.getHeight();
                         break;
                     case R.id.social_my_actionbar:
                         chat.setTextColor(getResources().getColor(R.color.black));
@@ -193,6 +195,7 @@ public class SocialFragment extends BaseFragment {
 
         @Override
         public void onPageSelected(int position) {
+            Constant.SOCIAL_ACTIONBAR = mRdioGroup.getHeight();
             if (position == 0) {
                 chat.setTextColor(getResources().getColor(R.color.appthemecolor));
                 maillist.setTextColor(getResources().getColor(R.color.black));

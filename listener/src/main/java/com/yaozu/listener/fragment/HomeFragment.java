@@ -14,6 +14,7 @@ import android.widget.RadioGroup;
 
 import com.yaozu.listener.R;
 import com.yaozu.listener.adapter.HomeViewPagerAdapter;
+import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.fragment.music.MusicHomeFragment;
 import com.yaozu.listener.fragment.music.MusicLocalFragment;
 import com.yaozu.listener.fragment.social.SocialFragment;
@@ -83,7 +84,7 @@ public class HomeFragment extends BaseFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewpager = (ViewPager) view.findViewById(R.id.main_home_viewpager);
         homeRadioGroup = (RadioGroup) view.findViewById(R.id.home_actionbar_radiogroup);
@@ -99,6 +100,7 @@ public class HomeFragment extends BaseFragment {
                         break;
                     case R.id.home_actionbar_mine_fragment:
                         viewpager.setCurrentItem(1);
+                        Constant.HOME_ACTIONBAR = homeRadioGroup.getHeight();
                         break;
                 }
             }
@@ -159,6 +161,7 @@ public class HomeFragment extends BaseFragment {
 
         @Override
         public void onPageSelected(int position) {
+            Constant.HOME_ACTIONBAR = homeRadioGroup.getHeight();
             if (position == 0) {
                 homeMusicRadioButton.setChecked(true);
             } else {

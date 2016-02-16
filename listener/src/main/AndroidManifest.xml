@@ -55,11 +55,6 @@
             android:theme="@style/MusicLyricTheme"
             android:windowSoftInputMode="adjustPan" />
 
-        <activity
-            android:name=".activity.SelectMenuActivity"
-            android:theme="@style/MusicLyricTheme"
-            android:windowSoftInputMode="adjustPan" />
-
         <service
             android:name="com.yaozu.listener.service.MusicService"
             android:enabled="true"

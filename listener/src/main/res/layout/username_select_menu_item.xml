@@ -2,13 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-<TextView
-    android:id="@+id/username_select_menu_item_text"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:text="A"
-    android:textSize="22dp"
-    android:layout_gravity="center"
-    android:gravity="center"/>
+    android:orientation="vertical"
+    android:background="@drawable/main_listview_selector">
+
+    <TextView
+        android:id="@+id/username_select_menu_item_text"
+        style="@style/RippleBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="A"
+        android:textSize="22dp" />
 </LinearLayout>

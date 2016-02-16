@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.yaozu.listener.R;
 import com.yaozu.listener.adapter.MailListAdapter;
+import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.fragment.BaseFragment;
 
 /**
@@ -42,7 +43,7 @@ public class MailListFragment extends BaseFragment {
     private int mWindowWidth;
     private int mWindowHeight;
 
-    private Handler mHandler = new Handler(){
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -51,6 +52,7 @@ public class MailListFragment extends BaseFragment {
             parentView.startAnimation(animation);
         }
     };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,35 +63,11 @@ public class MailListFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         parentView = (LinearLayout) view.findViewById(R.id.maillist_parentview);
         mListView = (ListView) view.findViewById(R.id.maillist_listview);
-        adapter = new MailListAdapter(this.getActivity());
+        adapter = new MailListAdapter(this.getActivity(), parentView, this);
         mListView.setAdapter(adapter);
         WindowManager wm = (WindowManager) this.getActivity().getSystemService(Context.WINDOW_SERVICE);
         mWindowWidth = wm.getDefaultDisplay().getWidth();
         mWindowHeight = wm.getDefaultDisplay().getHeight();
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.scale_shrink);
-                animation.setFillAfter(true);
-                parentView.startAnimation(animation);
-                animation.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        showPopupView();
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-            }
-        });
     }
 
     @Nullable
@@ -100,7 +78,10 @@ public class MailListFragment extends BaseFragment {
 
     private String[] letters = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
-    private void showPopupView() {
+    /**
+     * 展示索引字母
+     */
+    public void showPopupView() {
         View contentview = View.inflate(this.getActivity(), R.layout.username_select_menu, null);
         GridView gridView = (GridView) contentview.findViewById(R.id.username_select_gridview);
         gridView.setAdapter(new BaseAdapter() {
@@ -125,9 +106,16 @@ public class MailListFragment extends BaseFragment {
                 v.setLayoutParams(new GridView.LayoutParams(mWindowWidth / 4, mWindowWidth / 4));
                 TextView text = (TextView) v.findViewById(R.id.username_select_menu_item_text);
                 text.setText(letters[i]);
+                v.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        popupwindow.dismiss();
+                    }
+                });
                 return v;
             }
         });
+
         popupwindow = new PopupWindow(contentview, LinearLayout.LayoutParams.MATCH_PARENT, mListView.getHeight());
         popupwindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
@@ -152,13 +140,22 @@ public class MailListFragment extends BaseFragment {
         popupwindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         int[] location = new int[2];
         parentView.getLocationInWindow(location);
-        popupwindow.showAtLocation(parentView, Gravity.TOP | Gravity.LEFT, 0, mWindowWidth / 4);
+        popupwindow.showAtLocation(parentView, Gravity.TOP | Gravity.LEFT, 0, Constant.HOME_ACTIONBAR + Constant.SOCIAL_ACTIONBAR + getStatusBarHeight());
 
         Animation scaleAt = AnimationUtils.loadAnimation(getActivity(), R.anim.popup_show);
         //TranslateAnimation translate = new TranslateAnimation(0, 0, popupwindow.getHeight(), 0);
         scaleAt.setFillEnabled(true);
         scaleAt.setInterpolator(new DecelerateInterpolator());
         contentview.startAnimation(scaleAt);
+    }
+
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 
     @Override

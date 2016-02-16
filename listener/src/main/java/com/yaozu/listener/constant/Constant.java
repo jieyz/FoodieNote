@@ -9,4 +9,6 @@ public class Constant {
     public static String USER_TOKEN = "user_token";
     public static String USER_NAME = "user_name";
     public static String USER_ACCOUNT = "user_account";
+    public static int HOME_ACTIONBAR = 0;
+    public static int SOCIAL_ACTIONBAR = 0;
 }
