@@ -7,7 +7,6 @@
 /captures
 
 .idea/
-volley/.git/
 volley/build/
 volley/gradle/
 IMKit/build/
