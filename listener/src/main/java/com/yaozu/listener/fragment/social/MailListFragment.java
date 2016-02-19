@@ -116,7 +116,7 @@ public class MailListFragment extends BaseFragment {
             }
         });
 
-        popupwindow = new PopupWindow(contentview, LinearLayout.LayoutParams.MATCH_PARENT, mListView.getHeight());
+        popupwindow = new PopupWindow(contentview, LinearLayout.LayoutParams.MATCH_PARENT, parentView.getHeight());
         popupwindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
