@@ -18,7 +18,6 @@
         android:id="@+id/maillist_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#10000000"
         android:cacheColorHint="#00000000"
         android:divider="@null"
         android:listSelector="@null" />
