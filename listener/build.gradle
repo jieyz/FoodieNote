@@ -19,7 +19,7 @@ android {
         ndk{
             moduleName "mediascanner"
             ldLibs "log"
-            abiFilters "armeabi","armeabi-v7a"
+            abiFilters "x86","armeabi","armeabi-v7a"
         }
     }
     buildTypes {

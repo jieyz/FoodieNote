@@ -17,6 +17,14 @@ public class IntentKey {
     public static String SEND_BUNDLE_CHATDETAILINFO = "send_bundle_chatdetailinfo";
     public static String CHAT_USERID = "chat_userid";
     public static String USER_ICON_PATH = "user_icon_path";
+    //用户名
+    public static String USER_NAME = "user_name";
+    //用户TOKEN
+    public static String USER_TOKEN = "user_token";
+    //用户id
+    public static String USER_ID = "user_id";
+    //用户头像url
+    public static String USER_ICON_URL = "user_icon_url";
 
     /**
      * 广播Action
@@ -26,4 +34,7 @@ public class IntentKey {
     public static String NOTIFY_SONG_PAUSE = "notify.current.song.pause";
     public static String NOTIFY_CHAT_LIST_INFO = "notify.chat.list.info";
     public static String NOTIFY_LOGIN_OUT = "notify.loginout";
+
+    //通讯录好友验证
+    public static String NOTIFY_VERIFY_FRIEND = "notify_verify_friend";
 }

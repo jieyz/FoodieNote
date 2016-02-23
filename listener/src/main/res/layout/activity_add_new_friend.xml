@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/appthemecolor"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/add_new_friend_actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/appthemecolor">
+
+        <ImageView
+            android:id="@+id/add_new_friend_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/actionbar_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:text="添加朋友"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#10000000">
+
+            <RelativeLayout
+                android:id="@+id/add_new_friend_search"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/white">
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/activity_search" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/image"
+                    android:textSize="15dp"
+                    android:textColor="@color/gray_white"
+                    android:text="账号/手机号" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/appthemecolor"
+                    android:layout_below="@+id/image"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/activity_add_phone_user"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_below="@+id/add_new_friend_search"
+                android:background="@drawable/main_listview_selector"
+                android:layout_marginTop="20dp">
+                <ImageView
+                    android:id="@+id/image2"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/add_new_friend" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/image2"
+                    android:textSize="17dp"
+                    android:textColor="@color/black"
+                    android:layout_marginTop="6dp"
+                    android:text="手机联系人" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/image2"
+                    android:textSize="13dp"
+                    android:layout_alignParentBottom="true"
+                    android:textColor="@color/gray_white"
+                    android:text="添加或邀请通讯录中的朋友"
+                    android:layout_marginBottom="6dp"/>
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

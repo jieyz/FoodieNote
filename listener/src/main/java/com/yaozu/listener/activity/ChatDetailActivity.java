@@ -84,7 +84,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
                 if (code == 1) {
                     user.setText(username);
                     //更新数据库
-                    chatListInfoDao.updateChatListNameByid(username,mOtherUserId);
+                    chatListInfoDao.updateChatListNameByid(username, mOtherUserId);
                 }
             }
         }, new Response.ErrorListener() {
@@ -111,12 +111,14 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
      * 把未读置为已读
      */
     private void makeUnreadTohadread() {
-        chatListInfoDao.updateChatListUnreadsByid("0", mOtherUserId);
-        ChatListInfo chatListInfo = new ChatListInfo();
-        chatListInfo.setOtherUserid(mOtherUserId);
-        chatListInfo.setUnreadcount("0");
-        chatListInfo.setLastchatcontent(((ChatDetailInfo) mListAdapter.getItem(mListAdapter.getCount() - 1)).getChatcontent());
-        sendBroadCastToupdateChatlist(chatListInfo, null);
+        if (mListAdapter.getCount() > 0) {
+            chatListInfoDao.updateChatListUnreadsByid("0", mOtherUserId);
+            ChatListInfo chatListInfo = new ChatListInfo();
+            chatListInfo.setOtherUserid(mOtherUserId);
+            chatListInfo.setUnreadcount("0");
+            chatListInfo.setLastchatcontent(((ChatDetailInfo) mListAdapter.getItem(mListAdapter.getCount() - 1)).getChatcontent());
+            sendBroadCastToupdateChatlist(chatListInfo, null);
+        }
     }
 
     private void findViews() {

@@ -81,9 +81,6 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private JavaMediaScanner mMediaScanner;
     private final int HAS_OTHERLOGIN = 1;
     private final int NOT_OTHERLOGIN = 0;
-    private String token1 = "ZeOpNKgIS6NVsPnNIGS6NGxP7Qfd0jcFN0C5Ibqjpg328zglcxril0v4m4zETCFHBA68rgPUDVEw2+rmhAQNLnLfI1nmn0oY";
-    private String token2 = "AIzXjXl8KRobJnxbd8fhVnmGXj2xfWz1oFuzCcWFVHZb5axaA1K5spIaquTmp5+CVWLWAFPNoO6C8oPLXaCzITuX9Xew5d0E";
-    private String token3 = "v8XjNiu5BYSQ21+pn93xunmGXj2xfWz1oFuzCcWFVHZb5axaA1K5sgrVvM+PHxVHKxvRo5TOSReC8oPLXaCzITe1/77+nlZ3";
     //是否已连接到融云服务器上
     private boolean hasConnectToRongIM = false;
 

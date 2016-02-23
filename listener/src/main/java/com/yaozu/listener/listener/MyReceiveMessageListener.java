@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.dao.ChatDetailInfoDao;
 import com.yaozu.listener.db.dao.ChatListInfoDao;
@@ -44,6 +45,9 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
      */
     @Override
     public boolean onReceived(Message message, int left) {
+        if (isVerifyMsg(message)) {
+            return true;
+        }
         //更新或者插入聊天列表
         ChatListInfo chatListInfo = new ChatListInfo();
         chatListInfo.setOtherUserid(message.getSenderUserId());
@@ -56,14 +60,14 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
         }
         //更新未读数
         String ureads = chatListInfoDao.getChatListUnreadsByid(chatListInfo.getOtherUserid());
-        if(!TextUtils.isEmpty(ureads)){
+        if (!TextUtils.isEmpty(ureads)) {
             int count = Integer.parseInt(ureads);
             ++count;
-            chatListInfo.setUnreadcount(count+"");
-            chatListInfoDao.updateChatListUnreadsByid(count+"",chatListInfo.getOtherUserid());
-        }else{
+            chatListInfo.setUnreadcount(count + "");
+            chatListInfoDao.updateChatListUnreadsByid(count + "", chatListInfo.getOtherUserid());
+        } else {
             chatListInfo.setUnreadcount("1");
-            chatListInfoDao.updateChatListUnreadsByid("1",chatListInfo.getOtherUserid());
+            chatListInfoDao.updateChatListUnreadsByid("1", chatListInfo.getOtherUserid());
         }
 
         //更新或者插入聊天详情记录
@@ -91,5 +95,20 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
         chatdetailInfo.setIssender("true");
         mChatDetailInfoDao.add(chatdetailInfo);
         return chatdetailInfo;
+    }
+
+    private boolean isVerifyMsg(Message message) {
+        boolean is = false;
+        JSONObject object = JSON.parseObject(new String(message.getContent().encode()));
+        String msg = object.getString("content");
+        if (msg.contains(Constant.VERIFY_PREFIX)) {
+            is = true;
+            //通知通讯录列表页面
+            Intent intent = new Intent(IntentKey.NOTIFY_VERIFY_FRIEND);
+            intent.putExtra(IntentKey.USER_ID, message.getSenderUserId());
+            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(mContext);
+            localBroadcastManager.sendBroadcast(intent);
+        }
+        return is;
     }
 }

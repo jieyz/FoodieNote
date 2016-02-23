@@ -35,7 +35,7 @@ public class ChatDetailListViewAdapter extends BaseAdapter {
         mContext = context;
         mChatDetaillists = chatlists;
         thisUserBitmap = User.getUserIcon();
-        NetUtil.setImageIcon(otherUserid,null,false);
+        NetUtil.setImageIcon(otherUserid, null, false, false);
         otherUserBitmap = NetUtil.getLocalOtherUserIcon(otherUserid);
     }
 

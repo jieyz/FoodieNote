@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/appthemecolor"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/add_new_friend_actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/appthemecolor">
+
+        <ImageView
+            android:id="@+id/user_detail_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/actionbar_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:text="详细资料"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#10000000">
+
+            <RelativeLayout
+                android:id="@+id/user_detail_main"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="15dp"
+                android:background="@color/white">
+
+                <com.yaozu.listener.widget.RoundCornerImageView
+                    android:id="@+id/activity_userdetail_usericon"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="15dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/usericon" />
+
+                <TextView
+                    android:id="@+id/user_detail_beizhuname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toRightOf="@+id/activity_userdetail_usericon"
+                    android:text="test"
+                    android:textColor="@color/black"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/user_detail_userid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@+id/activity_userdetail_usericon"
+                    android:text="账号:123456"
+                    android:textColor="@color/gray_white"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/user_detail_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@+id/activity_userdetail_usericon"
+                    android:text="test"
+                    android:textColor="@color/gray_white"
+                    android:textSize="12dp" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/user_detail_add_or_send"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/user_detail_main"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/button_background_selector"
+                android:gravity="center"
+                android:text="加入通讯录"
+                android:textColor="@color/white"
+                android:textSize="18dp" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

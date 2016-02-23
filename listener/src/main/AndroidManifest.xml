@@ -49,9 +49,25 @@
         <activity
             android:name=".activity.UserIconDetail"
             android:theme="@style/MusicLyricTheme" />
-
         <activity
             android:name=".activity.ChatDetailActivity"
+            android:theme="@style/MusicLyricTheme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activity.AddNewFriendActivity"
+            android:theme="@style/MusicLyricTheme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activity.SearchActivity"
+            android:theme="@style/MusicLyricTheme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activity.SearchResultActivity"
+            android:theme="@style/MusicLyricTheme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activity.UserDetailActivity"
+            android:launchMode="singleTask"
             android:theme="@style/MusicLyricTheme"
             android:windowSoftInputMode="adjustPan" />
 

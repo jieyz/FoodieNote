@@ -185,17 +185,23 @@ public class NetUtil {
      * 设置头像
      * 先是从本地取，如果本地没有的话，就从服务器上取，取完之后
      * 再保存到本地，然后再设置头像
+     *
      * @param userid
      * @param imageView
      */
-    public static void setImageIcon(String userid, final ImageView imageView,boolean isGetfromLocal) {
+    public static void setImageIcon(String userid, final ImageView imageView, boolean isGetfromLocal, boolean isOrigin) {
         final String filePath = USERS_ICON_PATH + File.separator + userid + "_icon";
+        final String filePath_origin = USERS_ICON_PATH + File.separator + userid + "_icon_og";
         Bitmap localbitmap = null;
-        if(isGetfromLocal){
-            localbitmap = getLocalOtherUserIcon(userid);
+        if (isGetfromLocal) {
+            if (isOrigin) {
+                localbitmap = getLocalOriginOtherUserIcon(userid);
+            } else {
+                localbitmap = getLocalOtherUserIcon(userid);
+            }
         }
         if (localbitmap != null) {
-            if(imageView != null){
+            if (imageView != null) {
                 imageView.setImageBitmap(localbitmap);
             }
         } else {
@@ -203,7 +209,7 @@ public class NetUtil {
                 @Override
                 public void downLoadSuccess(Bitmap bitmap) {
                     if (bitmap != null) {
-                        if(imageView != null){
+                        if (imageView != null) {
                             imageView.setImageBitmap(bitmap);
                         }
                         //保存到本地
@@ -211,8 +217,8 @@ public class NetUtil {
                         if (!dir.exists()) {
                             dir.mkdirs();
                         }
-                        FileUtil.saveOutput(bitmap, filePath);
-                        Bitmap smallBitmap = FileUtil.compressUserIcon(200, filePath);
+                        FileUtil.saveOutput(bitmap, filePath_origin);
+                        Bitmap smallBitmap = FileUtil.compressUserIcon(200, filePath_origin);
                         FileUtil.saveOutput(smallBitmap, filePath);
                     }
                 }
@@ -225,8 +231,19 @@ public class NetUtil {
         }
     }
 
-    public static Bitmap getLocalOtherUserIcon(String userid){
+    public static Bitmap getLocalOtherUserIcon(String userid) {
         final String filePath = USERS_ICON_PATH + File.separator + userid + "_icon";
+        Bitmap localbitmap = BitmapFactory.decodeFile(filePath);
+        return localbitmap;
+    }
+
+    /**
+     * 原画质
+     * @param userid
+     * @return
+     */
+    public static Bitmap getLocalOriginOtherUserIcon(String userid) {
+        final String filePath = USERS_ICON_PATH + File.separator + userid + "_icon_og";
         Bitmap localbitmap = BitmapFactory.decodeFile(filePath);
         return localbitmap;
     }

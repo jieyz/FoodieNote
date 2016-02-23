@@ -6,6 +6,24 @@ package com.yaozu.listener.db.model;
 public class Person {
     private String id;
     private String name;
+    private String beizhuname;
+    private String isNew;
+
+    public String getIsNew() {
+        return isNew;
+    }
+
+    public void setIsNew(String isNew) {
+        this.isNew = isNew;
+    }
+
+    public String getBeizhuname() {
+        return beizhuname;
+    }
+
+    public void setBeizhuname(String beizhuname) {
+        this.beizhuname = beizhuname;
+    }
 
     public String getId() {
         return id;
