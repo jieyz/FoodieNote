@@ -22,6 +22,7 @@ import com.yaozu.listener.HomeMainActivity;
 import com.yaozu.listener.R;
 import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.constant.DataInterface;
+import com.yaozu.listener.db.dao.FriendDao;
 import com.yaozu.listener.fragment.social.MyselfFragment;
 import com.yaozu.listener.listener.DownLoadIconListener;
 import com.yaozu.listener.utils.NetUtil;
@@ -47,6 +48,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private User mUser;
     private TextView registerTextView;
     private String TAG = this.getClass().getSimpleName();
+    private FriendDao friendDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         sp = this.getSharedPreferences(Constant.LOGIN_MSG, Context.MODE_PRIVATE);
         mLogin.setOnClickListener(this);
         registerTextView.setOnClickListener(this);
+        friendDao = new FriendDao(this);
         mUser = new User(this);
 
         boolean islogin = mUser.isLogining();
@@ -136,10 +139,41 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
                         if (code == 1) {
                             NetUtil.downLoadUserIcon(iconurl, new MyDownLoadListener());
+                            //更新通讯录
+                            friendDao.clear();
+                            getFriendsIdRequest(userid);
+                            //跳转
                             intent.putExtra("token", jsonObject.getString("token"));
                             startActivity(intent);
                             mUser.storeLoginUserInfo(true, userid, username, token);
                             finish();
+                        } else {
+                            return;
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(LoginActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+            }
+        }));
+    }
+
+    private void getFriendsIdRequest(String userid) {
+        String url = DataInterface.getFriendIdsUrl() + "?userid=" + userid;
+        VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
+                url,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "response : " + response.toString());
+                        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                        int code = jsonObject.getIntValue("code");
+                        String msg = jsonObject.getString("message");
+                        String friendids = jsonObject.getString("friendids");
+                        Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        if (code == 1) {
+                            System.out.println("=====friendids=====>" + friendids);
                         } else {
                             return;
                         }

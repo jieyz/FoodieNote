@@ -102,4 +102,12 @@ public class FriendDao {
         db.close();
         return persons;
     }
+
+    public void clear(){
+        SQLiteDatabase db = helper.getWritableDatabase();
+        if (db.isOpen()) {
+            db.execSQL("delete from friend where 1=?",new Object[]{1});
+        }
+        db.close();
+    }
 }
