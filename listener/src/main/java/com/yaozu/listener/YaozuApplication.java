@@ -12,10 +12,13 @@ import android.widget.Toast;
 import com.yaozu.listener.activity.BaseActivity;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.listener.MyConnectionStatusListener;
+import com.yaozu.listener.listener.PersonStateInterface;
 import com.yaozu.listener.service.MusicService;
 import com.yaozu.listener.utils.VolleyHelper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,7 +33,8 @@ public class YaozuApplication extends Application {
     private final int MUSIC_SERVICE = 0;
     private HashMap<Integer, MusicService> musicService = new HashMap<>();
     public static Map<BaseActivity,Boolean> mActivitys = new HashMap<BaseActivity,Boolean>();
-
+    //PersonState的实例集合
+    public static List<PersonStateInterface> personStateInstances = new ArrayList<PersonStateInterface>();
     private final int CONNECTED = 0;
     private final int DISCONNECTED = 1;
     private final int CONNECTING = 2;

@@ -8,6 +8,15 @@ public class Person {
     private String name;
     private String beizhuname;
     private String isNew;
+    private String currentSong;
+
+    public String getCurrentSong() {
+        return currentSong;
+    }
+
+    public void setCurrentSong(String currentSong) {
+        this.currentSong = currentSong;
+    }
 
     public String getIsNew() {
         return isNew;

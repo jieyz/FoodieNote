@@ -19,6 +19,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.yaozu.listener.R;
+import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.activity.AddNewFriendActivity;
 import com.yaozu.listener.activity.UserDetailActivity;
 import com.yaozu.listener.constant.DataInterface;
@@ -26,6 +27,7 @@ import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.dao.FriendDao;
 import com.yaozu.listener.db.model.Person;
 import com.yaozu.listener.fragment.social.MailListFragment;
+import com.yaozu.listener.listener.PersonStateInterface;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
@@ -40,8 +42,8 @@ import java.util.List;
 /**
  * Created by 耀祖 on 2016/2/10.
  */
-public class MailListAdapter extends BaseAdapter {
-    private List<Person> persons;
+public class MailListAdapter extends BaseAdapter implements PersonStateInterface{
+    public static List<Person> persons;
     private Context mContext;
     private LinearLayout parentView;
     private MailListFragment mf;
@@ -49,11 +51,16 @@ public class MailListAdapter extends BaseAdapter {
     private String TAG = this.getClass().getSimpleName();
 
     public MailListAdapter(Context context, List<Person> data, LinearLayout pv, MailListFragment mf) {
+        YaozuApplication.personStateInstances.add(this);
         this.mContext = context;
         this.parentView = pv;
         this.mf = mf;
         this.persons = data;
         friendDao = new FriendDao(mContext);
+    }
+
+    public void setData(List<Person> data) {
+        this.persons = data;
     }
 
     @Override
@@ -86,6 +93,7 @@ public class MailListAdapter extends BaseAdapter {
             return view;
         }
         final Person person = persons.get(i - 1);
+        //索引
         if (person.getId() == null) {
             view = View.inflate(mContext, R.layout.maillist_list_sort_item, null);
             TextView letter = (TextView) view.findViewById(R.id.maillist_list_item_letter);
@@ -114,18 +122,20 @@ public class MailListAdapter extends BaseAdapter {
             });
             return view;
         }
+        //通讯录条目
         view = View.inflate(mContext, R.layout.maillist_list_item, null);
         RoundCornerImageView icon = (RoundCornerImageView) view.findViewById(R.id.maillist_user_icon);
         NetUtil.setImageIcon(person.getId(), icon, true, false);
         TextView name = (TextView) view.findViewById(R.id.maillist_user_name);
         name.setText(person.getName());
+        TextView current_song = (TextView) view.findViewById(R.id.maillist_user_listenering_song);
         final TextView agree = (TextView) view.findViewById(R.id.new_friend_agree);
         if ("true".equals(person.getIsNew())) {
             agree.setVisibility(View.VISIBLE);
             agree.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    agreeTobeFriend(person,agree);
+                    agreeTobeFriend(person, agree);
                 }
             });
         }
@@ -146,10 +156,11 @@ public class MailListAdapter extends BaseAdapter {
     /**
      * 同意成为好友
      * 向服务器发送请求，改变服务器上的好友关系数据库库
+     *
      * @param person
      */
-    private void agreeTobeFriend(final Person person, final TextView agree){
-        String url = DataInterface.getAgreeTobeFriendUrl() + "?userid=" + User.getUserAccount()+"&friendid="+person.getId();
+    private void agreeTobeFriend(final Person person, final TextView agree) {
+        String url = DataInterface.getAgreeTobeFriendUrl() + "?userid=" + User.getUserAccount() + "&friendid=" + person.getId();
         VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
                 url,
                 new Response.Listener<JSONObject>() {
@@ -172,5 +183,10 @@ public class MailListAdapter extends BaseAdapter {
                 Toast.makeText(mContext, "网络错误", Toast.LENGTH_SHORT).show();
             }
         }));
+    }
+
+    @Override
+    public void updatePersonState(Person person) {
+
     }
 }

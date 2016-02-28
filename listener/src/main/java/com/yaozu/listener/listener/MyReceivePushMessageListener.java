@@ -14,7 +14,9 @@ import android.widget.LinearLayout;
 import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.activity.LoginActivity;
+import com.yaozu.listener.adapter.MailListAdapter;
 import com.yaozu.listener.constant.IntentKey;
+import com.yaozu.listener.db.model.Person;
 import com.yaozu.listener.utils.PhoneInfoUtil;
 import com.yaozu.listener.utils.User;
 
@@ -44,6 +46,18 @@ public class MyReceivePushMessageListener implements RongIMClient.OnReceivePushM
     @Override
     public boolean onReceivePushMessage(PushNotificationMessage pushNotificationMessage) {
         String content = pushNotificationMessage.getPushContent();
+        if (false) {
+            String songInfo = "";
+            String userid = "";
+            Person person = new Person();
+            person.setId(userid);
+            person.setCurrentSong(songInfo);
+            for(int i = 0;i<YaozuApplication.personStateInstances.size();i++){
+                YaozuApplication.personStateInstances.get(i).updatePersonState(person);
+            }
+            return true;
+        }
+        //确保唯一设备登陆
         PhoneInfoUtil phoneInfoUtil = new PhoneInfoUtil(mContext);
         Log.d(TAG, "=====content=====>" + content + "  ===DeviceId===>" + phoneInfoUtil.getDeviceId());
         if (phoneInfoUtil.getDeviceId().equals(content)) {
@@ -54,4 +68,6 @@ public class MyReceivePushMessageListener implements RongIMClient.OnReceivePushM
         }
         return true;
     }
+
+
 }

@@ -56,7 +56,7 @@ import java.util.List;
  */
 public class MailListFragment extends BaseFragment implements View.OnClickListener {
     private ListView mListView;
-    private MailListAdapter adapter;
+    private static MailListAdapter adapter;
     /**
      * 父布局
      */
@@ -65,8 +65,8 @@ public class MailListFragment extends BaseFragment implements View.OnClickListen
     private int mWindowWidth;
     private int mWindowHeight;
     //通讯录数据DAO
-    private FriendDao friendDao;
-    public List<Person> persons;
+    private static FriendDao friendDao;
+    public static List<Person> persons;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -77,12 +77,26 @@ public class MailListFragment extends BaseFragment implements View.OnClickListen
         }
     };
 
+    public static Handler updateAdapterHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            persons = friendDao.findAllFriends();
+            //插入索引字母并排序
+            addLetters();
+            adapter.setData(persons);
+            adapter.notifyDataSetChanged();
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         registerVerifyFriendReceiver();
         friendDao = new FriendDao(this.getActivity());
         persons = friendDao.findAllFriends();
+        //插入索引字母并排序
+        addLetters();
     }
 
     @Override
@@ -90,8 +104,7 @@ public class MailListFragment extends BaseFragment implements View.OnClickListen
         super.onViewCreated(view, savedInstanceState);
         parentView = (LinearLayout) view.findViewById(R.id.maillist_parentview);
         mListView = (ListView) view.findViewById(R.id.maillist_listview);
-        //插入索引字母并排序
-        addLetters();
+
         adapter = new MailListAdapter(this.getActivity(), persons, parentView, this);
         mListView.setAdapter(adapter);
         WindowManager wm = (WindowManager) this.getActivity().getSystemService(Context.WINDOW_SERVICE);
@@ -105,9 +118,9 @@ public class MailListFragment extends BaseFragment implements View.OnClickListen
         return inflater.inflate(R.layout.fragment_social_maillist, container, false);
     }
 
-    private String[] letters = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+    private static String[] letters = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
-    private void addLetters() {
+    private static void addLetters() {
         for (int i = 0; i < letters.length; i++) {
             Person person = new Person();
             person.setName(letters[i]);

@@ -19,17 +19,32 @@
             android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher" />
 
-        <TextView
-            android:id="@+id/maillist_user_name"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@+id/maillist_user_icon"
-            android:text="你好"
-            android:textSize="16dp" />
+            android:layout_toRightOf="@+id/maillist_user_icon">
+            <TextView
+                android:id="@+id/maillist_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="你好"
+                android:textSize="16dp" />
 
-        <View
+            <TextView
+                android:id="@+id/maillist_user_listenering_song"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_below="@+id/maillist_user_name"
+                android:layout_marginLeft="5dp"
+                android:textSize="11dp"
+                android:textColor="@color/gray_white"
+                android:text="正在播放:香草吧噗-南拳妈妈"/>
+        </RelativeLayout>
+
+      <View
             android:layout_width="match_parent"
             android:layout_height="1px"
             android:layout_alignParentBottom="true"

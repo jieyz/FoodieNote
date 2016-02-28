@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +24,8 @@ import com.yaozu.listener.R;
 import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.db.dao.FriendDao;
+import com.yaozu.listener.db.model.Person;
+import com.yaozu.listener.fragment.social.MailListFragment;
 import com.yaozu.listener.fragment.social.MyselfFragment;
 import com.yaozu.listener.listener.DownLoadIconListener;
 import com.yaozu.listener.utils.NetUtil;
@@ -173,7 +176,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         String friendids = jsonObject.getString("friendids");
                         Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
                         if (code == 1) {
-                            System.out.println("=====friendids=====>" + friendids);
+                            String[] ids = friendids.split(",");
+                            for (int i = 0; i < ids.length; i++) {
+                                String friendid = ids[i];
+                                if (TextUtils.isEmpty(friendid)) {
+                                    continue;
+                                }
+                                requestCheckUserInfo(friendid);
+                            }
                         } else {
                             return;
                         }
@@ -182,6 +192,44 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(LoginActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+            }
+        }));
+    }
+
+    /**
+     * 根据id得到用户的详细信息
+     *
+     * @param userid
+     */
+    private void requestCheckUserInfo(final String userid) {
+        String url = DataInterface.getCheckUserInfoUrl() + "?userid=" + userid;
+        VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
+                url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                int code = jsonObject.getIntValue("code");
+                String msg = jsonObject.getString("message");
+                String token = jsonObject.getString("token");
+                String username = jsonObject.getString("username");
+                String iconurl = jsonObject.getString("iconurl");
+                if (code == 1) {
+                    Person person = new Person();
+                    person.setId(userid);
+                    person.setName(username);
+                    person.setBeizhuname(username);
+                    person.setIsNew("false");
+                    friendDao.add(person);
+
+                    MailListFragment.updateAdapterHandler.removeMessages(0);
+                    Message message = MailListFragment.updateAdapterHandler.obtainMessage();
+                    MailListFragment.updateAdapterHandler.sendEmptyMessageDelayed(0, 1000);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
             }
         }));
     }

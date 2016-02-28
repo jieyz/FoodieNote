@@ -97,6 +97,11 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
         return chatdetailInfo;
     }
 
+    /**
+     * 是否是通讯录好友确认信息
+     * @param message
+     * @return
+     */
     private boolean isVerifyMsg(Message message) {
         boolean is = false;
         JSONObject object = JSON.parseObject(new String(message.getContent().encode()));
