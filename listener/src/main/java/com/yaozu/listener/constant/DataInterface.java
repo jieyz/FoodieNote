@@ -59,4 +59,8 @@ public class DataInterface {
     public static String getFriendIdsUrl() {
         return APP_HOST + "TestServers/servlet/getFriendsIdServlet";
     }
+
+    public static String getUpdatePersonStateUrl(){
+        return APP_HOST + "TestServers/servlet/UpdatePersonStateServlet";
+    }
 }
