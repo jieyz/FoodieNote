@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * Created by 耀祖 on 2016/2/10.
  */
-public class MailListAdapter extends BaseAdapter implements PersonStateInterface{
+public class MailListAdapter extends BaseAdapter implements PersonStateInterface {
     public static List<Person> persons;
     private Context mContext;
     private LinearLayout parentView;
@@ -187,6 +187,13 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
 
     @Override
     public void updatePersonState(Person person) {
-
+        for (int i = 0; i < persons.size(); i++) {
+            Person p = persons.get(i);
+            if (p.getId().equals(person.getId())) {
+                p.setCurrentSong(person.getCurrentSong());
+                notifyDataSetChanged();
+                break;
+            }
+        }
     }
 }

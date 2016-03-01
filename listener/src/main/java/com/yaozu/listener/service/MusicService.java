@@ -1,7 +1,5 @@
 package com.yaozu.listener.service;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -14,11 +12,18 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.yaozu.listener.HomeMainActivity;
-import com.yaozu.listener.R;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.yaozu.listener.YaozuApplication;
+import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
+import com.yaozu.listener.listener.PersonState;
 import com.yaozu.listener.playlist.model.Song;
+import com.yaozu.listener.utils.VolleyHelper;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -139,7 +144,7 @@ public class MusicService extends Service {
                 intent.putExtra(IntentKey.MEDIA_FILE_SONG_NAME, mCurrentSong.getTitle());
                 intent.putExtra(IntentKey.MEDIA_FILE_SONG_SINGER, mCurrentSong.getSinger());
                 intent.putExtra(IntentKey.MEDIA_CURRENT_INDEX, mCurrentIndex);
-                intent.putExtra(IntentKey.MEDIA_FILE_SONG_ALBUMID,mCurrentSong.getAlbumid());
+                intent.putExtra(IntentKey.MEDIA_FILE_SONG_ALBUMID, mCurrentSong.getAlbumid());
                 //intent.putExtra(IntentKey.MEDIA_FILE_SONG_ALBUM, mCurrentSong.getAlbum());
                 LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(app);
                 localBroadcastManager.sendBroadcast(intent);
@@ -152,16 +157,50 @@ public class MusicService extends Service {
                 playinglocalBroadcastManager.sendBroadcast(playingintent);
 
                 notification();
+
+                //TODO 通知服务器当前用户正在播放歌曲的信息
+                notificationServerPersonState(PersonState.PLAYING);
                 break;
             case pause:
                 Intent pauseintent = new Intent(IntentKey.NOTIFY_SONG_PAUSE);
                 LocalBroadcastManager pauselocalBroadcastManager = LocalBroadcastManager.getInstance(app);
                 pauselocalBroadcastManager.sendBroadcast(pauseintent);
+
+                //TODO 通知服务器当前用户正在播放歌曲的信息
+                notificationServerPersonState(PersonState.PAUSE);
                 break;
             case completed:
                 playNextSong();
+
+                //TODO 通知服务器当前用户正在播放歌曲的信息
+                notificationServerPersonState(PersonState.PAUSE);
                 break;
         }
+    }
+
+    /**
+     * 1、包括当前歌曲信息（歌曲名、歌手，歌曲ID），播放状态
+     * 2、服务器会通过推送服务把这些状态通知给当前用户的好友们
+     *
+     * @param state
+     */
+    private void notificationServerPersonState(PersonState state) {
+        String url = DataInterface.getUpdatePersonStateUrl() + "?songname=" + mCurrentSong.getTitle() + "&singer=" + mCurrentSong.getSinger() + "&songid=" + mCurrentSong.getId() + "&state=" + state.toString();
+        //TODO
+        VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
+                url,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }));
     }
 
     private void playNextSong() {
@@ -228,9 +267,9 @@ public class MusicService extends Service {
         }
     }
 
-    public void killMyself(){
+    public void killMyself() {
         stopPlayBack();
-        if(mMediaPlayer != null){
+        if (mMediaPlayer != null) {
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
@@ -257,10 +296,11 @@ public class MusicService extends Service {
 
     /**
      * 得到当前播放器的进度
+     *
      * @return
      */
-    public int getCurrentPlayPosition(){
-        if(currentState == PlayState.playing || currentState == PlayState.pause){
+    public int getCurrentPlayPosition() {
+        if (currentState == PlayState.playing || currentState == PlayState.pause) {
             return mMediaPlayer.getCurrentPosition();
         }
         return -1;
@@ -268,18 +308,19 @@ public class MusicService extends Service {
 
     /**
      * 获取播放时长
+     *
      * @return
      */
-    public int getDuration(){
-        if(currentState == PlayState.playing || currentState == PlayState.pause){
+    public int getDuration() {
+        if (currentState == PlayState.playing || currentState == PlayState.pause) {
             return mMediaPlayer.getDuration();
         }
         return -1;
     }
 
-    public void seekto(int pos){
-        if(currentState == PlayState.playing || currentState == PlayState.pause){
-            if(mMediaPlayer != null){
+    public void seekto(int pos) {
+        if (currentState == PlayState.playing || currentState == PlayState.pause) {
+            if (mMediaPlayer != null) {
                 mMediaPlayer.seekTo(pos);
             }
         }

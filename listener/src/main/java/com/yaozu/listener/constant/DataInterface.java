@@ -45,7 +45,8 @@ public class DataInterface {
     }
 
     /**
-     *同意成为好友
+     * 同意成为好友
+     *
      * @return
      */
     public static String getAgreeTobeFriendUrl() {
@@ -54,13 +55,19 @@ public class DataInterface {
 
     /**
      * 获取好友列表
+     *
      * @return
      */
     public static String getFriendIdsUrl() {
         return APP_HOST + "TestServers/servlet/getFriendsIdServlet";
     }
 
-    public static String getUpdatePersonStateUrl(){
+    /**
+     * 通知更新当前用户状态
+     *
+     * @return
+     */
+    public static String getUpdatePersonStateUrl() {
         return APP_HOST + "TestServers/servlet/UpdatePersonStateServlet";
     }
 }

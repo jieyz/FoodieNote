@@ -46,7 +46,8 @@ public class MyReceivePushMessageListener implements RongIMClient.OnReceivePushM
     @Override
     public boolean onReceivePushMessage(PushNotificationMessage pushNotificationMessage) {
         String content = pushNotificationMessage.getPushContent();
-        if (false) {
+        //通知用户当前状态
+        if (content.contains("")) {
             String songInfo = "";
             String userid = "";
             Person person = new Person();
