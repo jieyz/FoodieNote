@@ -9,6 +9,15 @@ public class Person {
     private String beizhuname;
     private String isNew;
     private String currentSong;
+    private String state;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public String getCurrentSong() {
         return currentSong;

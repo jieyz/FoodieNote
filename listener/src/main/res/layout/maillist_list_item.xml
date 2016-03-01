@@ -33,15 +33,30 @@
                 android:textSize="16dp" />
 
             <TextView
-                android:id="@+id/maillist_user_listenering_song"
+                android:id="@+id/maillist_user_listenering_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
                 android:layout_below="@+id/maillist_user_name"
                 android:layout_marginLeft="5dp"
+                android:layout_marginTop="3dp"
                 android:textSize="11dp"
+                android:text="正在播放: "/>
+
+            <com.yaozu.listener.widget.AlwaysMarqueeTextView
+                android:id="@+id/maillist_user_listenering_song"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:layout_marginTop="3dp"
+                android:layout_toRightOf="@+id/maillist_user_listenering_title"
+                android:layout_below="@+id/maillist_user_name"
+                android:textSize="11dp"
+                android:focusable="true"
                 android:textColor="@color/gray_white"
-                android:text="正在播放:香草吧噗-南拳妈妈"/>
+                android:text="香草吧噗-南拳妈妈"/>
         </RelativeLayout>
 
       <View

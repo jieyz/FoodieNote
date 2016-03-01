@@ -2,6 +2,7 @@ package com.yaozu.listener.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import com.yaozu.listener.listener.PersonStateInterface;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
+import com.yaozu.listener.widget.AlwaysMarqueeTextView;
 import com.yaozu.listener.widget.RoundCornerImageView;
 
 import org.json.JSONObject;
@@ -128,7 +130,19 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
         NetUtil.setImageIcon(person.getId(), icon, true, false);
         TextView name = (TextView) view.findViewById(R.id.maillist_user_name);
         name.setText(person.getName());
-        TextView current_song = (TextView) view.findViewById(R.id.maillist_user_listenering_song);
+        //显示当前正在听的歌曲
+        AlwaysMarqueeTextView current_song = (AlwaysMarqueeTextView) view.findViewById(R.id.maillist_user_listenering_song);
+        current_song.setText(person.getCurrentSong());
+        //更新状态
+        TextView state = (TextView) view.findViewById(R.id.maillist_user_listenering_title);
+        if ("playing".equals(person.getState())) {
+            state.setText("正在播放: ");
+            state.setTextColor(mContext.getResources().getColor(R.color.playing_color));
+        } else if ("pause".equals(person.getState())) {
+            state.setText("暂停播放: ");
+            state.setTextColor(mContext.getResources().getColor(R.color.pause_color));
+        }
+
         final TextView agree = (TextView) view.findViewById(R.id.new_friend_agree);
         if ("true".equals(person.getIsNew())) {
             agree.setVisibility(View.VISIBLE);
@@ -189,8 +203,9 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
     public void updatePersonState(Person person) {
         for (int i = 0; i < persons.size(); i++) {
             Person p = persons.get(i);
-            if (p.getId().equals(person.getId())) {
+            if (person.getId().equals(p.getId())) {
                 p.setCurrentSong(person.getCurrentSong());
+                p.setState(person.getState());
                 notifyDataSetChanged();
                 break;
             }

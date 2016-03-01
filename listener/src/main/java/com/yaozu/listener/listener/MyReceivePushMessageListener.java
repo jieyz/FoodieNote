@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.alibaba.fastjson.JSON;
 import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.activity.LoginActivity;
@@ -46,14 +47,20 @@ public class MyReceivePushMessageListener implements RongIMClient.OnReceivePushM
     @Override
     public boolean onReceivePushMessage(PushNotificationMessage pushNotificationMessage) {
         String content = pushNotificationMessage.getPushContent();
+        String extra = pushNotificationMessage.getExtra();
+        Log.d(TAG, "=====content=====>" + content + "  ===extra===>" + extra);
+        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(extra);
         //通知用户当前状态
-        if (content.contains("")) {
-            String songInfo = "";
-            String userid = "";
+        if (content.equals("updatepersonstate")) {
+            String songInfo = jsonObject.getString("songname");
+            String singer = jsonObject.getString("singer");
+            String userid = jsonObject.getString("userid");
+            String state = jsonObject.getString("state");
             Person person = new Person();
             person.setId(userid);
-            person.setCurrentSong(songInfo);
-            for(int i = 0;i<YaozuApplication.personStateInstances.size();i++){
+            person.setState(state);
+            person.setCurrentSong(songInfo+"--"+singer);
+            for (int i = 0; i < YaozuApplication.personStateInstances.size(); i++) {
                 YaozuApplication.personStateInstances.get(i).updatePersonState(person);
             }
             return true;

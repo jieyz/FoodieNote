@@ -21,11 +21,14 @@ import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.listener.PersonState;
 import com.yaozu.listener.playlist.model.Song;
+import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
 
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class MusicService extends Service {
@@ -185,7 +188,16 @@ public class MusicService extends Service {
      * @param state
      */
     private void notificationServerPersonState(PersonState state) {
-        String url = DataInterface.getUpdatePersonStateUrl() + "?songname=" + mCurrentSong.getTitle() + "&singer=" + mCurrentSong.getSinger() + "&songid=" + mCurrentSong.getId() + "&state=" + state.toString();
+        String url = null;
+        try {
+            String songname = mCurrentSong.getTitle();
+            String singer = mCurrentSong.getSinger();
+            url = DataInterface.getUpdatePersonStateUrl() + "?songname=" + URLEncoder.encode(songname == null ? "" : songname, "UTF-8") + "&singer=" + URLEncoder.encode(singer == null ? "" : singer, "UTF-8") +
+                    "&userid=" + User.getUserAccount() + "&songid=" + mCurrentSong.getId() + "&state=" + state.toString();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Log.d("url", "url=>" + url);
         //TODO
         VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
                 url,
