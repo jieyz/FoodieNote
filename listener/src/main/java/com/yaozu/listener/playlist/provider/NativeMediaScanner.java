@@ -19,7 +19,7 @@ public class NativeMediaScanner {
      * Called by native code to return metadata extracted from media files.
      */
     public void handleStringTag(String name, String value){
-        Log.d(TAG,"====java====>"+"name == "+name+"  value=="+value);
+        //Log.d(TAG,"====java====>"+"name == "+name+"  value=="+value);
         if(name.equalsIgnoreCase("title") || name.startsWith("title;")){
             mTitle = value;
         }else if(name.equalsIgnoreCase("artist") || name.startsWith("artist;")){

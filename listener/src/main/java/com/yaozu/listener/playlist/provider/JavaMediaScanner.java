@@ -123,7 +123,7 @@ public class JavaMediaScanner {
                         if (path.endsWith(".mp3")) {
                             NativeMediaScanner scanner = new NativeMediaScanner();
                             scanner.processFile(path, scanner);
-                            if(TextUtils.isEmpty(scanner.getmTitle().trim())){
+                            if(TextUtils.isEmpty(scanner.getmTitle())){
                                 parserMediaMetaByRetriever(path, song);
                             }else{
                                 song.setTitle(scanner.getmTitle());

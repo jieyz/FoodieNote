@@ -3,6 +3,7 @@ package com.yaozu.listener.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,10 +132,10 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
         TextView name = (TextView) view.findViewById(R.id.maillist_user_name);
         name.setText(person.getName());
         //显示当前正在听的歌曲
-        AlwaysMarqueeTextView current_song = (AlwaysMarqueeTextView) view.findViewById(R.id.maillist_user_listenering_song);
+        final AlwaysMarqueeTextView current_song = (AlwaysMarqueeTextView) view.findViewById(R.id.maillist_user_listenering_song);
         current_song.setText(person.getCurrentSong());
         //更新状态
-        TextView state = (TextView) view.findViewById(R.id.maillist_user_listenering_title);
+        final TextView state = (TextView) view.findViewById(R.id.maillist_user_listenering_title);
         if ("playing".equals(person.getState())) {
             state.setText("正在播放: ");
             state.setTextColor(mContext.getResources().getColor(R.color.playing_color));
