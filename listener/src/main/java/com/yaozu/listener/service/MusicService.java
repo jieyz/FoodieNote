@@ -174,9 +174,6 @@ public class MusicService extends Service {
                 break;
             case completed:
                 playNextSong();
-
-                //TODO 通知服务器当前用户正在播放歌曲的信息
-                notificationServerPersonState(PersonState.PAUSE);
                 break;
         }
     }

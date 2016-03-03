@@ -53,6 +53,9 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
     private FriendDao friendDao;
     private String TAG = this.getClass().getSimpleName();
 
+    private String STR_PLAYING = "正在播放: ";
+    private String STR_PAUSE = "暂停播放: ";
+
     public MailListAdapter(Context context, List<Person> data, LinearLayout pv, MailListFragment mf) {
         YaozuApplication.personStateInstances.add(this);
         this.mContext = context;
@@ -132,16 +135,42 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
         TextView name = (TextView) view.findViewById(R.id.maillist_user_name);
         name.setText(person.getName());
         //显示当前正在听的歌曲
-        final AlwaysMarqueeTextView current_song = (AlwaysMarqueeTextView) view.findViewById(R.id.maillist_user_listenering_song);
+        TextView current_song = (TextView) view.findViewById(R.id.maillist_user_listenering_song);
         current_song.setText(person.getCurrentSong());
         //更新状态
-        final TextView state = (TextView) view.findViewById(R.id.maillist_user_listenering_title);
+        TextView state = (TextView) view.findViewById(R.id.maillist_user_listenering_title);
         if ("playing".equals(person.getState())) {
-            state.setText("正在播放: ");
+            state.setText(STR_PLAYING);
             state.setTextColor(mContext.getResources().getColor(R.color.playing_color));
+            if (person.isChange()) {
+                person.setChange(false);
+                person.setChangetiem(System.currentTimeMillis());
+            } else {
+                long time = System.currentTimeMillis() - person.getChangetiem();
+                if (time > 300000) {
+                    state.setText("");
+                    person.setState("");
+                    person.setCurrentSong("");
+                    current_song.setText("");
+                }
+            }
         } else if ("pause".equals(person.getState())) {
-            state.setText("暂停播放: ");
+            state.setText(STR_PAUSE);
             state.setTextColor(mContext.getResources().getColor(R.color.pause_color));
+            if (person.isChange()) {
+                person.setChange(false);
+                person.setChangetiem(System.currentTimeMillis());
+            } else {
+                long time = System.currentTimeMillis() - person.getChangetiem();
+                if (time > 30000) {
+                    state.setText("");
+                    person.setState("");
+                    person.setCurrentSong("");
+                    current_song.setText("");
+                }
+            }
+        } else {
+            state.setText("");
         }
 
         final TextView agree = (TextView) view.findViewById(R.id.new_friend_agree);
@@ -207,6 +236,7 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
             if (person.getId().equals(p.getId())) {
                 p.setCurrentSong(person.getCurrentSong());
                 p.setState(person.getState());
+                p.setChange(true);
                 notifyDataSetChanged();
                 break;
             }

@@ -10,6 +10,24 @@ public class Person {
     private String isNew;
     private String currentSong;
     private String state;
+    private boolean change = false;
+    private Long changetiem;
+
+    public Long getChangetiem() {
+        return changetiem;
+    }
+
+    public void setChangetiem(Long changetiem) {
+        this.changetiem = changetiem;
+    }
+
+    public boolean isChange() {
+        return change;
+    }
+
+    public void setChange(boolean change) {
+        this.change = change;
+    }
 
     public String getState() {
         return state;
