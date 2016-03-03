@@ -41,6 +41,27 @@ public class NetUtil {
      * @param file
      */
     public static void uploadFile(final Context context, final File file, final UploadListener uploadListener) {
+        final int SUCCESS = 1;
+        final int FAILED = 0;
+        final Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case SUCCESS:
+                        if (uploadListener != null) {
+                            uploadListener.uploadSuccess();
+                        }
+                        break;
+                    case FAILED:
+                        if (uploadListener != null) {
+                            uploadListener.uploadFailed();
+                        }
+                        break;
+                }
+            }
+        };
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -62,21 +83,21 @@ public class NetUtil {
                     if (status == 200) {
                         //Toast.makeText(context, "上传文件成功", Toast.LENGTH_SHORT).show();
                         Log.d("NetUtil", "=====================上传文件成功================");
-                        if (uploadListener != null) {
-                            uploadListener.uploadSuccess();
-                        }
+                        Message msg = handler.obtainMessage();
+                        msg.what = SUCCESS;
+                        handler.sendMessage(msg);
                     } else {
-                        if (uploadListener != null) {
-                            uploadListener.uploadFailed();
-                        }
+                        Message msg = handler.obtainMessage();
+                        msg.what = FAILED;
+                        handler.sendMessage(msg);
                     }
                 } catch (Exception e) {
                     Log.e("NetUtil", e.getLocalizedMessage(), e);
                     //Toast.makeText(context, "上传文件失败", Toast.LENGTH_SHORT).show();
                     Log.d("NetUtil", "=====================上传文件失败================");
-                    if (uploadListener != null) {
-                        uploadListener.uploadFailed();
-                    }
+                    Message msg = handler.obtainMessage();
+                    msg.what = FAILED;
+                    handler.sendMessage(msg);
                 } finally {
                     filePost.releaseConnection();
                 }

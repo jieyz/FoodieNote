@@ -194,20 +194,20 @@ public class MusicService extends Service {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        Log.d("url", "url=>" + url);
+        Log.d("url", "url===>" + url);
         //TODO
         VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
                 url,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-
+                        Log.d("MusicService", "response====>" + response.toString());
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        Log.d("MusicService", "error====>" + error.toString());
                     }
                 }));
     }
@@ -353,6 +353,9 @@ public class MusicService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.d(this.getClass().getSimpleName(), "=====onDestroy======>");
+        //TODO 通知服务器当前用户正在播放歌曲的信息
+        notificationServerPersonState(PersonState.PAUSE);
         YaozuApplication.getIntance().cleanMusicService();
         super.onDestroy();
     }

@@ -63,6 +63,19 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
         this.mf = mf;
         this.persons = data;
         friendDao = new FriendDao(mContext);
+
+        new CountDownTimer(300000,30000){
+
+            @Override
+            public void onTick(long l) {
+                  notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFinish() {
+                this.start();
+            }
+        }.start();
     }
 
     public void setData(List<Person> data) {
