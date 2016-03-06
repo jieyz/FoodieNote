@@ -203,6 +203,8 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
                 Intent intent = new Intent(mContext, UserDetailActivity.class);
                 intent.putExtra(IntentKey.USER_NAME, person.getName());
                 intent.putExtra(IntentKey.USER_ID, person.getId());
+                intent.putExtra(IntentKey.CURRENT_SONG_STATE, person.getState());
+                intent.putExtra(IntentKey.CURRENT_SONG_INFO, person.getCurrentSong());
                 //intent.putExtra(IntentKey.USER_ICON_URL, iconurl);
                 mContext.startActivity(intent);
             }

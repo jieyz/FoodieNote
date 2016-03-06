@@ -27,6 +27,7 @@ import com.yaozu.listener.db.dao.ChatListInfoDao;
 import com.yaozu.listener.db.model.ChatDetailInfo;
 import com.yaozu.listener.db.model.ChatListInfo;
 import com.yaozu.listener.utils.VolleyHelper;
+import com.yaozu.listener.widget.ResizeLayout;
 
 import org.json.JSONObject;
 
@@ -50,6 +51,8 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
     private ChatDetailInfoDao mChatDetailDao;
     private ChatListInfoDao chatListInfoDao;
     private String mOtherUserId;
+
+    private ResizeLayout chatRoot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +125,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     private void findViews() {
+        chatRoot = (ResizeLayout) findViewById(R.id.chat_root);
         mListView = (ListView) findViewById(R.id.activity_social_chatdetail_listview);
         user = (TextView) findViewById(R.id.activity_chatdetail_user);
         mEditText = (EditText) findViewById(R.id.activity_social_chatdetail_edittext);
@@ -129,6 +133,13 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
         mSend = (Button) findViewById(R.id.activity_social_chatdetail_send);
         mSend.setOnClickListener(this);
         back.setOnClickListener(this);
+
+        chatRoot.setCallBackListener(new ResizeLayout.OnLayoutCallBack() {
+            @Override
+            public void onLayoutCall() {
+                mListView.smoothScrollToPosition(mListAdapter.getCount() - 1);
+            }
+        });
     }
 
     @Override

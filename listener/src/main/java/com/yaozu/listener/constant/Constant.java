@@ -13,4 +13,9 @@ public class Constant {
     public static int SOCIAL_ACTIONBAR = 0;
 
     public static String VERIFY_PREFIX = "verify_";
+
+    //保存歌曲信息
+    public static String QUIT_SONG_NAME = "quit_song_name";
+    public static String QUIT_SONG_SINGER = "quit_song_singer";
+    public static String QUIT_MEDIA_CURRENT_INDEX = "quit_index";
 }

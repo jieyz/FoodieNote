@@ -14,6 +14,7 @@ import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.fragment.social.MyselfFragment;
 import com.yaozu.listener.listener.DownLoadIconListener;
 import com.yaozu.listener.listener.UploadListener;
+import com.yaozu.listener.playlist.model.Song;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -21,6 +22,7 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 /**
  * Created by 耀祖 on 2015/12/22.
@@ -40,7 +43,7 @@ public class NetUtil {
      *
      * @param file
      */
-    public static void uploadFile(final Context context, final File file, final UploadListener uploadListener) {
+    public static void uploadFile(final Context context, final Song song, final File file, final UploadListener uploadListener) {
         final int SUCCESS = 1;
         final int FAILED = 0;
         final Handler handler = new Handler() {
@@ -67,13 +70,17 @@ public class NetUtil {
             public void run() {
                 // 创建一个httppost的请求
                 PostMethod filePost = new PostMethod(
-                        "http://120.27.129.229:8080/TestServers/servlet/UploadServlet3");
+                        "http://120.27.129.229:8080/TestServers/servlet/UploadSongServlet");
+                filePost.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET,"UTF-8");
                 try {
                     User user = new User(context);
                     // 组拼上传的数据
-                    Part[] parts = {new StringPart("source", "695132533"),
-                            new StringPart("userid", user.getUserAccount()),
-                            new FilePart("file", file)};
+                    Part[] parts = {new StringPart("songname", song.getTitle(),"UTF-8"),
+                            new StringPart("userid", user.getUserAccount(),"UTF-8"),
+                            new StringPart("singer",song.getSinger(),"UTF-8"),
+                            new StringPart("album", song.getAlbum(),"UTF-8"),
+                            new StringPart("filename", song.getFileName(),"UTF-8"),
+                            new FilePart("file", file,null,"UTF-8")};
                     filePost.setRequestEntity(new MultipartRequestEntity(parts,
                             filePost.getParams()));
                     HttpClient client = new HttpClient();
@@ -260,6 +267,7 @@ public class NetUtil {
 
     /**
      * 原画质
+     *
      * @param userid
      * @return
      */

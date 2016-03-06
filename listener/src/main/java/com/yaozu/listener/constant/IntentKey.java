@@ -37,4 +37,8 @@ public class IntentKey {
 
     //通讯录好友验证
     public static String NOTIFY_VERIFY_FRIEND = "notify_verify_friend";
+
+    //正在播放歌曲信息
+    public static String CURRENT_SONG_INFO = "current_song_info";
+    public static String CURRENT_SONG_STATE = "current_song_state";
 }

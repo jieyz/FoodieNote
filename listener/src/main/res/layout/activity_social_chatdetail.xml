@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.yaozu.listener.widget.ResizeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chat_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/appthemecolor"
@@ -36,8 +37,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/bottom_rl"
-        android:background="#ffffffff"
-        android:layout_below="@+id/chatdetail_actionbar">
+        android:layout_below="@+id/chatdetail_actionbar"
+        android:background="#ffffffff">
 
         <ListView
             android:id="@+id/activity_social_chatdetail_listview"
@@ -55,17 +56,46 @@
         android:layout_alignParentBottom="true"
         android:background="#ffffffff">
 
-        <EditText
-            android:id="@+id/activity_social_chatdetail_edittext"
+        <RelativeLayout
+            android:id="@+id/bottom_rl_rl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/activity_social_chatdetail_send" />
+            android:layout_centerVertical="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="7dp"
+            android:layout_toLeftOf="@+id/activity_social_chatdetail_send">
+
+            <EditText
+                android:id="@+id/activity_social_chatdetail_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="4"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:background="@null"
+                android:paddingBottom="5dp"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="5dp"
+                android:layout_below="@+id/activity_social_chatdetail_edittext"
+                android:layout_marginTop="5dp"
+                android:background="@color/appthemecolor" />
+        </RelativeLayout>
 
         <Button
             android:id="@+id/activity_social_chatdetail_send"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:layout_alignParentRight="true"
-            android:text="发送" />
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/button_background_selector"
+            android:layout_alignBottom="@+id/bottom_rl_rl"
+            android:text="发送"
+            android:textColor="@color/white" />
     </RelativeLayout>
-</RelativeLayout>
+</com.yaozu.listener.widget.ResizeLayout>

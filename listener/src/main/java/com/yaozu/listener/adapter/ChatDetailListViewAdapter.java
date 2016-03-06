@@ -16,6 +16,7 @@ import com.yaozu.listener.db.model.ChatListInfo;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.widget.RoundCornerImageView;
+import com.yaozu.listener.widget.SoundWaveView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,28 +61,46 @@ public class ChatDetailListViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
-        View view = View.inflate(mContext, R.layout.activity_social_chatdetail_item, null);
-        RelativeLayout senderrl = (RelativeLayout) view.findViewById(R.id.chat_detail_sender_rl);
-        RelativeLayout myselfrl = (RelativeLayout) view.findViewById(R.id.chat_detail_myself_rl);
-        TextView sendercontent = (TextView) view.findViewById(R.id.chat_detail_sendercontent);
-        TextView myselfcontent = (TextView) view.findViewById(R.id.chat_detail_myselfcontent);
-        RoundCornerImageView senderIcon = (RoundCornerImageView) view.findViewById(R.id.activity_chatdetail_item_sender_icon);
-        RoundCornerImageView myselfIcon = (RoundCornerImageView) view.findViewById(R.id.activity_chatdetail_item_myself_icon);
+        ViewHolder holder = null;
+        View view = null;
+        if (convertView == null) {
+            view = View.inflate(mContext, R.layout.activity_social_chatdetail_item, null);
+            holder = new ViewHolder();
+            holder.senderrl = (RelativeLayout) view.findViewById(R.id.chat_detail_sender_rl);
+            holder.myselfrl = (RelativeLayout) view.findViewById(R.id.chat_detail_myself_rl);
+            holder.sendercontent = (TextView) view.findViewById(R.id.chat_detail_sendercontent);
+            holder.myselfcontent = (TextView) view.findViewById(R.id.chat_detail_myselfcontent);
+            holder.senderIcon = (RoundCornerImageView) view.findViewById(R.id.activity_chatdetail_item_sender_icon);
+            holder.myselfIcon = (RoundCornerImageView) view.findViewById(R.id.activity_chatdetail_item_myself_icon);
+            view.setTag(holder);
+        } else {
+            view = convertView;
+            holder = (ViewHolder) view.getTag();
+        }
 
         ChatDetailInfo info = mChatDetaillists.get(i);
         if ("true".equals(info.getIssender())) {
-            senderrl.setVisibility(View.VISIBLE);
-            myselfrl.setVisibility(View.GONE);
+            holder.senderrl.setVisibility(View.VISIBLE);
+            holder.myselfrl.setVisibility(View.GONE);
             if (otherUserBitmap != null) {
-                senderIcon.setImageBitmap(otherUserBitmap);
+                holder.senderIcon.setImageBitmap(otherUserBitmap);
             }
-            sendercontent.setText(info.getChatcontent());
+            holder.sendercontent.setText(info.getChatcontent());
         } else {
-            senderrl.setVisibility(View.GONE);
-            myselfrl.setVisibility(View.VISIBLE);
-            myselfIcon.setImageBitmap(thisUserBitmap);
-            myselfcontent.setText(info.getChatcontent());
+            holder.senderrl.setVisibility(View.GONE);
+            holder.myselfrl.setVisibility(View.VISIBLE);
+            holder.myselfIcon.setImageBitmap(thisUserBitmap);
+            holder.myselfcontent.setText(info.getChatcontent());
         }
         return view;
+    }
+
+    public class ViewHolder {
+        public RelativeLayout senderrl;
+        public RelativeLayout myselfrl;
+        public TextView sendercontent;
+        public TextView myselfcontent;
+        public RoundCornerImageView senderIcon;
+        public RoundCornerImageView myselfIcon;
     }
 }

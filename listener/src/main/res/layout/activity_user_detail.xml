@@ -93,11 +93,56 @@
                     android:textSize="12dp" />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/user_detail_playing_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/user_detail_main"
+                android:layout_marginTop="15dp"
+                android:background="@color/white"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/user_detail_flag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="正在播放: "
+                    android:textColor="@color/playing_color"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/user_detail_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:layout_toLeftOf="@+id/user_detail_play_together"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@+id/user_detail_flag"
+                    android:textColor="@color/gray_white"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/user_detail_play_together"
+                    style="@style/RippleBackground"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:padding="5dp"
+                    android:text="一起听"
+                    android:textColor="@color/black" />
+            </RelativeLayout>
+
             <TextView
                 android:id="@+id/user_detail_add_or_send"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_below="@+id/user_detail_main"
+                android:layout_below="@+id/user_detail_playing_info"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="15dp"

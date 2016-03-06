@@ -87,4 +87,41 @@ public class User {
         boolean islogin = preferences.getBoolean(Constant.IS_LOGINING, false);
         return islogin;
     }
+
+    /**
+     * 保存退出时播放的歌曲
+     * @param songname
+     * @param singer
+     */
+    public void storeQuitSongInfo(String songname,String singer,int index){
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(Constant.QUIT_SONG_NAME, songname);
+        editor.putString(Constant.QUIT_SONG_SINGER, singer);
+        editor.putInt(Constant.QUIT_MEDIA_CURRENT_INDEX, index);
+        editor.commit();
+    }
+
+    /**
+     * 获得退出时播放的歌曲名
+     * @return
+     */
+    public String getQuitSongName(){
+        return preferences.getString(Constant.QUIT_SONG_NAME, "");
+    }
+
+    /**
+     * 获得退出时播放的歌手名
+     * @return
+     */
+    public String getQuitSinger(){
+        return preferences.getString(Constant.QUIT_SONG_SINGER, "");
+    }
+
+    /**
+     * 退出时的下标
+     * @return
+     */
+    public int getQuitIndex(){
+        return preferences.getInt(Constant.QUIT_MEDIA_CURRENT_INDEX, 0);
+    }
 }

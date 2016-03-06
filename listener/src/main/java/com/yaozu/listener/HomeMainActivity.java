@@ -38,12 +38,14 @@ import com.yaozu.listener.activity.BaseActivity;
 import com.yaozu.listener.activity.MusicLyricActivity;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
+import com.yaozu.listener.db.dao.SongInfoDao;
 import com.yaozu.listener.fragment.HomeFragment;
 import com.yaozu.listener.fragment.music.MusicLocalFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.listener.MyReceiveMessageListener;
 import com.yaozu.listener.listener.MyReceivePushMessageListener;
 import com.yaozu.listener.listener.MySendMessageListener;
+import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.playlist.model.SongList;
 import com.yaozu.listener.playlist.provider.JavaMediaScanner;
 import com.yaozu.listener.playlist.provider.NativeMediaScanner;
@@ -55,6 +57,7 @@ import com.yaozu.listener.utils.VolleyHelper;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.rong.imkit.RongIM;
@@ -84,6 +87,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     //是否已连接到融云服务器上
     private boolean hasConnectToRongIM = false;
 
+    private SongInfoDao mSongInfoDao;
     static {
         System.loadLibrary("mediascanner");
     }
@@ -116,6 +120,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
             }
         }
     };
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,6 +158,12 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         IntentFilter mFilter = new IntentFilter();
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(myNetReceiver, mFilter);
+
+        //初始化上次退出时的歌曲信息
+        user = new User(this);
+        mCurrentSongName.setText(user.getQuitSongName());
+        mCurrentSinger.setText(user.getQuitSinger());
+        mSongInfoDao = new SongInfoDao(this);
     }
 
     @Override
@@ -276,6 +287,9 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
             case R.id.mediaplay_play_pause:
                 if (service == null) {
                     Intent intent = new Intent(this, MusicService.class);
+                    ArrayList<Song> songs = (ArrayList<Song>) mSongInfoDao.findAllSongInfo();
+                    intent.putExtra(IntentKey.MEDIA_CURRENT_INDEX, user.getQuitIndex());
+                    intent.putExtra(IntentKey.MEDIA_FILE_LIST, songs);
                     startService(intent);
                 } else {
                     if (service.isPlaying()) {

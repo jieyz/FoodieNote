@@ -6,13 +6,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yaozu.listener.R;
+import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.dao.FriendDao;
+import com.yaozu.listener.db.model.Person;
+import com.yaozu.listener.listener.PersonStateInterface;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.widget.RoundCornerImageView;
 
@@ -24,7 +28,7 @@ import io.rong.message.TextMessage;
 /**
  * Created by jieyaozu on 2016/2/20.
  */
-public class UserDetailActivity extends BaseActivity implements View.OnClickListener {
+public class UserDetailActivity extends BaseActivity implements View.OnClickListener, PersonStateInterface {
     private TextView userBeizhuName, userId, userName;
     private TextView addOrSend;
     private ImageView actionBack;
@@ -34,10 +38,15 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
     private Dialog dialog;
     //通讯录的数据库
     private FriendDao friendDao;
+    private String state;
+    private String currentSongInfo;
+    private RelativeLayout r_playingInfo;
+    private TextView t_curentflag, t_currentsong, t_playtogether;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        YaozuApplication.personStateInstances.add(this);
         setContentView(R.layout.activity_user_detail);
         findViewByIds();
 
@@ -46,6 +55,9 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
         str_userid = intent.getStringExtra(IntentKey.USER_ID);
         token = intent.getStringExtra(IntentKey.USER_TOKEN);
         iconUrl = intent.getStringExtra(IntentKey.USER_ICON_URL);
+        //当前正在播放信息
+        state = intent.getStringExtra(IntentKey.CURRENT_SONG_STATE);
+        currentSongInfo = intent.getStringExtra(IntentKey.CURRENT_SONG_INFO);
 
         userName.setText(name);
         userId.setText("账号: " + str_userid);
@@ -62,15 +74,28 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
         addOrSend = (TextView) findViewById(R.id.user_detail_add_or_send);
         actionBack = (ImageView) findViewById(R.id.user_detail_back);
         userIcon = (RoundCornerImageView) findViewById(R.id.activity_userdetail_usericon);
+        r_playingInfo = (RelativeLayout) findViewById(R.id.user_detail_playing_info);
+        t_curentflag = (TextView) findViewById(R.id.user_detail_flag);
+        t_currentsong = (TextView) findViewById(R.id.user_detail_info);
+        t_playtogether = (TextView) findViewById(R.id.user_detail_play_together);
+
         actionBack.setOnClickListener(this);
         addOrSend.setOnClickListener(this);
         userIcon.setOnClickListener(this);
+        t_playtogether.setOnClickListener(this);
     }
 
     private void initData() {
         friendDao = new FriendDao(this);
         if (friendDao.isHavePerson(str_userid)) {
             addOrSend.setText("发消息");
+        }
+
+        if ("playing".equals(state)) {
+            r_playingInfo.setVisibility(View.VISIBLE);
+            t_currentsong.setText(currentSongInfo);
+        } else {
+            r_playingInfo.setVisibility(View.GONE);
         }
     }
 
@@ -144,6 +169,28 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
                 intent.putExtra(IntentKey.USER_ID, str_userid);
                 startActivity(intent);
                 break;
+            case R.id.user_detail_play_together:
+
+                break;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        YaozuApplication.personStateInstances.remove(this);
+    }
+
+    @Override
+    public void updatePersonState(Person person) {
+        t_currentsong.setText(person.getCurrentSong());
+        if ("playing".equals(person.getState())) {
+            r_playingInfo.setVisibility(View.VISIBLE);
+            t_curentflag.setText("正在播放: ");
+            t_curentflag.setTextColor(getResources().getColor(R.color.playing_color));
+        } else {
+            t_curentflag.setText("暂停播放: ");
+            t_curentflag.setTextColor(getResources().getColor(R.color.pause_color));
         }
     }
 }

@@ -1,9 +1,13 @@
 package com.yaozu.listener.service;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -21,6 +25,7 @@ import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.listener.PersonState;
 import com.yaozu.listener.playlist.model.Song;
+import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
 
@@ -43,6 +48,7 @@ public class MusicService extends Service {
     private ArrayList<Song> mSongs;
     private PlayState currentState;
     private int NOTIFICATION_ID = -1;
+    private User user;
 
     public MusicService() {
 
@@ -69,7 +75,9 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        registerConnectReceiver();
         initAuidoData(intent);
+        user = new User(app);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -163,6 +171,8 @@ public class MusicService extends Service {
 
                 //TODO 通知服务器当前用户正在播放歌曲的信息
                 notificationServerPersonState(PersonState.PLAYING);
+                //保存退出时的歌曲信息
+                user.storeQuitSongInfo(mCurrentSong.getTitle(), mCurrentSong.getSinger(), mCurrentIndex);
                 break;
             case pause:
                 Intent pauseintent = new Intent(IntentKey.NOTIFY_SONG_PAUSE);
@@ -356,7 +366,45 @@ public class MusicService extends Service {
         Log.d(this.getClass().getSimpleName(), "=====onDestroy======>");
         //TODO 通知服务器当前用户正在播放歌曲的信息
         notificationServerPersonState(PersonState.PAUSE);
+        unregisterReceiver();
         YaozuApplication.getIntance().cleanMusicService();
         super.onDestroy();
+    }
+
+    /**
+     * 网络变化的监听
+     */
+    private ConnectionChangeReceiver myReceiver;
+
+    private void registerConnectReceiver() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        myReceiver = new ConnectionChangeReceiver();
+        this.registerReceiver(myReceiver, filter);
+    }
+
+    private void unregisterReceiver() {
+        this.unregisterReceiver(myReceiver);
+    }
+
+    private boolean hasRegister = false;
+
+    public class ConnectionChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!hasRegister) {
+                hasRegister = true;
+                return;
+            }
+            if (NetUtil.hasNetwork(context)) {
+                if (isPlaying()) {
+                    notificationServerPersonState(PersonState.PLAYING);
+                } else {
+                    notificationServerPersonState(PersonState.PAUSE);
+                }
+                //改变背景或者 处理网络的全局变量
+            } else {
+                //改变背景或者 处理网络的全局变量
+            }
+        }
     }
 }

@@ -320,6 +320,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
         View view = View.inflate(getActivity(), R.layout.dialog_editname, null);
         final EditText name = (EditText) view.findViewById(R.id.dialog_edit_name);
         name.setText(mUser.getUserName());
+        name.setSelection(mUser.getUserName().length());
         TextView dialog_edit_confirm = (TextView) view.findViewById(R.id.dialog_edit_confirm);
         dialog_edit_confirm.setOnClickListener(new View.OnClickListener() {
             @Override
