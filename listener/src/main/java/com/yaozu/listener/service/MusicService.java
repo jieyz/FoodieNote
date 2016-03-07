@@ -50,6 +50,9 @@ public class MusicService extends Service {
     private int NOTIFICATION_ID = -1;
     private User user;
 
+    //缓冲的百分比
+    private int mPercent = 100;
+
     public MusicService() {
 
     }
@@ -108,6 +111,7 @@ public class MusicService extends Service {
             try {
                 String playMediaPath = mCurrentSong.getFileUrl();
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                //mMediaPlayer.setDataSource("http://120.27.129.229:8080/TestServers/servlet/DownLoadSongServlet?songname=" + URLEncoder.encode("稻香","UTF-8")+"&singer="+URLEncoder.encode("周杰伦","UTF-8"));
                 mMediaPlayer.setDataSource(playMediaPath);
                 mMediaPlayer.prepareAsync();
                 notifyState(PlayState.prepareing);
@@ -117,6 +121,7 @@ public class MusicService extends Service {
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    mPercent = 100;
                     notifyState(PlayState.prepared);
                     start();
                 }
@@ -124,7 +129,31 @@ public class MusicService extends Service {
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
+                    mPercent = 100;
                     notifyState(PlayState.completed);
+                }
+            });
+
+            mMediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+                @Override
+                public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
+                    Log.d("MusicService", "percent: " + percent);
+                    mPercent = percent;
+                }
+            });
+
+            mMediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                @Override
+                public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+                    switch (what) {
+                        case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+
+                            break;
+                        case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+
+                            break;
+                    }
+                    return false;
                 }
             });
 
@@ -183,7 +212,10 @@ public class MusicService extends Service {
                 notificationServerPersonState(PersonState.PAUSE);
                 break;
             case completed:
-                playNextSong();
+                //播放列表不为空
+                if (mSongs != null && !mSongs.isEmpty()) {
+                    playNextSong();
+                }
                 break;
         }
     }
@@ -222,6 +254,9 @@ public class MusicService extends Service {
                 }));
     }
 
+    /**
+     * 播放列表不为空时播放下一首歌曲
+     */
     private void playNextSong() {
         mCurrentIndex++;
         if (mCurrentIndex >= mSongs.size()) {
@@ -229,6 +264,19 @@ public class MusicService extends Service {
         }
         stopPlayBack();
         playCurrentIndexSong(mCurrentIndex);
+    }
+
+    /**
+     * 播放指定的歌曲
+     * 有可能是本地的也有可能是网络上的
+     * 需要清空播放列表
+     *
+     * @param song
+     */
+    public void playSong(Song song) {
+        mSongs.clear();
+        this.mCurrentSong = song;
+        prepareToPlay();
     }
 
     private void notification() {
@@ -337,10 +385,24 @@ public class MusicService extends Service {
         return -1;
     }
 
-    public void seekto(int pos) {
+    public void seekto(final int pos) {
         if (currentState == PlayState.playing || currentState == PlayState.pause) {
             if (mMediaPlayer != null) {
-                mMediaPlayer.seekTo(pos);
+                float percent = (float) pos / (float) getDuration();
+                percent = percent * 100;
+                //如果大于缓冲的百分比
+                if (percent > mPercent) {
+                    mMediaPlayer.pause();
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            seekto(pos);
+                        }
+                    }, 1000);
+                } else {
+                    mMediaPlayer.start();
+                    mMediaPlayer.seekTo(pos);
+                }
             }
         }
     }

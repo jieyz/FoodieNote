@@ -168,6 +168,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         lyricSinger = (TextView) findViewById(R.id.music_lyric_singer);
         mShowLyricView = (ListView) findViewById(R.id.music_lyric_show);
 
+        //封面背景
         Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
         mBitmap = getAeroBitmap(mBitmap);
         BitmapDrawable drawable = new BitmapDrawable(mBitmap);

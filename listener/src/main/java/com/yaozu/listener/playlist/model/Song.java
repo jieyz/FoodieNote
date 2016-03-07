@@ -15,6 +15,7 @@ public class Song implements Serializable{
     private String type;
     private String size;
     private String downloadurl;
+    //本地路径或者网络路径
     private String fileUrl;
     private long albumid;
 

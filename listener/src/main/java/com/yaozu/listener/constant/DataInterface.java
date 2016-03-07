@@ -70,4 +70,13 @@ public class DataInterface {
     public static String getUpdatePersonStateUrl() {
         return APP_HOST + "TestServers/servlet/UpdatePersonStateServlet";
     }
+
+    /**
+     * 下载歌曲
+     *
+     * @return
+     */
+    public static String getDownLoadSongUrl() {
+        return APP_HOST + "TestServers/servlet/DownLoadSongServlet";
+    }
 }

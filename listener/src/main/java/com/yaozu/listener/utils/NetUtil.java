@@ -71,16 +71,16 @@ public class NetUtil {
                 // 创建一个httppost的请求
                 PostMethod filePost = new PostMethod(
                         "http://120.27.129.229:8080/TestServers/servlet/UploadSongServlet");
-                filePost.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET,"UTF-8");
+                filePost.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
                 try {
                     User user = new User(context);
                     // 组拼上传的数据
-                    Part[] parts = {new StringPart("songname", song.getTitle(),"UTF-8"),
-                            new StringPart("userid", user.getUserAccount(),"UTF-8"),
-                            new StringPart("singer",song.getSinger(),"UTF-8"),
-                            new StringPart("album", song.getAlbum(),"UTF-8"),
-                            new StringPart("filename", song.getFileName(),"UTF-8"),
-                            new FilePart("file", file,null,"UTF-8")};
+                    Part[] parts = {new StringPart("songname", song.getTitle() == null ? "" : song.getTitle(), "UTF-8"),
+                            new StringPart("userid", user.getUserAccount(), "UTF-8"),
+                            new StringPart("singer", song.getSinger() == null ? "" : song.getSinger(), "UTF-8"),
+                            new StringPart("album", song.getAlbum() == null ? "" : song.getAlbum(), "UTF-8"),
+                            new StringPart("filename", song.getFileName() == null ? "" : song.getFileName(), "UTF-8"),
+                            new FilePart("file", file, null, "UTF-8")};
                     filePost.setRequestEntity(new MultipartRequestEntity(parts,
                             filePost.getParams()));
                     HttpClient client = new HttpClient();
