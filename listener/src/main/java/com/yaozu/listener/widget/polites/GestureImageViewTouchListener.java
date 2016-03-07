@@ -17,6 +17,7 @@ package com.yaozu.listener.widget.polites;
 
 import android.content.res.Configuration;
 import android.graphics.PointF;
+import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -270,6 +271,13 @@ public class GestureImageViewTouchListener implements OnTouchListener {
                 }
 
                 if (event.getAction() == MotionEvent.ACTION_UP) {
+                    //计算手放开时angle的值,最大值为 fitScaleHorizontal，根据 currentScale 和它的比值计算
+                    if (currentScale < fitScaleHorizontal) {
+                        float pi = (float) Math.asin(currentScale / fitScaleHorizontal);
+                        angle = (float) ((180 / Math.PI) * pi);
+                        dtx = scaleVector.end.x - centerX;
+                        dty = scaleVector.end.y - centerY;
+                    }
                     handleUp();
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     stopAnimations();
@@ -305,7 +313,6 @@ public class GestureImageViewTouchListener implements OnTouchListener {
 
                                     float newX = scaleVector.end.x;
                                     float newY = scaleVector.end.y;
-
                                     handleScale(newScale, newX, newY);
                                 }
                             }
@@ -342,6 +349,10 @@ public class GestureImageViewTouchListener implements OnTouchListener {
         return true;
     }
 
+    float angle = 0;
+    float dtx = 0, dty = 0;
+    private Handler mHandler = new Handler();
+
     protected void handleUp() {
 
         multiTouch = false;
@@ -361,15 +372,29 @@ public class GestureImageViewTouchListener implements OnTouchListener {
 
         if (!canDragX && !canDragY) {
 
-            if (image.isLandscape()) {
+/*            if (image.isLandscape()) {
                 currentScale = fitScaleHorizontal;
                 lastScale = fitScaleHorizontal;
             } else {
                 currentScale = fitScaleVertical;
                 lastScale = fitScaleVertical;
+            }*/
+            if (currentScale < fitScaleHorizontal) {
+                currentScale = (float) Math.sin((Math.PI / 180) * angle) * fitScaleHorizontal + 0.1f;
+                next.x = (float) (scaleVector.end.x - Math.sin((Math.PI / 180) * angle) * dtx);
+                next.y = (float) (scaleVector.end.y - Math.sin((Math.PI / 180) * angle) * dty);
+                angle += 3;
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        handleUp();
+                    }
+                });
+            } else {
+                currentScale = fitScaleHorizontal;
+                angle = 0;
             }
         }
-
         image.setScale(currentScale);
         image.setPosition(next.x, next.y);
 
