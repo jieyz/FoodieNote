@@ -1,5 +1,7 @@
 package com.yaozu.listener.constant;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by 耀祖 on 2015/11/4.
  */
@@ -41,4 +43,7 @@ public class IntentKey {
     //正在播放歌曲信息
     public static String CURRENT_SONG_INFO = "current_song_info";
     public static String CURRENT_SONG_STATE = "current_song_state";
+
+    //从图册里选取的位图
+    public static Bitmap cropBitmap;
 }

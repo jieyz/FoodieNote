@@ -31,6 +31,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.yaozu.listener.R;
+import com.yaozu.listener.activity.CropImageActivity;
 import com.yaozu.listener.activity.LoginActivity;
 import com.yaozu.listener.activity.UserIconDetail;
 import com.yaozu.listener.constant.Constant;
@@ -47,6 +48,7 @@ import com.yaozu.listener.widget.RoundCornerImageView;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -72,6 +74,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
     private RelativeLayout userInfoRl;
     private Dialog dialog;
     private static final int ACTIVITY_RESULT_GALRY = 0;
+    private static final int ACTIVITY_RESULT_CROPIMAGE = 1;
     public static String ICON_PATH = FileUtil.getSDPath() + File.separator + "ListenerMusic" + File.separator + "icon.jpg";
     public static String CP_ICON_PATH = FileUtil.getSDPath() + File.separator + "ListenerMusic" + File.separator + "cp_icon.jpg";
 
@@ -191,7 +194,10 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                 ContentResolver resolver = getActivity().getContentResolver();
                 try {
                     final Bitmap bm = MediaStore.Images.Media.getBitmap(resolver, localUri);
-                    new Thread(new Runnable() {
+                    Intent cropimage = new Intent(getActivity(), CropImageActivity.class);
+                    IntentKey.cropBitmap = bm;
+                    startActivity(cropimage);
+/*                    new Thread(new Runnable() {
                         @Override
                         public void run() {
                             //保存到本地
@@ -204,10 +210,13 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                             //上传头像到服务器上
                             NetUtil.uploadIconFile(getActivity(), new File(ICON_PATH), new MyUploadListener());
                         }
-                    }).start();
+                    }).start();*/
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                break;
+            case ACTIVITY_RESULT_CROPIMAGE:
+
                 break;
         }
     }
