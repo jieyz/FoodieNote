@@ -230,8 +230,6 @@ public class CropImageView extends ImageViewTouchBase {
     }
 
     public void add(HighlightView hv) {
-        //设置最小的裁剪宽度
-        hv.setWidthCap(this.getRotateBitmap().getBitmap().getWidth() * 0.2f);
         mHighlightViews.add(hv);
         invalidate();
     }

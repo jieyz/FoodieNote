@@ -89,7 +89,7 @@ public abstract class ImageViewTouchBase extends ImageView {
         }
     }
 
-    public RotateBitmap getRotateBitmap(){
+    public RotateBitmap getRotateBitmap() {
         return mBitmapDisplayed;
     }
 
@@ -136,7 +136,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
     private Runnable mOnLayoutRunnable = null;
 
-	public float scale;
+    public float scale;
 
     // This function changes bitmap, reset base matrix according to the size
     // of the bitmap, and optionally reset the supplementary matrix.
@@ -157,7 +157,6 @@ public abstract class ImageViewTouchBase extends ImageView {
         }
 
         if (bitmap.getBitmap() != null) {
-        	
             getProperBaseMatrix(bitmap, mBaseMatrix);
             setImageBitmap(bitmap.getBitmap(), bitmap.getRotation());
         } else {
@@ -249,7 +248,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
     // Setup the base matrix so that the image is centered and scaled properly.
     private void getProperBaseMatrix(RotateBitmap bitmap, Matrix matrix) {
-   
+
         float viewWidth = getWidth();
         float viewHeight = getHeight();
 
@@ -267,7 +266,7 @@ public abstract class ImageViewTouchBase extends ImageView {
         matrix.postScale(scale, scale);
 
         matrix.postTranslate((viewWidth - w * scale) / 2F, (viewHeight - h * scale) / 2F);
-    
+
     }
 
     // Combine the base matrix and the supp matrix to make the final matrix.
@@ -303,7 +302,7 @@ public abstract class ImageViewTouchBase extends ImageView {
 
         float oldScale = getScale();
         float deltaScale = scale / oldScale;
-        
+
         mSuppMatrix.postScale(deltaScale, deltaScale, centerX, centerY);
         setImageMatrix(getImageViewMatrix());
         center(true, true);

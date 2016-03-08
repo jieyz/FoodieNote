@@ -36,6 +36,9 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     //使用键
     private TextView mUse;
 
+    //是否裁剪过
+    private boolean hasCut = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +53,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
 
         //TODO
         mBitmap = IntentKey.cropBitmap;
+        IntentKey.cropBitmap = null;
         mImageView.setShow(true);
         mImageView.setImageBitmapResetBase(mBitmap, true);
         mRunFaceDetection.run();
@@ -62,6 +66,8 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
         // Create a default HightlightView if we found no face in the picture.
         private void makeDefault() {
             HighlightView hv = new HighlightView(mImageView);
+            //设置最小的裁剪宽度
+            hv.setWidthCap(mBitmap.getWidth() * 0.2f);
 
             int width = mBitmap.getWidth();
             int height = mBitmap.getHeight();
@@ -104,6 +110,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
             return;
         }
         Rect r = mCrop.getCropRect();
+
         int width = r.width(); // CR: final == happy panda!
         int height = r.height();
 
@@ -119,7 +126,18 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
             // height)/2);
             canvas.drawBitmap(mBitmap, r, dstRect, null);
         }
-        mImageView.setImageBitmap(croppedImage);
+        //mImageView.setImageBitmap(croppedImage);
+        hasCut = true;
+        IntentKey.cropBitmap = croppedImage;
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (!hasCut) {
+            IntentKey.cropBitmap = null;
+        }
     }
 
     @Override

@@ -196,27 +196,29 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                     final Bitmap bm = MediaStore.Images.Media.getBitmap(resolver, localUri);
                     Intent cropimage = new Intent(getActivity(), CropImageActivity.class);
                     IntentKey.cropBitmap = bm;
-                    startActivity(cropimage);
-/*                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //保存到本地
-                            saveOutput(bm, ICON_PATH);
-                            //压缩大的图片
-                            Bitmap bigBitmap = compressUserIcon(600, ICON_PATH);
-                            //保存大的图片到本地
-                            saveOutput(bigBitmap, ICON_PATH);
-
-                            //上传头像到服务器上
-                            NetUtil.uploadIconFile(getActivity(), new File(ICON_PATH), new MyUploadListener());
-                        }
-                    }).start();*/
+                    startActivityForResult(cropimage, ACTIVITY_RESULT_CROPIMAGE);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 break;
             case ACTIVITY_RESULT_CROPIMAGE:
+                if (IntentKey.cropBitmap == null) {
+                    return;
+                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //保存到本地
+                        saveOutput(IntentKey.cropBitmap, ICON_PATH);
+                        //压缩大的图片
+                        Bitmap bigBitmap = compressUserIcon(600, ICON_PATH);
+                        //保存大的图片到本地
+                        saveOutput(bigBitmap, ICON_PATH);
 
+                        //上传头像到服务器上
+                        NetUtil.uploadIconFile(getActivity(), new File(ICON_PATH), new MyUploadListener());
+                    }
+                }).start();
                 break;
         }
     }

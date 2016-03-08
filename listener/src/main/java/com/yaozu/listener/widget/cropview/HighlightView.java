@@ -249,7 +249,7 @@ public class HighlightView {
     // Grows the cropping rectange by (dx, dy) in image space.
     void moveBy(float dx, float dy) {
         Rect invalRect = new Rect(mDrawRect);
-
+        
         mCropRect.offset(dx, dy);
         //System.out.println("aaaaaaaaaaaaa"+mCropRect.left+"-"+mCropRect.top+"-"+mCropRect.right+"-"+mCropRect.bottom);
         // Put the cropping rectangle inside image rectangle.yso
@@ -265,7 +265,6 @@ public class HighlightView {
 
     // Grows the cropping rectange by (dx, dy) in image space.
     void growBy(int edge, float dx, float dy) {
-        System.out.println("=======>" + dx + "   " + dy);
         if (dx != dy) {
             if ((edge & GROW_LEFT_EDGE) != 0) {
                 dy = dx;
