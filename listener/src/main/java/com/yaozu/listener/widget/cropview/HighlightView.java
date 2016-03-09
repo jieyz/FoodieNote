@@ -296,6 +296,7 @@ public class HighlightView {
         if (dx > 0F && r.width() + 2 * dx > mImageRect.width()) {
             float adjustment = (mImageRect.width() - r.width()) / 2F;
             dx = adjustment;
+            dy = dx;
             if (mMaintainAspectRatio) {
                 dy = dx / mInitialAspectRatio;
             }
@@ -303,6 +304,7 @@ public class HighlightView {
         if (dy > 0F && r.height() + 2 * dy > mImageRect.height()) {
             float adjustment = (mImageRect.height() - r.height()) / 2F;
             dy = adjustment;
+            dx = dy;
             if (mMaintainAspectRatio) {
                 dx = dy * mInitialAspectRatio;
             }
