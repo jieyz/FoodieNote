@@ -17,7 +17,6 @@
 package com.yaozu.listener.widget.cropview;
 
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -56,9 +55,11 @@ public class HighlightView {
 
     private void init() {
         android.content.res.Resources resources = mContext.getResources();
-        mResizeDrawableWidth = resources.getDrawable(R.drawable.camera_crop_width);
-        mResizeDrawableHeight = resources.getDrawable(R.drawable.camera_crop_height);
-        mResizeDrawableDiagonal = resources.getDrawable(R.drawable.indicator_autocrop);
+
+        connerDrawableTopLeft = resources.getDrawable(R.drawable.conner_top_left);
+        connerDrawableTopRight = resources.getDrawable(R.drawable.conner_top_right);
+        connerDrawableBottomLeft = resources.getDrawable(R.drawable.conner_bottom_left);
+        connerDrawableBottomRight = resources.getDrawable(R.drawable.conner_bottom_right);
     }
 
     public boolean mIsFocused;
@@ -103,7 +104,7 @@ public class HighlightView {
                 mOutlinePaint.setColor(0xFFFF8A00);//桔黄色
             } else {
                 path.addRect(new RectF(mDrawRect), Path.Direction.CW);
-                mOutlinePaint.setColor(0xFFEF04D6);//紫色
+                mOutlinePaint.setColor(0xFFFFFFFF);//紫色
             }
             canvas.clipPath(path, Region.Op.DIFFERENCE);
             canvas.drawRect(viewDrawingRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
@@ -111,50 +112,55 @@ public class HighlightView {
             canvas.restore();
             canvas.drawPath(path, mOutlinePaint);
 
+            //以下的都是画conner
+            int left = mDrawRect.left + 1;
+            int right = mDrawRect.right;
+            int top = mDrawRect.top;
+            int bottom = mDrawRect.bottom;
+
+            int widthWidth = connerDrawableTopLeft.getIntrinsicWidth() / 2;//intrinsic: 固有�?
+            int widthHeight = connerDrawableTopLeft.getIntrinsicHeight() / 2;
+            int heightHeight = connerDrawableTopLeft.getIntrinsicHeight() / 2;
+            int heightWidth = connerDrawableTopLeft.getIntrinsicWidth() / 2;
+
+            int xMiddle = mDrawRect.left + ((mDrawRect.right - mDrawRect.left) / 2); //mDrawRect x 的中间位�?下同
+            int yMiddle = mDrawRect.top + ((mDrawRect.bottom - mDrawRect.top) / 2);
+
+            connerDrawableTopLeft.setBounds(left - widthWidth, top - heightHeight, left + widthWidth, top
+                    + heightHeight);
+            connerDrawableTopLeft.draw(canvas);
+
+            connerDrawableTopRight.setBounds(right - widthWidth, top - heightHeight, right + widthWidth, top
+                    + heightHeight);
+            connerDrawableTopRight.draw(canvas);
+
+            connerDrawableBottomLeft.setBounds(left - widthWidth, bottom - heightHeight, left + widthWidth, bottom
+                    + heightHeight);
+            connerDrawableBottomLeft.draw(canvas);
+
+            connerDrawableBottomRight.setBounds(right - widthWidth, bottom - heightHeight, right + widthWidth, bottom
+                    + heightHeight);
+            connerDrawableBottomRight.draw(canvas);
+
             if (mMode == ModifyMode.Grow) {
                 if (mCircle) {
-                    int width = mResizeDrawableDiagonal.getIntrinsicWidth();
-                    int height = mResizeDrawableDiagonal.getIntrinsicHeight();
+                    int width = connerDrawableTopLeft.getIntrinsicWidth();
+                    int height = connerDrawableTopLeft.getIntrinsicHeight();
 
                     int d = (int) Math.round(Math.cos(/* 45deg */Math.PI / 4D) * (mDrawRect.width() / 2D));
                     int x = mDrawRect.left + (mDrawRect.width() / 2) + d - width / 2;
                     int y = mDrawRect.top + (mDrawRect.height() / 2) - d - height / 2;
-                    mResizeDrawableDiagonal.setBounds(x, y, x + mResizeDrawableDiagonal.getIntrinsicWidth(), y
-                            + mResizeDrawableDiagonal.getIntrinsicHeight());
-                    mResizeDrawableDiagonal.draw(canvas);
+//                    mResizeDrawableDiagonal.setBounds(x, y, x + mResizeDrawableDiagonal.getIntrinsicWidth(), y
+//                            + mResizeDrawableDiagonal.getIntrinsicHeight());
+//                    mResizeDrawableDiagonal.draw(canvas);
                 } else {  //move
-                    int left = mDrawRect.left + 1;
-                    int right = mDrawRect.right + 1;
-                    int top = mDrawRect.top + 4;
-                    int bottom = mDrawRect.bottom + 3;
-
-                    int widthWidth = mResizeDrawableWidth.getIntrinsicWidth() / 2;//intrinsic: 固有�?
-                    int widthHeight = mResizeDrawableWidth.getIntrinsicHeight() / 2;
-                    int heightHeight = mResizeDrawableHeight.getIntrinsicHeight() / 2;
-                    int heightWidth = mResizeDrawableHeight.getIntrinsicWidth() / 2;
-
-                    int xMiddle = mDrawRect.left + ((mDrawRect.right - mDrawRect.left) / 2); //mDrawRect x 的中间位�?下同
-                    int yMiddle = mDrawRect.top + ((mDrawRect.bottom - mDrawRect.top) / 2);
-
-                    mResizeDrawableWidth.setBounds(left - widthWidth, yMiddle - widthHeight, left + widthWidth, yMiddle
-                            + widthHeight);
-                    mResizeDrawableWidth.draw(canvas);
-
-                    mResizeDrawableWidth.setBounds(right - widthWidth, yMiddle - widthHeight, right + widthWidth, yMiddle
-                            + widthHeight);
-                    mResizeDrawableWidth.draw(canvas);
-
-                    mResizeDrawableHeight.setBounds(xMiddle - heightWidth, top - heightHeight, xMiddle + heightWidth, top
-                            + heightHeight);
-                    mResizeDrawableHeight.draw(canvas);
-
-                    mResizeDrawableHeight.setBounds(xMiddle - heightWidth, bottom - heightHeight, xMiddle + heightWidth, bottom
-                            + heightHeight);
-                    mResizeDrawableHeight.draw(canvas);
+                    mOutlinePaint.setColor(0xFFEF04D6);//紫色
+                    canvas.drawPath(path, mOutlinePaint);
                 }
             }
         }
     }
+
 
     public void setMode(ModifyMode mode) {
         if (mode != mMode) {
@@ -249,7 +255,7 @@ public class HighlightView {
     // Grows the cropping rectange by (dx, dy) in image space.
     void moveBy(float dx, float dy) {
         Rect invalRect = new Rect(mDrawRect);
-        
+
         mCropRect.offset(dx, dy);
         //System.out.println("aaaaaaaaaaaaa"+mCropRect.left+"-"+mCropRect.top+"-"+mCropRect.right+"-"+mCropRect.bottom);
         // Put the cropping rectangle inside image rectangle.yso
@@ -367,7 +373,7 @@ public class HighlightView {
         mInitialAspectRatio = mCropRect.width() / mCropRect.height();
         mDrawRect = computeLayout();
 
-        mFocusPaint.setARGB(125, 50, 50, 50);
+        mFocusPaint.setARGB(125, 00, 00, 00);
         mNoFocusPaint.setARGB(125, 50, 50, 50);
         mOutlinePaint.setStrokeWidth(3F);
         mOutlinePaint.setStyle(Paint.Style.STROKE);
@@ -392,9 +398,11 @@ public class HighlightView {
     private float mInitialAspectRatio;
     private boolean mCircle = false;
 
-    private Drawable mResizeDrawableWidth;
-    private Drawable mResizeDrawableHeight;
-    private Drawable mResizeDrawableDiagonal;
+
+    private Drawable connerDrawableTopLeft;
+    private Drawable connerDrawableTopRight;
+    private Drawable connerDrawableBottomLeft;
+    private Drawable connerDrawableBottomRight;
 
     private final Paint mFocusPaint = new Paint();
     private final Paint mNoFocusPaint = new Paint();
