@@ -80,7 +80,6 @@ public class NetUtil {
             @Override
             public void run() {
                 // 创建一个httppost的请求
-
                 PostMethod filePost = new PostMethod(DataInterface.getUpLoadSongUrl());
                 NameValuePair songname   = new NameValuePair("songname", song.getTitle());
                 NameValuePair singer = new NameValuePair("singer", song.getSinger());

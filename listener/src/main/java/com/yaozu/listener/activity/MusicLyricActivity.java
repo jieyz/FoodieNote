@@ -249,7 +249,6 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                     DownLoadUtil.download(fileUtil, downLrcUrl, file);
                     if (getFileSize(file) <= 0) {
                         file.delete();
-                        // Log.d(TAG, "=======从百度上下载的文件大小为0，已删除=======>");
                     }
                     Message msg = mHandler.obtainMessage();
                     msg.what = FILE_DOWNLOAD;
