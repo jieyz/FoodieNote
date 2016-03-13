@@ -79,4 +79,17 @@ public class DataInterface {
     public static String getDownLoadSongUrl() {
         return APP_HOST + "TestServers/servlet/DownLoadSongServlet";
     }
+
+    /**
+     * 上传歌曲
+     *
+     * @return
+     */
+    public static String getUpLoadSongUrl() {
+        return APP_HOST + "TestServers/servlet/UploadSongServlet";
+    }
+
+    public static String getHaveSongInServerUrl(){
+        return APP_HOST + "TestServers/servlet/HaveSongServlet";
+    }
 }

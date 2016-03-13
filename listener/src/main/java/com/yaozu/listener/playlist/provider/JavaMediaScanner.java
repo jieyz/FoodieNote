@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import com.yaozu.listener.db.dao.SongInfoDao;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.utils.EncodingConvert;
+import com.yaozu.listener.utils.UploadSongsUtil;
 
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
@@ -123,9 +124,9 @@ public class JavaMediaScanner {
                         if (path.endsWith(".mp3")) {
                             NativeMediaScanner scanner = new NativeMediaScanner();
                             scanner.processFile(path, scanner);
-                            if(TextUtils.isEmpty(scanner.getmTitle())){
+                            if (TextUtils.isEmpty(scanner.getmTitle())) {
                                 parserMediaMetaByRetriever(path, song);
-                            }else{
+                            } else {
                                 song.setTitle(scanner.getmTitle());
                                 song.setSinger(scanner.getmArtist());
                                 song.setAlbum(scanner.getmAlbum());
@@ -133,7 +134,16 @@ public class JavaMediaScanner {
                         } else {
                             parserMediaMetaByRetriever(path, song);
                         }
-                        mSongInfoDao.add(song);
+                        if (!TextUtils.isEmpty(song.getTitle())) {
+                            if (TextUtils.isEmpty(song.getAlbum())) {
+                                song.setAlbum("未知专辑");
+                            }
+
+                            if (TextUtils.isEmpty(song.getSinger())) {
+                                song.setSinger("未知歌手");
+                            }
+                            mSongInfoDao.add(song);
+                        }
                     }
                 }
                 cursor.close();
@@ -141,7 +151,7 @@ public class JavaMediaScanner {
         }
     }
 
-    private void parserMediaMetaByRetriever(String path,Song song){
+    private void parserMediaMetaByRetriever(String path, Song song) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         mmr.setDataSource(path);
         String _artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);

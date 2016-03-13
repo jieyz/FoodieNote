@@ -29,4 +29,4 @@ android {
 
 dependencies {
     compile fileTree(dir: 'src/main/libs', include: ['*.jar'])
-       }
+}

@@ -62,6 +62,7 @@ import java.util.List;
 
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
+import io.vov.vitamio.Vitamio;
 
 
 public class HomeMainActivity extends BaseActivity implements View.OnClickListener, OnFragmentInteractionListener, Infointerface {
@@ -126,7 +127,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         app = YaozuApplication.getIntance();
-
+        Vitamio.initialize(this);
         setContentView(R.layout.activity_home_main);
         mFragmentManager = getSupportFragmentManager();
         findViewByIds();

@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.yaozu.listener.db.AppDbHelper;
 import com.yaozu.listener.playlist.model.Song;
+import com.yaozu.listener.utils.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,21 +18,22 @@ public class SongInfoDao {
     private AppDbHelper helper;
     private Context context;
 
-    public SongInfoDao(Context context){
+    public SongInfoDao(Context context) {
         this.context = context;
         helper = new AppDbHelper(context);
     }
 
     /**
      * 添加一首歌到数据库中
+     *
      * @param songinfo
      */
     public void add(Song songinfo) {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
             db.execSQL("insert into songinfo (songid,fileName,title,duration,singer,album,type,size,fileurl,downloadurl,albumid) values (?,?,?,?,?,?,?,?,?,?,?)",
-                    new Object[] { songinfo.getId(), songinfo.getFileName(),songinfo.getTitle(),songinfo.getDuration(),songinfo.getSinger(),
-                            songinfo.getAlbum(),songinfo.getType(),songinfo.getSize(),songinfo.getFileUrl(),songinfo.getDownloadurl(),(int)songinfo.getAlbumid()});
+                    new Object[]{songinfo.getId(), songinfo.getFileName(), songinfo.getTitle(), songinfo.getDuration(), songinfo.getSinger(),
+                            songinfo.getAlbum(), songinfo.getType(), songinfo.getSize(), songinfo.getFileUrl(), songinfo.getDownloadurl(), (int) songinfo.getAlbumid()});
         }
         db.close();
     }
@@ -39,35 +41,36 @@ public class SongInfoDao {
     /**
      * 删除
      */
-    public void deleteSongById(Song songinfo){
+    public void deleteSongById(Song songinfo) {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
             db.execSQL("delete from songinfo where songid = ?",
-                    new Object[] {songinfo.getId()});
+                    new Object[]{songinfo.getId()});
         }
         db.close();
     }
 
     /**
      * 查询数据的总条数
+     *
      * @return
      */
-    public int queryTotalCount(){
+    public int queryTotalCount() {
         SQLiteDatabase db = helper.getReadableDatabase();
         int count = 0;
         if (db.isOpen()) {
-            Cursor cursor = db.rawQuery("select * from songinfo",null);
+            Cursor cursor = db.rawQuery("select * from songinfo", null);
             count = cursor.getCount();
         }
         db.close();
         return count;
     }
 
-    public List<Song> findAllSongInfo(){
+    public List<Song> findAllSongInfo() {
         List<Song> songinfos = new ArrayList<Song>();
         SQLiteDatabase db = helper.getReadableDatabase();
         if (db.isOpen()) {
-            Cursor cursor = db.rawQuery("select * from songinfo",null);
+            Cursor cursor = db.rawQuery("select * from songinfo", null);
             while (cursor.moveToNext()) {
                 Song info = new Song();
                 int songid = cursor.getInt(cursor.getColumnIndex("songid"));
@@ -77,10 +80,11 @@ public class SongInfoDao {
                 String singer = cursor.getString(cursor.getColumnIndex("singer"));
                 String album = cursor.getString(cursor.getColumnIndex("album"));
                 String type = cursor.getString(cursor.getColumnIndex("type"));
-                String  size = cursor.getString(cursor.getColumnIndex("size"));
-                String  fileurl = cursor.getString(cursor.getColumnIndex("fileurl"));
-                String  downloadurl = cursor.getString(cursor.getColumnIndex("downloadurl"));
-                int  albumid = cursor.getInt(cursor.getColumnIndex("albumid"));
+                String size = cursor.getString(cursor.getColumnIndex("size"));
+                String upload = cursor.getString(cursor.getColumnIndex("upload"));
+                String fileurl = cursor.getString(cursor.getColumnIndex("fileurl"));
+                String downloadurl = cursor.getString(cursor.getColumnIndex("downloadurl"));
+                int albumid = cursor.getInt(cursor.getColumnIndex("albumid"));
 
                 info.setId(songid);
                 info.setFileName(fileName);
@@ -92,6 +96,7 @@ public class SongInfoDao {
                 info.setSize(size);
                 info.setFileUrl(fileurl);
                 info.setDownloadurl(downloadurl);
+                info.setUpload(upload);
                 info.setAlbumid(albumid);
 
                 songinfos.add(info);
@@ -103,22 +108,36 @@ public class SongInfoDao {
 
     /**
      * is have this song
+     *
      * @param fileName
      * @return
      */
-    public boolean isHaveSong(String fileName){
+    public boolean isHaveSong(String fileName) {
         boolean have = false;
-        if(fileName == null){
+        if (fileName == null) {
             return true;
         }
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
-            Cursor cursor = db.rawQuery("select * from songinfo where fileName = ?",new String[]{fileName});
+            Cursor cursor = db.rawQuery("select * from songinfo where fileName = ?", new String[]{fileName});
             if (cursor.moveToFirst()) {
                 have = true;
             }
         }
         db.close();
         return have;
+    }
+
+    /**
+     * 标记为已上传
+     * @param song
+     */
+    public void updateSongHaveUpload(Song song) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        if (db.isOpen()) {
+            db.execSQL("update songinfo set upload=? where title=? and singer=?",
+                    new Object[]{"true", song.getTitle(), song.getSinger()});
+        }
+        db.close();
     }
 }
