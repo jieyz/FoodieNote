@@ -79,4 +79,8 @@ public class DataInterface {
     public static String getDownLoadSongUrl() {
         return APP_HOST + "TestServers/servlet/DownLoadSongServlet";
     }
+
+    public static String getHaveSongInServerUrl(){
+        return APP_HOST + "TestServers/servlet/HaveSongServlet";
+    }
 }

@@ -1,1 +1,1 @@
-include ':volley', ':listener', ':IMKit'
+include ':volley', ':listener', ':IMKit', ':vitamio'

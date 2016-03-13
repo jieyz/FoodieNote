@@ -17,8 +17,14 @@ import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.dao.FriendDao;
 import com.yaozu.listener.db.model.Person;
 import com.yaozu.listener.listener.PersonStateInterface;
+import com.yaozu.listener.playlist.model.Song;
+import com.yaozu.listener.service.MusicService;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.widget.RoundCornerImageView;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
@@ -170,7 +176,28 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
                 startActivity(intent);
                 break;
             case R.id.user_detail_play_together:
-
+                MusicService service = YaozuApplication.getIntance().getMusicService();
+                Song song = new Song();
+                String str[] = currentSongInfo.split("--");
+                String songname = str[0];
+                String singer = str[1];
+                System.out.println("===songname===>" + songname + "   ====singer===>" + singer);
+                song.setTitle(songname);
+                song.setSinger(singer);
+                try {
+                    song.setFileUrl("http://120.27.129.229:8080/TestServers/servlet/DownLoadSongServlet?songname=" + URLEncoder.encode(songname, "UTF-8") + "&singer=" + URLEncoder.encode(singer, "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                if (service != null) {
+                    service.playSong(song);
+                } else {
+                    Intent intentservice = new Intent(this, MusicService.class);
+                    ArrayList<Song> songs = new ArrayList<Song>();
+                    songs.add(song);
+                    intentservice.putExtra(IntentKey.MEDIA_FILE_LIST, songs);
+                    startService(intentservice);
+                }
                 break;
         }
     }
@@ -183,6 +210,7 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void updatePersonState(Person person) {
+        currentSongInfo = person.getCurrentSong();
         t_currentsong.setText(person.getCurrentSong());
         if ("playing".equals(person.getState())) {
             r_playingInfo.setVisibility(View.VISIBLE);

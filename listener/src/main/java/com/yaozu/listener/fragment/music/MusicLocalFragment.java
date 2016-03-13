@@ -7,12 +7,16 @@ import android.app.Fragment;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.alibaba.fastjson.JSON;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.yaozu.listener.Infointerface;
 import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
@@ -23,10 +27,15 @@ import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.playlist.provider.JavaMediaScanner;
 import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.utils.NetUtil;
+import com.yaozu.listener.utils.UploadSongsUtil;
 import com.yaozu.listener.widget.SoundWaveView;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,6 +68,7 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
             super.handleMessage(msg);
         }
     };
+    private List<Song> songs;
 
     /**
      * Use this factory method to create a new instance of
@@ -111,6 +121,34 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
         if (service != null) {
             highLightPlayingItem(service.getmCurrentIndex());
         }
+        //上传
+        songs = mSongInfoDao.findAllSongInfo();
+        for (int i = 0; i < songs.size(); i++) {
+            final Song song = songs.get(i);
+            if (!"true".equals(song.getUpload())) {
+                NetUtil.uploadSongIfNotExist(song, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                        int code = jsonObject.getIntValue("code");
+                        if (code == 1) {
+                            UploadSongsUtil.getInstance(getActivity()).addUploadThread(song);
+                            UploadSongsUtil.getInstance(getActivity()).onStart();
+                        } else {
+                            mSongInfoDao.updateSongHaveUpload(song);
+                            Log.e("HomeListViewAdapter", "=====歌曲已经在服务器上存在=====>"+song.getTitle());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+            }
+        }
+
+        //填充数据
         getData();
     }
 
@@ -130,9 +168,7 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
     }
 
     private void getData() {
-/*        String path = Environment.getExternalStorageDirectory().getPath();
-        path = path + File.separator + "KuwoMusic" + File.separator + "music";*/
-        mAdapter.setSongData((ArrayList<Song>) mSongInfoDao.findAllSongInfo());
+        mAdapter.setSongData((ArrayList<Song>) songs);
         mListView.setAdapter(mAdapter);
     }
 

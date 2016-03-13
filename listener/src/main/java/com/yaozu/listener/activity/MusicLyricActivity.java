@@ -90,7 +90,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                     if (mService == null) {
                         return;
                     }
-                    int currentposition = mService.getCurrentPlayPosition();
+                    long currentposition = mService.getCurrentPlayPosition();
                     if (lyricData != null && lyricData.size() > 0) {
                         for (int i = 0; i < lyricData.size(); i++) {
                             LRCUtils.timelrc nexttimelrc = lyricData.get(i);
@@ -220,7 +220,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                 return;
             }
             final String url = downloadUrl + "?songname=" + URLEncoder.encode(name, "UTF-8") + "&singer=" + URLEncoder.encode(singer, "UTF-8");
-            Log.d(TAG,"====url====>"+url);
+            //Log.d(TAG,"====url====>"+url);
             //创建歌词目录(以歌手名为目录名)
             fileUtil.creatSDDir(singer.trim());
             try {
@@ -235,21 +235,21 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                     String downLrcUrl = null;
                     if (getFileSize(file) <= 0) {
                         file.delete();
-                        Log.d(TAG, "=======文件大小为0，已删除=======>");
+                        //Log.d(TAG, "=======文件大小为0，已删除=======>");
                         //&title=我是一只鱼$$任贤齐$$$$"
                         String url = baiduGetLrcIdUrl + "&title=" + name + "$$" + singer + "$$$$";
                         String lrcid = DownLoadUtil.baiduDownLoadLrc(url);
                         if (TextUtils.isEmpty(lrcid)) {
-                            Log.d(TAG, "=======获取的歌词为空!=======>");
+                            //Log.d(TAG, "=======获取的歌词为空!=======>");
                             return;
                         }
                         downLrcUrl = baiduDownLoadLrc + Integer.parseInt(lrcid) / 100 + "/" + lrcid + ".lrc";
-                        Log.d(TAG, "======downLrcUrl=======>" + downLrcUrl);
+                        //Log.d(TAG, "======downLrcUrl=======>" + downLrcUrl);
                     }
                     DownLoadUtil.download(fileUtil, downLrcUrl, file);
                     if (getFileSize(file) <= 0) {
                         file.delete();
-                        Log.d(TAG, "=======从百度上下载的文件大小为0，已删除=======>");
+                       // Log.d(TAG, "=======从百度上下载的文件大小为0，已删除=======>");
                     }
                     Message msg = mHandler.obtainMessage();
                     msg.what = FILE_DOWNLOAD;
@@ -325,9 +325,11 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
 
     private class MediaSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
 
+        private int newPosition;
+
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            long newPosition = (mDuration * progress) / 1000;
+            newPosition = (mDuration * progress) / 1000;
             String time = generateTime(newPosition);
             if (media_current_position != null) {
                 media_current_position.setText(time);
@@ -342,8 +344,8 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             if (mService != null) {
-                int pos = (int) (((float) seekBar.getProgress() / 1000f) * mService.getDuration());
-                mService.seekto(pos);
+                //int pos = (int) (((float) seekBar.getProgress() / 1000f) * mService.getDuration());
+                mService.seekto(newPosition);
             }
         }
     }
@@ -395,7 +397,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         if (mService == null) {
             return;
         }
-        int currentpos = mService.getCurrentPlayPosition();
+        long currentpos = mService.getCurrentPlayPosition();
         int duration = mService.getDuration();
         if (mSeekBar != null) {
             if (duration != -1) {

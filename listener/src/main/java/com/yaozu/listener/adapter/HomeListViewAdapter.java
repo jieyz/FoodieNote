@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +14,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
+import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.service.MusicService;
 import com.yaozu.listener.utils.NetUtil;
+import com.yaozu.listener.utils.VolleyHelper;
 import com.yaozu.listener.widget.SoundWaveView;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -138,7 +148,24 @@ public class HomeListViewAdapter extends BaseAdapter {
         holder.uploadFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NetUtil.uploadFile(mContext,song,new File(song.getFileUrl()),null);
+                NetUtil.uploadSongIfNotExist(song, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                        int code = jsonObject.getIntValue("code");
+                        //表示服务器上没有此歌曲
+                        if(code == 1){
+                            NetUtil.uploadFile(mContext, song, new File(song.getFileUrl()), null).start();
+                        }else{
+                            Log.e("HomeListViewAdapter","=====歌曲已经在服务器上存在=====>");
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
             }
         });
         return view;

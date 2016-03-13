@@ -22,6 +22,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
                 "                         type varchar(512), " +
                 "                         size varchar(32)," +
                 "                         fileurl varchar(32)," +
+                "                         upload varchar(16)," +
                 "                         downloadurl varchar(32)," +
                 "                         albumid integer)");
 

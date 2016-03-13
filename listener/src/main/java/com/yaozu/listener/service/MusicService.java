@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.IBinder;
@@ -36,6 +35,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import io.vov.vitamio.MediaPlayer;
+
 public class MusicService extends Service {
 
     private MediaPlayer mMediaPlayer;
@@ -49,9 +50,6 @@ public class MusicService extends Service {
     private PlayState currentState;
     private int NOTIFICATION_ID = -1;
     private User user;
-
-    //缓冲的百分比
-    private int mPercent = 100;
 
     public MusicService() {
 
@@ -105,13 +103,14 @@ public class MusicService extends Service {
     private void prepareToPlay() {
         synchronized (this) {
             if (mMediaPlayer == null) {
-                mMediaPlayer = new MediaPlayer();
+                mMediaPlayer = new MediaPlayer(this);
                 mMediaPlayer.setWakeMode(MusicService.this, PowerManager.PARTIAL_WAKE_LOCK);
             }
             try {
                 String playMediaPath = mCurrentSong.getFileUrl();
-                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                //mMediaPlayer.setDataSource("http://120.27.129.229:8080/TestServers/servlet/DownLoadSongServlet?songname=" + URLEncoder.encode("稻香","UTF-8")+"&singer="+URLEncoder.encode("周杰伦","UTF-8"));
+                //mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                //mMediaPlayer.setDataSource("http://120.27.129.229:8080/TestServers/servlet/DownLoadSongServlet?songname=" + URLEncoder.encode("半兽人","UTF-8")+"&singer="+URLEncoder.encode("周杰伦","UTF-8"));
+                Log.d("MusicService", "playMediaPath: " + playMediaPath);
                 mMediaPlayer.setDataSource(playMediaPath);
                 mMediaPlayer.prepareAsync();
                 notifyState(PlayState.prepareing);
@@ -121,7 +120,6 @@ public class MusicService extends Service {
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    mPercent = 100;
                     notifyState(PlayState.prepared);
                     start();
                 }
@@ -129,7 +127,6 @@ public class MusicService extends Service {
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mPercent = 100;
                     notifyState(PlayState.completed);
                 }
             });
@@ -138,7 +135,6 @@ public class MusicService extends Service {
                 @Override
                 public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
                     Log.d("MusicService", "percent: " + percent);
-                    mPercent = percent;
                 }
             });
 
@@ -157,13 +153,20 @@ public class MusicService extends Service {
                 }
             });
 
+            mMediaPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
+                @Override
+                public void onSeekComplete(MediaPlayer mediaPlayer) {
+                    //mMediaPlayer.start();
+                }
+            });
+
             mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
                     switch (what) {
-                        case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+                        case MediaPlayer.MEDIA_ERROR_UNKNOWN:
                             mMediaPlayer.release();
-                            mMediaPlayer = new MediaPlayer();
+                            mMediaPlayer = new MediaPlayer(MusicService.this);
                             mMediaPlayer.setWakeMode(MusicService.this, PowerManager.PARTIAL_WAKE_LOCK);
                             break;
                         default:
@@ -275,6 +278,7 @@ public class MusicService extends Service {
      */
     public void playSong(Song song) {
         mSongs.clear();
+        stopPlayBack();
         this.mCurrentSong = song;
         prepareToPlay();
     }
@@ -366,7 +370,7 @@ public class MusicService extends Service {
      *
      * @return
      */
-    public int getCurrentPlayPosition() {
+    public long getCurrentPlayPosition() {
         if (currentState == PlayState.playing || currentState == PlayState.pause) {
             return mMediaPlayer.getCurrentPosition();
         }
@@ -380,30 +384,14 @@ public class MusicService extends Service {
      */
     public int getDuration() {
         if (currentState == PlayState.playing || currentState == PlayState.pause) {
-            return mMediaPlayer.getDuration();
+            return (int) mMediaPlayer.getDuration();
         }
         return -1;
     }
 
     public void seekto(final int pos) {
-        if (currentState == PlayState.playing || currentState == PlayState.pause) {
-            if (mMediaPlayer != null) {
-                float percent = (float) pos / (float) getDuration();
-                percent = percent * 100;
-                //如果大于缓冲的百分比
-                if (percent > mPercent) {
-                    mMediaPlayer.pause();
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            seekto(pos);
-                        }
-                    }, 1000);
-                } else {
-                    mMediaPlayer.start();
-                    mMediaPlayer.seekTo(pos);
-                }
-            }
+        if (mMediaPlayer != null) {
+            mMediaPlayer.seekTo(pos);
         }
     }
 

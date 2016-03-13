@@ -17,6 +17,8 @@ public class Song implements Serializable{
     private String downloadurl;
     //本地路径或者网络路径
     private String fileUrl;
+    //是否已经上传
+    private String upload;
     private long albumid;
 
     public Song(){
@@ -44,6 +46,14 @@ public class Song implements Serializable{
                 + ", duration=" + duration + ", singer=" + singer + ", album="
                 + album + ", type=" + type + ", size="
                 + size + ", fileUrl=" + fileUrl + "]";
+    }
+
+    public String getUpload() {
+        return upload;
+    }
+
+    public void setUpload(String upload) {
+        this.upload = upload;
     }
 
     public String getDownloadurl() {
