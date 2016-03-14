@@ -1,5 +1,6 @@
 package com.yaozu.listener;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -89,6 +91,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private boolean hasConnectToRongIM = false;
 
     private SongInfoDao mSongInfoDao;
+
     static {
         System.loadLibrary("mediascanner");
     }
@@ -127,7 +130,25 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         app = YaozuApplication.getIntance();
-        Vitamio.initialize(this);
+
+        new AsyncTask<Object, Object, Boolean>() {
+            @Override
+            protected void onPreExecute() {
+
+            }
+
+            @Override
+            protected Boolean doInBackground(Object... params) {
+                return Vitamio.initialize(HomeMainActivity.this);
+            }
+
+            @Override
+            protected void onPostExecute(Boolean inited) {
+                if (inited) {
+                }
+            }
+        }.execute();
+
         setContentView(R.layout.activity_home_main);
         mFragmentManager = getSupportFragmentManager();
         findViewByIds();

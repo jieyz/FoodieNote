@@ -92,4 +92,8 @@ public class DataInterface {
     public static String getHaveSongInServerUrl(){
         return APP_HOST + "TestServers/servlet/HaveSongServlet";
     }
+
+    public static String getPlaySongEncodeUrl(){
+        return APP_HOST + "TestServers/storesong/";
+    }
 }

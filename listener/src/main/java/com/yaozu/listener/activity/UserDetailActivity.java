@@ -3,6 +3,7 @@ package com.yaozu.listener.activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -10,10 +11,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.constant.Constant;
+import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
+import com.yaozu.listener.dao.NetDao;
 import com.yaozu.listener.db.dao.FriendDao;
 import com.yaozu.listener.db.model.Person;
 import com.yaozu.listener.listener.PersonStateInterface;
@@ -21,6 +27,8 @@ import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.service.MusicService;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.widget.RoundCornerImageView;
+
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -176,28 +184,41 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
                 startActivity(intent);
                 break;
             case R.id.user_detail_play_together:
-                MusicService service = YaozuApplication.getIntance().getMusicService();
-                Song song = new Song();
+                final MusicService service = YaozuApplication.getIntance().getMusicService();
+                final Song song = new Song();
                 String str[] = currentSongInfo.split("--");
-                String songname = str[0];
-                String singer = str[1];
-                System.out.println("===songname===>" + songname + "   ====singer===>" + singer);
+                final String songname = str[0];
+                final String singer = str[1];
                 song.setTitle(songname);
                 song.setSinger(singer);
-                try {
-                    song.setFileUrl("http://120.27.129.229:8080/TestServers/servlet/DownLoadSongServlet?songname=" + URLEncoder.encode(songname, "UTF-8") + "&singer=" + URLEncoder.encode(singer, "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                if (service != null) {
-                    service.playSong(song);
-                } else {
-                    Intent intentservice = new Intent(this, MusicService.class);
-                    ArrayList<Song> songs = new ArrayList<Song>();
-                    songs.add(song);
-                    intentservice.putExtra(IntentKey.MEDIA_FILE_LIST, songs);
-                    startService(intentservice);
-                }
+                NetDao.getPlaySongEncodeFileName(song, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                        int code = jsonObject.getIntValue("code");
+                        if (code == 0) {//歌曲存在
+                            String encodeFileName = jsonObject.getString("encodefilename");
+                            Log.d("UserDetailActivity", "=====playUrl=====>" + (DataInterface.getPlaySongEncodeUrl() + encodeFileName));
+                            song.setFileUrl(DataInterface.getPlaySongEncodeUrl() + encodeFileName);
+                            if (service != null) {
+                                service.playSong(song);
+                            } else {
+                                Intent intentservice = new Intent(UserDetailActivity.this, MusicService.class);
+                                ArrayList<Song> songs = new ArrayList<Song>();
+                                songs.add(song);
+                                intentservice.putExtra(IntentKey.MEDIA_FILE_LIST, songs);
+                                startService(intentservice);
+                            }
+                        } else {//歌曲不存在
+
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
                 break;
         }
     }

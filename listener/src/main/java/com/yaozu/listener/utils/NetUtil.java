@@ -305,6 +305,12 @@ public class NetUtil {
         return true;
     }
 
+    /**
+     * 检查是否已在服务器上，而后决定要不要上传
+     * @param song
+     * @param listener
+     * @param errorListener
+     */
     public static void uploadSongIfNotExist(final Song song,Response.Listener<JSONObject> listener, Response.ErrorListener errorListener){
         String url = null;
         try {

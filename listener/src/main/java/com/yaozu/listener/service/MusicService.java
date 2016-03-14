@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import io.vov.vitamio.MediaPlayer;
 
 public class MusicService extends Service {
-
+    private String TAG = this.getClass().getSimpleName();
     private MediaPlayer mMediaPlayer;
     private YaozuApplication app;
 
@@ -133,7 +133,7 @@ public class MusicService extends Service {
             mMediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
                 @Override
                 public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
-                    Log.d("MusicService", "percent: " + percent);
+                    //Log.d("MusicService", "percent: " + percent);
                 }
             });
 
@@ -238,7 +238,7 @@ public class MusicService extends Service {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        Log.d("url", "url===>" + url);
+        Log.d(TAG, "url===>" + url);
         //TODO
         VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
                 url,
