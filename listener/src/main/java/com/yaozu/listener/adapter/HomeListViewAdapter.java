@@ -56,6 +56,10 @@ public class HomeListViewAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public int getCurrentPlayingPos(){
+        return mCurrentPlayingPos;
+    }
+
     @Override
     public int getCount() {
         return songs.size();
@@ -82,7 +86,7 @@ public class HomeListViewAdapter extends BaseAdapter {
             holder.songName = (TextView) view.findViewById(R.id.song_name);
             holder.singer = (TextView) view.findViewById(R.id.song_singer);
             holder.indicate = (ImageView) view.findViewById(R.id.playing_item);
-            holder.soundWaveView = (SoundWaveView) view.findViewById(R.id.sound_wave);
+            holder.playing = (ImageView) view.findViewById(R.id.playlist_playing);
             holder.uploadFile = (TextView) view.findViewById(R.id.upload_file);
             view.setTag(holder);
         } else {
@@ -107,16 +111,10 @@ public class HomeListViewAdapter extends BaseAdapter {
          //音乐播放时的波浪示意
         if (mCurrentPlayingPos == position) {
             holder.indicate.setVisibility(View.VISIBLE);
-            holder.soundWaveView.setVisibility(View.VISIBLE);
-            MusicService service = YaozuApplication.getIntance().getMusicService();
-            if (service != null && service.isPlaying()) {
-                holder.soundWaveView.start();
-            }
-            mView = holder.soundWaveView;
+            holder.playing.setVisibility(View.VISIBLE);
         } else {
             holder.indicate.setVisibility(View.INVISIBLE);
-            holder.soundWaveView.setVisibility(View.GONE);
-            holder.soundWaveView.stop();
+            holder.playing.setVisibility(View.GONE);
         }
 
         final int currentPosition = position;
@@ -175,7 +173,7 @@ public class HomeListViewAdapter extends BaseAdapter {
         public TextView songName;
         public TextView singer;
         public ImageView indicate;
-        public SoundWaveView soundWaveView;
+        public ImageView playing;
         public TextView uploadFile;
     }
 }

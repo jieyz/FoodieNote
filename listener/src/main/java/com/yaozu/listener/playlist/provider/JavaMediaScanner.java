@@ -151,9 +151,14 @@ public class JavaMediaScanner {
         }
     }
 
-    private void parserMediaMetaByRetriever(String path, Song song) {
+    private void parserMediaMetaByRetriever(String path, Song song){
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(path);
+        try {
+            mmr.setDataSource(path);
+        }catch (IllegalArgumentException e){
+            song.setTitle("");
+            return;
+        }
         String _artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
         String _title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
         String _album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);

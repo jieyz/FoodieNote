@@ -170,6 +170,7 @@ public class MusicLocalFragment extends BaseFragment implements View.OnClickList
     private void getData() {
         mAdapter.setSongData((ArrayList<Song>) songs);
         mListView.setAdapter(mAdapter);
+        mListView.setSelectionFromTop(mAdapter.getCurrentPlayingPos(),300);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
