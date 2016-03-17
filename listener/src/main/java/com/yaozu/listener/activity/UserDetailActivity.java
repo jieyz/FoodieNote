@@ -191,34 +191,9 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
                 final String singer = str[1];
                 song.setTitle(songname);
                 song.setSinger(singer);
-                NetDao.getPlaySongEncodeFileName(song, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
-                        int code = jsonObject.getIntValue("code");
-                        if (code == 0) {//歌曲存在
-                            String encodeFileName = jsonObject.getString("encodefilename");
-                            Log.d("UserDetailActivity", "=====playUrl=====>" + (DataInterface.getPlaySongEncodeUrl() + encodeFileName));
-                            song.setFileUrl(DataInterface.getPlaySongEncodeUrl() + encodeFileName);
-                            if (service != null) {
-                                service.playSong(song);
-                            } else {
-                                Intent intentservice = new Intent(UserDetailActivity.this, MusicService.class);
-                                ArrayList<Song> songs = new ArrayList<Song>();
-                                songs.add(song);
-                                intentservice.putExtra(IntentKey.MEDIA_FILE_LIST, songs);
-                                startService(intentservice);
-                            }
-                        } else {//歌曲不存在
-
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                });
+                if(service != null){
+                    service.playSongFromServer(song);
+                }
                 break;
         }
     }

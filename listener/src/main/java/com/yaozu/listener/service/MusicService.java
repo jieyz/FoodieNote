@@ -15,6 +15,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -22,6 +23,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
+import com.yaozu.listener.dao.NetDao;
 import com.yaozu.listener.listener.PersonState;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.utils.NetUtil;
@@ -282,6 +284,47 @@ public class MusicService extends Service {
         prepareToPlay();
     }
 
+    /**
+     * 播放非本地的歌曲
+     *
+     * @param song 只需要保证title、singer有值就可以了
+     */
+    public void playSongFromServer(final Song song) {
+        NetDao.getPlaySongEncodeFileName(song, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                int code = jsonObject.getIntValue("code");
+                if (code == 0) {//歌曲存在
+                    String encodeFileName = jsonObject.getString("encodefilename");
+                    Log.d(TAG, "=====playUrl=====>" + (DataInterface.getPlaySongEncodeUrl() + encodeFileName));
+                    song.setFileUrl(DataInterface.getPlaySongEncodeUrl() + encodeFileName);
+                    playSong(song);
+                } else {//歌曲不存在
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+    }
+
+    /**
+     * 播放非本地的歌曲
+     *
+     * @param songname
+     * @param singer
+     */
+    public void playSongFromServer(String songname, String singer) {
+        Song song = new Song();
+        song.setTitle(songname);
+        song.setSinger(singer);
+        playSongFromServer(song);
+    }
+
     private void notification() {
 /*        String songName;
         // assign the song name to songName
@@ -368,6 +411,10 @@ public class MusicService extends Service {
         } else {
             return false;
         }
+    }
+
+    public boolean isPlayInback() {
+        return currentState == PlayState.pause || currentState == PlayState.playing;
     }
 
     /**

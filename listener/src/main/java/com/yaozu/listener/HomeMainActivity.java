@@ -186,6 +186,9 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         mCurrentSongName.setText(user.getQuitSongName());
         mCurrentSinger.setText(user.getQuitSinger());
         mSongInfoDao = new SongInfoDao(this);
+
+        Intent intent = new Intent(this, MusicService.class);
+        startService(intent);
     }
 
     @Override
@@ -307,17 +310,17 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         MusicService service = app.getMusicService();
         switch (v.getId()) {
             case R.id.mediaplay_play_pause:
-                if (service == null) {
-                    Intent intent = new Intent(this, MusicService.class);
-                    ArrayList<Song> songs = (ArrayList<Song>) mSongInfoDao.findAllSongInfo();
-                    intent.putExtra(IntentKey.MEDIA_CURRENT_INDEX, user.getQuitIndex());
-                    intent.putExtra(IntentKey.MEDIA_FILE_LIST, songs);
-                    startService(intent);
-                } else {
-                    if (service.isPlaying()) {
-                        service.pause();
+                if (service != null) {
+                    if (service.isPlayInback()) {
+                        if (service.isPlaying()) {
+                            service.pause();
+                        } else {
+                            service.start();
+                        }
                     } else {
-                        service.start();
+                        ArrayList<Song> songs = (ArrayList<Song>) mSongInfoDao.findAllSongInfo();
+                        service.setmSongs(songs);
+                        service.switchNextSong(user.getQuitIndex());
                     }
                 }
                 break;
