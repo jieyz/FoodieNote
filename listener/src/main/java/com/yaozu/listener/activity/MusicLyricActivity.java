@@ -34,10 +34,12 @@ import android.widget.Toast;
 import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.constant.IntentKey;
+import com.yaozu.listener.listener.PersonState;
 import com.yaozu.listener.playlist.lyric.LRCUtils;
 import com.yaozu.listener.service.MusicService;
 import com.yaozu.listener.utils.DownLoadUtil;
 import com.yaozu.listener.utils.FileUtil;
+import com.yaozu.listener.utils.IntentUtil;
 
 import org.w3c.dom.Text;
 
@@ -67,7 +69,12 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     private TextView lyricTitle;
     private TextView lyricSinger;
     private RelativeLayout background;
+    //播放暂停
     private ImageView mPlay;
+    //上一首和下一首
+    private ImageView mPrev, mNext;
+    //跟随播放的用户
+    private TextView mFollowUser;
     private ListView mShowLyricView;
     private LyricAdapter mAdapter;
     private ArrayList<LRCUtils.timelrc> lyricData;
@@ -143,9 +150,9 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         initDate();
         mService = YaozuApplication.getIntance().getMusicService();
         setProgress();
-        if (mService != null && mService.isPlaying()) {
-            mPlay.setImageResource(R.drawable.play_btn_pause);
-        }
+        initFollowUserState();
+        changeMenuState();
+
         registerPushReceiver();
 
         SwipeBackLayout swipeBackLayout = getSwipeBackLayout();
@@ -167,6 +174,9 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         lyricTitle = (TextView) findViewById(R.id.music_lyric_title);
         lyricSinger = (TextView) findViewById(R.id.music_lyric_singer);
         mShowLyricView = (ListView) findViewById(R.id.music_lyric_show);
+        mPrev = (ImageView) findViewById(R.id.play_btn_prev);
+        mNext = (ImageView) findViewById(R.id.play_btn_next);
+        mFollowUser = (TextView) findViewById(R.id.music_lyric_follow_user);
 
         //封面背景
         Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
@@ -303,6 +313,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
 
     private void setOnclickListener() {
         mPlay.setOnClickListener(this);
+        mFollowUser.setOnClickListener(this);
     }
 
     @Override
@@ -318,6 +329,10 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                         mPlay.setImageResource(R.drawable.play_btn_pause);
                     }
                 }
+                break;
+            case R.id.music_lyric_follow_user:
+                IntentUtil.toUserDetail(MusicLyricActivity.this, YaozuApplication.followUserName, YaozuApplication.followUserid,
+                        PersonState.PLAYING.toString(), lyricTitle.getText().toString() + "--" + lyricSinger.getText().toString());
                 break;
         }
     }
@@ -537,10 +552,61 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     }
 
     public void notifySongPlaying() {
-
+        changeMenuState();
+        if (YaozuApplication.isFollowPlay) {
+            mPlay.setImageResource(R.drawable.play_btn_pause_not_available);
+        } else {
+            mPlay.setImageResource(R.drawable.play_btn_pause);
+        }
     }
 
     public void notifySongPause() {
+        changeMenuState();
+        if (YaozuApplication.isFollowPlay) {
+            mPlay.setImageResource(R.drawable.play_btn_play_not_available);
+        } else {
+            mPlay.setImageResource(R.drawable.play_btn_play);
+        }
+    }
 
+    /**
+     * 改变操作栏的状态，变为可操作或者不可操作
+     */
+    private void changeMenuState() {
+        if (YaozuApplication.isFollowPlay) {
+            mPlay.setClickable(false);
+            mSeekBar.setEnabled(false);
+            mPrev.setImageResource(R.drawable.play_btn_prev_not_available);
+            mNext.setImageResource(R.drawable.play_btn_next_not_available);
+
+            mFollowUser.setVisibility(View.VISIBLE);
+            mFollowUser.setText(YaozuApplication.followUserName);
+        } else {
+            mPlay.setClickable(true);
+            mSeekBar.setEnabled(true);
+            mPrev.setImageResource(R.drawable.play_btn_prev);
+            mNext.setImageResource(R.drawable.play_btn_next);
+
+            mFollowUser.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * 初始化一起听的用户状态
+     */
+    private void initFollowUserState() {
+        if (mService != null && mService.isPlaying()) {
+            if (YaozuApplication.isFollowPlay) {
+                mPlay.setImageResource(R.drawable.play_btn_pause_not_available);
+            } else {
+                mPlay.setImageResource(R.drawable.play_btn_pause);
+            }
+        } else {
+            if (YaozuApplication.isFollowPlay) {
+                mPlay.setImageResource(R.drawable.play_btn_play_not_available);
+            } else {
+                mPlay.setImageResource(R.drawable.play_btn_play);
+            }
+        }
     }
 }

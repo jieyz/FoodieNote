@@ -32,19 +32,24 @@ public class YaozuApplication extends Application {
 
     private final int MUSIC_SERVICE = 0;
     private HashMap<Integer, MusicService> musicService = new HashMap<>();
-    public static Map<BaseActivity,Boolean> mActivitys = new HashMap<BaseActivity,Boolean>();
+    public static Map<BaseActivity, Boolean> mActivitys = new HashMap<BaseActivity, Boolean>();
     //PersonState的实例集合
     public static List<PersonStateInterface> personStateInstances = new ArrayList<PersonStateInterface>();
+
+    public static boolean isFollowPlay = false;
+    public static String followUserid = null;
+    public static String followUserName = null;
+
     private final int CONNECTED = 0;
     private final int DISCONNECTED = 1;
     private final int CONNECTING = 2;
     private final int NETWORK_UNAVAILABLE = 3;
     private final int KICKED_OFFLINE_BY_OTHER_CLIENT = 4;
-    private Handler mHandler = new Handler(){
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case CONNECTED://连接成功。
                     Toast.makeText(app, "连接成功", Toast.LENGTH_SHORT).show();
                     break;
@@ -85,7 +90,7 @@ public class YaozuApplication extends Application {
             /**
              * 设置连接状态变化的监听器.
              */
-            RongIM.getInstance().getRongIMClient().setConnectionStatusListener(new MyConnectionStatusListener(YaozuApplication.getIntance(),mHandler));
+            RongIM.getInstance().getRongIMClient().setConnectionStatusListener(new MyConnectionStatusListener(YaozuApplication.getIntance(), mHandler));
         }
     }
 
@@ -97,29 +102,43 @@ public class YaozuApplication extends Application {
         return musicService.get(MUSIC_SERVICE);
     }
 
-    public void cleanMusicService(){
+    public void cleanMusicService() {
         musicService.remove(MUSIC_SERVICE);
     }
 
-    public void setMusicService(MusicService service){
+    public void setMusicService(MusicService service) {
         musicService.put(MUSIC_SERVICE, service);
+    }
+
+    public static void clearFollowInfo() {
+        isFollowPlay = false;
+        followUserid = null;
+        followUserName = null;
+    }
+
+    public static void setFollowPlayInfo(String userid, String username) {
+        isFollowPlay = true;
+        followUserid = userid;
+        followUserName = username;
     }
 
     /**
      * 应用是否在前台运行
+     *
      * @return
      */
-    public static boolean isAppTopRunning(){
+    public static boolean isAppTopRunning() {
         boolean topRunning = false;
         Set<Map.Entry<BaseActivity, Boolean>> entries = YaozuApplication.mActivitys.entrySet();
         for (Map.Entry<BaseActivity, Boolean> entry : entries) {
             boolean isStart = entry.getValue();
-            if(isStart){
+            if (isStart) {
                 topRunning = true;
             }
         }
         return topRunning;
     }
+
     /**
      * 获得当前进程的名字
      *

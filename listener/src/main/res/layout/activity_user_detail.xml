@@ -91,12 +91,23 @@
                     android:text="test"
                     android:textColor="@color/gray_white"
                     android:textSize="12dp" />
+
+                <ImageView
+                    android:id="@+id/user_detail_not_follow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/lay_icn_not_interest"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="5dp"
+                    android:visibility="gone"
+                    android:padding="5dp"/>
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/user_detail_playing_info"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:layout_below="@+id/user_detail_main"
                 android:layout_marginTop="15dp"
                 android:background="@color/white"
@@ -117,12 +128,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:singleLine="true"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toLeftOf="@+id/user_detail_play_together"
+                    android:layout_toRightOf="@+id/user_detail_flag"
                     android:ellipsize="marquee"
                     android:focusable="true"
-                    android:layout_toLeftOf="@+id/user_detail_play_together"
-                    android:layout_marginLeft="5dp"
-                    android:layout_toRightOf="@+id/user_detail_flag"
+                    android:singleLine="true"
                     android:textColor="@color/gray_white"
                     android:textSize="12dp" />
 
@@ -130,10 +141,14 @@
                     android:id="@+id/user_detail_play_together"
                     style="@style/RippleBackground"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="5dp"
-                    android:padding="5dp"
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:drawableLeft="@drawable/clock_icn_shuffle"
+                    android:drawablePadding="5dp"
+                    android:paddingLeft="5dp"
                     android:text="一起听"
                     android:textColor="@color/black" />
             </RelativeLayout>

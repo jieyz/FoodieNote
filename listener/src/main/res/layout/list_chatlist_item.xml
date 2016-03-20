@@ -33,7 +33,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/sound_wave"
             android:layout_toRightOf="@+id/chat_list_usericon"
             android:orientation="vertical"
             android:paddingLeft="5dp">
@@ -62,6 +61,16 @@
                 android:textColor="#7F7F7F"
                 android:textSize="11dp" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/chat_list_playing"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/chat_music_normal"
+            android:visibility="gone" />
 
         <View
             android:layout_width="match_parent"

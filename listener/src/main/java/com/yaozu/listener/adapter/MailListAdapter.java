@@ -29,8 +29,12 @@ import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.dao.FriendDao;
 import com.yaozu.listener.db.model.Person;
 import com.yaozu.listener.fragment.social.MailListFragment;
+import com.yaozu.listener.listener.PersonState;
 import com.yaozu.listener.listener.PersonStateInterface;
+import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.utils.IntentUtil;
 import com.yaozu.listener.utils.NetUtil;
+import com.yaozu.listener.utils.Order;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
 import com.yaozu.listener.widget.AlwaysMarqueeTextView;
@@ -64,11 +68,11 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
         this.persons = data;
         friendDao = new FriendDao(mContext);
 
-        new CountDownTimer(300000,30000){
+        new CountDownTimer(300000, 30000) {
 
             @Override
             public void onTick(long l) {
-                  notifyDataSetChanged();
+                notifyDataSetChanged();
             }
 
             @Override
@@ -152,7 +156,7 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
         current_song.setText(person.getCurrentSong());
         //更新状态
         TextView state = (TextView) view.findViewById(R.id.maillist_user_listenering_title);
-        if ("playing".equals(person.getState())) {
+        if (PersonState.PLAYING.toString().equals(person.getState())) {
             state.setText(STR_PLAYING);
             state.setTextColor(mContext.getResources().getColor(R.color.playing_color));
             if (person.isChange()) {
@@ -167,7 +171,7 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
                     current_song.setText("");
                 }
             }
-        } else if ("pause".equals(person.getState())) {
+        } else if (PersonState.PAUSE.toString().equals(person.getState())) {
             state.setText(STR_PAUSE);
             state.setTextColor(mContext.getResources().getColor(R.color.pause_color));
             if (person.isChange()) {
@@ -200,13 +204,7 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, UserDetailActivity.class);
-                intent.putExtra(IntentKey.USER_NAME, person.getName());
-                intent.putExtra(IntentKey.USER_ID, person.getId());
-                intent.putExtra(IntentKey.CURRENT_SONG_STATE, person.getState());
-                intent.putExtra(IntentKey.CURRENT_SONG_INFO, person.getCurrentSong());
-                //intent.putExtra(IntentKey.USER_ICON_URL, iconurl);
-                mContext.startActivity(intent);
+                IntentUtil.toUserDetail(mContext, person.getName(), person.getId(), person.getState(), person.getCurrentSong());
             }
         });
         return view;

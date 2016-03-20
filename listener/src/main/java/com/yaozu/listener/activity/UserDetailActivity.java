@@ -22,9 +22,11 @@ import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.dao.NetDao;
 import com.yaozu.listener.db.dao.FriendDao;
 import com.yaozu.listener.db.model.Person;
+import com.yaozu.listener.listener.PersonState;
 import com.yaozu.listener.listener.PersonStateInterface;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.utils.IntentUtil;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.widget.RoundCornerImageView;
 
@@ -47,6 +49,9 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
     private TextView addOrSend;
     private ImageView actionBack;
     private RoundCornerImageView userIcon;
+
+    //放弃跟随播放
+    private ImageView notFollow;
 
     private String name, str_userid, token, iconUrl;
     private Dialog dialog;
@@ -92,11 +97,13 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
         t_curentflag = (TextView) findViewById(R.id.user_detail_flag);
         t_currentsong = (TextView) findViewById(R.id.user_detail_info);
         t_playtogether = (TextView) findViewById(R.id.user_detail_play_together);
+        notFollow = (ImageView) findViewById(R.id.user_detail_not_follow);
 
         actionBack.setOnClickListener(this);
         addOrSend.setOnClickListener(this);
         userIcon.setOnClickListener(this);
         t_playtogether.setOnClickListener(this);
+        notFollow.setOnClickListener(this);
     }
 
     private void initData() {
@@ -105,11 +112,16 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
             addOrSend.setText("发消息");
         }
 
-        if ("playing".equals(state)) {
+        if (PersonState.PLAYING.toString().equals(state)) {
             r_playingInfo.setVisibility(View.VISIBLE);
             t_currentsong.setText(currentSongInfo);
         } else {
             r_playingInfo.setVisibility(View.GONE);
+        }
+
+        if (YaozuApplication.isFollowPlay && YaozuApplication.followUserid.equals(str_userid)) {
+            t_playtogether.setVisibility(View.GONE);
+            notFollow.setVisibility(View.VISIBLE);
         }
     }
 
@@ -191,8 +203,20 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
                 final String singer = str[1];
                 song.setTitle(songname);
                 song.setSinger(singer);
-                if(service != null){
+                if (service != null) {
                     service.playSongFromServer(song);
+                }
+                YaozuApplication.setFollowPlayInfo(str_userid, name);
+                t_playtogether.setVisibility(View.GONE);
+                notFollow.setVisibility(View.VISIBLE);
+                break;
+            case R.id.user_detail_not_follow:
+                YaozuApplication.clearFollowInfo();
+                t_playtogether.setVisibility(View.VISIBLE);
+                notFollow.setVisibility(View.GONE);
+                final MusicService service2 = YaozuApplication.getIntance().getMusicService();
+                if (service2 != null) {
+                    service2.pause();
                 }
                 break;
         }

@@ -2,9 +2,11 @@
 <resources>
     <color name="appthemecolor">#7EC0EE</color>
     <color name="black">#99000000</color>
+    <color name="black2">#3CB371</color>
     <color name="white">#ffffffff</color>
     <color name="gray_white">#B5B5B5</color>
 
     <color name="playing_color">#00CD66</color>
-    <color name="pause_color">#FF8247</color>
+    <color name="pause_color">#CD3333</color>
+    <color name="playing_color_two">#FF8247</color>
 </resources>

@@ -1,5 +1,6 @@
 package com.yaozu.listener.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -9,7 +10,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.yaozu.listener.R;
+import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.adapter.ChatDetailListViewAdapter;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
@@ -26,6 +30,11 @@ import com.yaozu.listener.db.dao.ChatDetailInfoDao;
 import com.yaozu.listener.db.dao.ChatListInfoDao;
 import com.yaozu.listener.db.model.ChatDetailInfo;
 import com.yaozu.listener.db.model.ChatListInfo;
+import com.yaozu.listener.db.model.Person;
+import com.yaozu.listener.listener.PersonState;
+import com.yaozu.listener.listener.PersonStateInterface;
+import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.utils.IntentUtil;
 import com.yaozu.listener.utils.VolleyHelper;
 import com.yaozu.listener.widget.ResizeLayout;
 
@@ -41,7 +50,7 @@ import io.rong.message.TextMessage;
 /**
  * Created by 耀祖 on 2016/1/18.
  */
-public class ChatDetailActivity extends BaseActivity implements View.OnClickListener {
+public class ChatDetailActivity extends BaseActivity implements View.OnClickListener, PersonStateInterface {
     private ListView mListView;
     private TextView user;
     private EditText mEditText;
@@ -51,15 +60,26 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
     private ChatDetailInfoDao mChatDetailDao;
     private ChatListInfoDao chatListInfoDao;
     private String mOtherUserId;
+    private TextView mFollowSong;
 
     private ResizeLayout chatRoot;
+    private String songInfo, songstate;
+
+    /**
+     * 对话框
+     */
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        YaozuApplication.personStateInstances.add(this);
         setContentView(R.layout.activity_social_chatdetail);
         mOtherUserId = getIntent().getStringExtra(IntentKey.CHAT_USERID);
+        songInfo = getIntent().getStringExtra(IntentKey.CURRENT_SONG_INFO);
+        songstate = getIntent().getStringExtra(IntentKey.CURRENT_SONG_STATE);
         findViews();
+        initData();
         mChatDetailDao = new ChatDetailInfoDao(this);
         chatListInfoDao = new ChatListInfoDao(this);
         mListAdapter = new ChatDetailListViewAdapter(this, mOtherUserId, mChatDetailDao.findAllChatDetailInfoByUserid(mOtherUserId));
@@ -68,9 +88,21 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
         RongIM.getInstance().getRongIMClient().clearConversations(Conversation.ConversationType.PRIVATE);
         mListView.setSelection(mListAdapter.getCount() - 1);
 
+
         //获取用户信息
         requestCheckUserInfo(mOtherUserId);
     }
+
+    private void initData() {
+        if (songstate != null && PersonState.PLAYING.toString().equals(songstate)) {
+            if (songInfo != null) {
+                mFollowSong.setVisibility(View.VISIBLE);
+                findViewById(R.id.activity_chatdetail_songinfo_ll).setVisibility(View.VISIBLE);
+                mFollowSong.setText(songInfo.split("--")[0]);
+            }
+        }
+    }
+
 
     private void requestCheckUserInfo(String userid) {
         String url = DataInterface.getCheckUserInfoUrl() + "?userid=" + userid;
@@ -108,6 +140,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         makeUnreadTohadread();
+        YaozuApplication.personStateInstances.remove(this);
     }
 
     /**
@@ -131,8 +164,10 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
         mEditText = (EditText) findViewById(R.id.activity_social_chatdetail_edittext);
         back = (ImageView) findViewById(R.id.activity_register_back);
         mSend = (Button) findViewById(R.id.activity_social_chatdetail_send);
+        mFollowSong = (TextView) findViewById(R.id.activity_chatdetail_songinfo);
         mSend.setOnClickListener(this);
         back.setOnClickListener(this);
+        mFollowSong.setOnClickListener(this);
 
         chatRoot.setCallBackListener(new ResizeLayout.OnLayoutCallBack() {
             @Override
@@ -175,9 +210,62 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
             case R.id.activity_register_back:
                 finish();
                 break;
+            case R.id.activity_chatdetail_songinfo:
+                //TODO
+                showDialog();
+                break;
         }
     }
 
+    /**
+     * 显示对话框
+     */
+    private void showDialog() {
+        dialog = new Dialog(this, R.style.NobackDialog);
+        View view = View.inflate(this, R.layout.dialog_select_followsong, null);
+        //正在听
+        TextView listening = (TextView) view.findViewById(R.id.dialog_song_info_t);
+        //歌曲详情
+        TextView songinfo = (TextView) view.findViewById(R.id.dialog_song_info);
+        songinfo.setText(songInfo);
+
+        TextView with = (TextView) view.findViewById(R.id.dialog_follow_or_lyric);
+        RelativeLayout withll = (RelativeLayout) view.findViewById(R.id.dialog_follow_or_lyric_rl);
+        RelativeLayout cancel = (RelativeLayout) view.findViewById(R.id.dialog_follow_cancel_rl);
+        if (!YaozuApplication.isFollowPlay) {
+            listening.setText("正在听:");
+            with.setText("和 " + user.getText().toString() + " 一起听");
+        } else {
+            listening.setText("你们正在听:");
+            with.setText("去播放页");
+        }
+        withll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                if (!YaozuApplication.isFollowPlay) {
+                    final MusicService service = YaozuApplication.getIntance().getMusicService();
+                    if (service != null) {
+                        String str[] = songInfo.split("--");
+                        final String songname = str[0];
+                        final String singer = str[1];
+                        service.playSongFromServer(songname, singer);
+                        YaozuApplication.setFollowPlayInfo(mOtherUserId, user.getText().toString());
+                    }
+                } else {
+                    IntentUtil.toMusicLyric(ChatDetailActivity.this);
+                }
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setContentView(view);
+        dialog.show();
+    }
 
     private void sendMessage() {
         final String msg = mEditText.getText().toString().trim();
@@ -234,5 +322,18 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
         playingintent.putExtra(IntentKey.SEND_BUNDLE, bundle);
         LocalBroadcastManager playinglocalBroadcastManager = LocalBroadcastManager.getInstance(this);
         playinglocalBroadcastManager.sendBroadcast(playingintent);
+    }
+
+    @Override
+    public void updatePersonState(Person person) {
+        songInfo = person.getCurrentSong();
+        if (PersonState.PLAYING.toString().equals(person.getState())) {
+            mFollowSong.setVisibility(View.VISIBLE);
+            findViewById(R.id.activity_chatdetail_songinfo_ll).setVisibility(View.VISIBLE);
+            mFollowSong.setText(person.getCurrentSong().split("--")[0]);
+        } else {
+            mFollowSong.setVisibility(View.GONE);
+            findViewById(R.id.activity_chatdetail_songinfo_ll).setVisibility(View.GONE);
+        }
     }
 }

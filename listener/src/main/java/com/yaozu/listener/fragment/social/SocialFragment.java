@@ -46,6 +46,7 @@ public class SocialFragment extends BaseFragment {
     private RadioGroup mRdioGroup;
     private RadioButton chat, maillist, my;
     private PagerSlidingTabStrip pagerSlidingTabStrip;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -81,7 +82,7 @@ public class SocialFragment extends BaseFragment {
     }
 
     @Override
-    public void notifyCurrentSongMsg(String name, String singer,long album_id, int currentPos) {
+    public void notifyCurrentSongMsg(String name, String singer, long album_id, int currentPos) {
 
     }
 
@@ -106,6 +107,7 @@ public class SocialFragment extends BaseFragment {
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mViewPager = (ViewPager) view.findViewById(R.id.social_viewpager);
+        mViewPager.setOffscreenPageLimit(2);
         mViewPager.setAdapter(new SocialViewPagerAdapter(((FragmentActivity) getActivity()).getSupportFragmentManager()));
         mRdioGroup = (RadioGroup) view.findViewById(R.id.social_actionbar);
 

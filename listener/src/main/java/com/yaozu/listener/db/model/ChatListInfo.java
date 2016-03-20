@@ -11,6 +11,24 @@ public class ChatListInfo implements Serializable{
     private String lastchatcontent;
     private String iconcacheurl;
     private String unreadcount;
+    private String state;
+    private String songinfo;
+
+    public String getSonginfo() {
+        return songinfo;
+    }
+
+    public void setSonginfo(String songinfo) {
+        this.songinfo = songinfo;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public String getUnreadcount() {
         return unreadcount;

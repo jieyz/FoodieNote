@@ -56,7 +56,7 @@ public class HomeListViewAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public int getCurrentPlayingPos(){
+    public int getCurrentPlayingPos() {
         return mCurrentPlayingPos;
     }
 
@@ -101,14 +101,14 @@ public class HomeListViewAdapter extends BaseAdapter {
         holder.songName.setText(song.getTitle());
         holder.singer.setText(song.getSinger() + " -- " + song.getAlbum());
         //如果不存在把颜色置灰
-        if(!exist){
+        if (!exist) {
             holder.songName.setTextColor(Color.parseColor("#EAEAEA"));
             holder.singer.setTextColor(Color.parseColor("#EAEAEA"));
-        }else{
+        } else {
             holder.songName.setTextColor(Color.parseColor("#363636"));
             holder.singer.setTextColor(Color.parseColor("#7F7F7F"));
         }
-         //音乐播放时的波浪示意
+        //音乐播放时的波浪示意
         if (mCurrentPlayingPos == position) {
             holder.indicate.setVisibility(View.VISIBLE);
             holder.playing.setVisibility(View.VISIBLE);
@@ -121,10 +121,12 @@ public class HomeListViewAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!exist){
-                    Toast.makeText(mContext,"文件不存在！",Toast.LENGTH_SHORT).show();
+                if (!exist) {
+                    Toast.makeText(mContext, "文件不存在！", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                YaozuApplication.clearFollowInfo();
+
                 setCurrentPlayingPos(position);
                 MusicService service = YaozuApplication.getIntance().getMusicService();
                 if (service == null) {
@@ -152,10 +154,10 @@ public class HomeListViewAdapter extends BaseAdapter {
                         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
                         int code = jsonObject.getIntValue("code");
                         //表示服务器上没有此歌曲
-                        if(code == 1){
+                        if (code == 1) {
                             NetUtil.uploadFile(mContext, song, new File(song.getFileUrl()), null).start();
-                        }else{
-                            Log.e("HomeListViewAdapter","=====歌曲已经在服务器上存在=====>");
+                        } else {
+                            Log.e("HomeListViewAdapter", "=====歌曲已经在服务器上存在=====>");
                         }
                     }
                 }, new Response.ErrorListener() {

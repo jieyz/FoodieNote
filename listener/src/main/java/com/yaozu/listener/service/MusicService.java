@@ -24,9 +24,12 @@ import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.dao.NetDao;
+import com.yaozu.listener.db.model.Person;
 import com.yaozu.listener.listener.PersonState;
+import com.yaozu.listener.listener.PersonStateInterface;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.utils.NetUtil;
+import com.yaozu.listener.utils.Order;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
 
@@ -39,7 +42,7 @@ import java.util.ArrayList;
 
 import io.vov.vitamio.MediaPlayer;
 
-public class MusicService extends Service {
+public class MusicService extends Service implements PersonStateInterface {
     private String TAG = this.getClass().getSimpleName();
     private MediaPlayer mMediaPlayer;
     private YaozuApplication app;
@@ -52,6 +55,7 @@ public class MusicService extends Service {
     private PlayState currentState;
     private int NOTIFICATION_ID = -1;
     private User user;
+    private int seektoOffset = 0;
 
     public MusicService() {
 
@@ -81,6 +85,7 @@ public class MusicService extends Service {
         registerConnectReceiver();
         initAuidoData(intent);
         user = new User(app);
+        flags = START_STICKY;
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -231,6 +236,9 @@ public class MusicService extends Service {
      * @param state
      */
     private void notificationServerPersonState(PersonState state) {
+        if (mCurrentSong == null) {
+            return;
+        }
         String url = null;
         try {
             String songname = mCurrentSong.getTitle();
@@ -278,7 +286,9 @@ public class MusicService extends Service {
      * @param song
      */
     public void playSong(Song song) {
-        mSongs.clear();
+        if (mSongs != null) {
+            mSongs.clear();
+        }
         stopPlayBack();
         this.mCurrentSong = song;
         prepareToPlay();
@@ -319,6 +329,7 @@ public class MusicService extends Service {
      * @param singer
      */
     public void playSongFromServer(String songname, String singer) {
+        System.out.println("==============songname======>" + songname + "  singer=====>" + singer);
         Song song = new Song();
         song.setTitle(songname);
         song.setSinger(singer);
@@ -450,6 +461,7 @@ public class MusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        YaozuApplication.personStateInstances.add(this);
         app = YaozuApplication.getIntance();
         app.setMusicService(this);
         mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -468,6 +480,7 @@ public class MusicService extends Service {
         Log.d(this.getClass().getSimpleName(), "=====onDestroy======>");
         //TODO 通知服务器当前用户正在播放歌曲的信息
         notificationServerPersonState(PersonState.PAUSE);
+        YaozuApplication.personStateInstances.remove(this);
         unregisterReceiver();
         YaozuApplication.getIntance().cleanMusicService();
         super.onDestroy();
@@ -489,6 +502,18 @@ public class MusicService extends Service {
     }
 
     private boolean hasRegister = false;
+
+    /**
+     * 目标用户的状态改变
+     *
+     * @param person 所跟随播放的用户
+     */
+    @Override
+    public void updatePersonState(Person person) {
+        System.out.println("===MusicService=========updatePersonState================>");
+        //切换下一首歌曲
+        Order.switchToNextSongOrPlayPause(person);
+    }
 
     public class ConnectionChangeReceiver extends BroadcastReceiver {
         @Override

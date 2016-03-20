@@ -78,13 +78,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/main_play_list"
+                android:layout_toLeftOf="@+id/main_play_next"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:src="@drawable/playbar_btn_play" />
 
             <ImageView
-                android:id="@+id/main_play_list"
+                android:id="@+id/main_play_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -92,91 +92,15 @@
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:src="@drawable/playbar_btn_next" />
+
+            <com.yaozu.listener.widget.RoundCornerImageView
+                android:id="@+id/main_follow_play_user"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:visibility="gone" />
         </RelativeLayout>
     </RelativeLayout>
-    <!--
-    <RadioGroup
-        android:id="@+id/mb_tablelayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#ffffff"
-        android:orientation="horizontal"
-        android:visibility="gone">
-        <RelativeLayout
-            android:id="@+id/rl_first"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center">
-            <RadioButton
-                android:id="@+id/radio_first"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:button="@null"
-                android:gravity="center_horizontal"
-                android:drawableTop="@drawable/main_tab_selector"
-                android:textColor="#8470FF"
-                android:text="首页"/>
-        </RelativeLayout>
-        <RelativeLayout
-            android:id="@+id/rl_second"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center">
-            <RadioButton
-                android:id="@+id/radio_second"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:button="@null"
-                android:gravity="center_horizontal"
-                android:drawableTop="@drawable/main_tab_selector"
-                android:textColor="#8470FF"
-                android:text="排行"/>
-        </RelativeLayout>
-
-        <ImageButton
-            android:id="@+id/music_home"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:button="@null"
-            android:gravity="center"
-            android:drawableTop="@drawable/ic_launcher"/>
-        <RelativeLayout
-            android:id="@+id/rl_third"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center">
-            <RadioButton
-                android:id="@+id/radio_third"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:button="@null"
-                android:gravity="center_horizontal"
-                android:drawableTop="@drawable/main_tab_selector"
-                android:textColor="#8470FF"
-                android:text="发现"/>
-        </RelativeLayout>
-        <RelativeLayout
-            android:id="@+id/rl_four"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center">
-            <RadioButton
-                android:id="@+id/radio_four"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:button="@null"
-                android:gravity="center_horizontal"
-                android:drawableTop="@drawable/main_tab_selector"
-                android:textColor="#8470FF"
-                android:text="我"/>
-        </RelativeLayout>
-
-    </RadioGroup>
--->
 </RelativeLayout>

@@ -31,6 +31,47 @@
             android:text="user"
             android:textColor="@color/white"
             android:textSize="18dp" />
+
+        <LinearLayout
+            android:id="@+id/activity_chatdetail_songinfo_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@+id/activity_chatdetail_user"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="["
+                android:textColor="@color/white"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/activity_chatdetail_songinfo"
+                style="@style/RippleBackground"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginLeft="5dp"
+                android:drawableLeft="@drawable/chatdetail_music_normal"
+                android:drawablePadding="5dp"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="sasadsadsa"
+                android:textColor="@color/playing_color_two"
+                android:textSize="12dp"
+                android:visibility="visible" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="]"
+                android:textColor="@color/white"
+                android:textSize="12dp" />
+        </LinearLayout>
     </RelativeLayout>
 
     <LinearLayout
@@ -61,18 +102,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginTop="5dp"
             android:layout_marginBottom="7dp"
+            android:layout_marginTop="5dp"
             android:layout_toLeftOf="@+id/activity_social_chatdetail_send">
 
             <EditText
                 android:id="@+id/activity_social_chatdetail_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="4"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
                 android:background="@null"
+                android:maxLines="4"
                 android:paddingBottom="5dp"
                 android:paddingLeft="5dp"
                 android:paddingTop="5dp" />
@@ -80,8 +121,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
-                android:layout_marginLeft="5dp"
                 android:layout_below="@+id/activity_social_chatdetail_edittext"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:background="@color/appthemecolor" />
         </RelativeLayout>
@@ -90,13 +131,13 @@
             android:id="@+id/activity_social_chatdetail_send"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
+            android:layout_alignBottom="@+id/bottom_rl_rl"
             android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/button_background_selector"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp"
-            android:background="@drawable/button_background_selector"
-            android:layout_alignBottom="@+id/bottom_rl_rl"
             android:text="发送"
             android:textColor="@color/white" />
     </RelativeLayout>

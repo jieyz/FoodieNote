@@ -1,6 +1,5 @@
 package com.yaozu.listener;
 
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -37,7 +36,6 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.yaozu.listener.activity.BaseActivity;
-import com.yaozu.listener.activity.MusicLyricActivity;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.dao.SongInfoDao;
@@ -52,9 +50,12 @@ import com.yaozu.listener.playlist.model.SongList;
 import com.yaozu.listener.playlist.provider.JavaMediaScanner;
 import com.yaozu.listener.playlist.provider.NativeMediaScanner;
 import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.utils.IntentUtil;
+import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.PhoneInfoUtil;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
+import com.yaozu.listener.widget.RoundCornerImageView;
 
 import org.json.JSONObject;
 
@@ -89,6 +90,8 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     private final int NOT_OTHERLOGIN = 0;
     //是否已连接到融云服务器上
     private boolean hasConnectToRongIM = false;
+    //跟随播放的用户
+    private RoundCornerImageView mFollowUser;
 
     private SongInfoDao mSongInfoDao;
 
@@ -125,6 +128,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         }
     };
     private User user;
+    private ImageView mPlayNext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -293,11 +297,13 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
 
     private void findViewByIds() {
         mPlayPause = (ImageView) findViewById(R.id.mediaplay_play_pause);
+        mPlayNext = (ImageView) findViewById(R.id.main_play_next);
         mCurrentSongName = (TextView) findViewById(R.id.current_songname);
         mCurrentSinger = (TextView) findViewById(R.id.current_songsinger);
         mShowController = (RelativeLayout) findViewById(R.id.main_play_layout);
         mMusicPhoto = (ImageView) findViewById(R.id.main_music_photo);
         mActionbarShadow = (ImageView) findViewById(R.id.main_actionbar_shadow);
+        mFollowUser = (RoundCornerImageView) findViewById(R.id.main_follow_play_user);
     }
 
     private void setOnclickLisener() {
@@ -325,13 +331,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
                 }
                 break;
             case R.id.main_play_layout:
-                Intent intent = new Intent(HomeMainActivity.this, MusicLyricActivity.class);
-                if (service != null) {
-                    intent.putExtra(IntentKey.MEDIA_FILE_SONG_NAME, service.getmCurrentSong().getTitle());
-                    intent.putExtra(IntentKey.MEDIA_FILE_SONG_SINGER, service.getmCurrentSong().getSinger());
-                }
-                startActivity(intent);
-                overridePendingTransition(R.anim.music_lyric_bottom_in, R.anim.music_lyric_out);
+                IntentUtil.toMusicLyric(HomeMainActivity.this);
                 break;
         }
     }
@@ -484,11 +484,31 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public void notifySongPlaying() {
+        changeMenuState();
         mPlayPause.setImageResource(R.drawable.playbar_btn_pause);
     }
 
     @Override
     public void notifySongPause() {
+        changeMenuState();
         mPlayPause.setImageResource(R.drawable.playbar_btn_play);
+    }
+
+    /**
+     * 改变操作栏的状态，变为可操作或者不可操作
+     */
+    private void changeMenuState() {
+        if (YaozuApplication.isFollowPlay) {
+            mPlayPause.setClickable(false);
+            mPlayPause.setVisibility(View.GONE);
+            mPlayNext.setVisibility(View.GONE);
+            mFollowUser.setVisibility(View.VISIBLE);
+            NetUtil.setImageIcon(YaozuApplication.followUserid, mFollowUser, true, false);
+        } else {
+            mPlayPause.setClickable(true);
+            mPlayPause.setVisibility(View.VISIBLE);
+            mPlayNext.setVisibility(View.VISIBLE);
+            mFollowUser.setVisibility(View.GONE);
+        }
     }
 }
