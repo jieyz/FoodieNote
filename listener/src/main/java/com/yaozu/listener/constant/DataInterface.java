@@ -89,11 +89,15 @@ public class DataInterface {
         return APP_HOST + "TestServers/servlet/UploadSongServlet";
     }
 
-    public static String getHaveSongInServerUrl(){
+    public static String getHaveSongInServerUrl() {
         return APP_HOST + "TestServers/servlet/HaveSongServlet";
     }
 
-    public static String getPlaySongEncodeUrl(){
+    public static String getPlaySongEncodeUrl() {
         return APP_HOST + "TestServers/storesong/";
+    }
+
+    public static String getUserStateUrl() {
+        return APP_HOST + "TestServers/servlet/getUserStateServlet";
     }
 }

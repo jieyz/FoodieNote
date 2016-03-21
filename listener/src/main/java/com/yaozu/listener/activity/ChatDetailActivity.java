@@ -26,6 +26,8 @@ import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.adapter.ChatDetailListViewAdapter;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
+import com.yaozu.listener.dao.NetDao;
+import com.yaozu.listener.dao.UserState;
 import com.yaozu.listener.db.dao.ChatDetailInfoDao;
 import com.yaozu.listener.db.dao.ChatListInfoDao;
 import com.yaozu.listener.db.model.ChatDetailInfo;
@@ -35,6 +37,7 @@ import com.yaozu.listener.listener.PersonState;
 import com.yaozu.listener.listener.PersonStateInterface;
 import com.yaozu.listener.service.MusicService;
 import com.yaozu.listener.utils.IntentUtil;
+import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
 import com.yaozu.listener.widget.ResizeLayout;
 
@@ -65,6 +68,10 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
     private ResizeLayout chatRoot;
     private String songInfo, songstate;
 
+    //对方的信息
+    private boolean isfollow;
+    private String followid;
+
     /**
      * 对话框
      */
@@ -91,6 +98,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
 
         //获取用户信息
         requestCheckUserInfo(mOtherUserId);
+        getUserState();
     }
 
     private void initData() {
@@ -103,6 +111,23 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
         }
     }
 
+    private void getUserState() {
+        NetDao.getUserState(mOtherUserId, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                UserState userState = JSON.parseObject(response.toString(), UserState.class);
+                if (userState != null) {
+                    isfollow = Boolean.parseBoolean(userState.getIsfollow());
+                    followid = userState.getFollowid();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+    }
 
     private void requestCheckUserInfo(String userid) {
         String url = DataInterface.getCheckUserInfoUrl() + "?userid=" + userid;
@@ -221,6 +246,7 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
      * 显示对话框
      */
     private void showDialog() {
+        getUserState();
         dialog = new Dialog(this, R.style.NobackDialog);
         View view = View.inflate(this, R.layout.dialog_select_followsong, null);
         //正在听
@@ -229,21 +255,40 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
         TextView songinfo = (TextView) view.findViewById(R.id.dialog_song_info);
         songinfo.setText(songInfo);
 
-        TextView with = (TextView) view.findViewById(R.id.dialog_follow_or_lyric);
+        final TextView with = (TextView) view.findViewById(R.id.dialog_follow_or_lyric);
         RelativeLayout withll = (RelativeLayout) view.findViewById(R.id.dialog_follow_or_lyric_rl);
         RelativeLayout cancel = (RelativeLayout) view.findViewById(R.id.dialog_follow_cancel_rl);
         if (!YaozuApplication.isFollowPlay) {
-            listening.setText("正在听:");
-            with.setText("和 " + user.getText().toString() + " 一起听");
+            //对方是否跟着听
+            if (isfollow && followid.equals(User.getUserAccount())) {
+                listening.setText("TA跟着你在听:");
+                with.setText("去播放页");
+            } else {
+                listening.setText("正在听:");
+                with.setText("和 " + user.getText().toString() + " 一起听");
+            }
         } else {
-            listening.setText("你们正在听:");
-            with.setText("去播放页");
+            //对方是否跟着听
+            if (isfollow && followid.equals(User.getUserAccount())) {
+                listening.setText("你们正在听:");
+                with.setText("去播放页");
+            } else {
+                if (YaozuApplication.followUserid.equals(mOtherUserId)) {
+                    listening.setText("你们正在听:");
+                    with.setText("去播放页");
+                } else {
+                    listening.setText("正在听:");
+                    with.setText("和 " + user.getText().toString() + " 一起听");
+                }
+            }
         }
         withll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                if (!YaozuApplication.isFollowPlay) {
+                if ("去播放页".equals(with.getText().toString())) {
+                    IntentUtil.toMusicLyric(ChatDetailActivity.this);
+                } else {
                     final MusicService service = YaozuApplication.getIntance().getMusicService();
                     if (service != null) {
                         String str[] = songInfo.split("--");
@@ -252,8 +297,6 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
                         service.playSongFromServer(songname, singer);
                         YaozuApplication.setFollowPlayInfo(mOtherUserId, user.getText().toString());
                     }
-                } else {
-                    IntentUtil.toMusicLyric(ChatDetailActivity.this);
                 }
             }
         });

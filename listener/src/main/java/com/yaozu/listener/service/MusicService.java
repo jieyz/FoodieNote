@@ -243,8 +243,14 @@ public class MusicService extends Service implements PersonStateInterface {
         try {
             String songname = mCurrentSong.getTitle();
             String singer = mCurrentSong.getSinger();
-            url = DataInterface.getUpdatePersonStateUrl() + "?songname=" + URLEncoder.encode(songname == null ? "" : songname, "UTF-8") + "&singer=" + URLEncoder.encode(singer == null ? "" : singer, "UTF-8") +
-                    "&userid=" + User.getUserAccount() + "&songid=" + mCurrentSong.getId() + "&state=" + state.toString();
+            url = DataInterface.getUpdatePersonStateUrl() +
+                    "?songname=" + URLEncoder.encode(songname == null ? "" : songname, "UTF-8") +
+                    "&singer=" + URLEncoder.encode(singer == null ? "" : singer, "UTF-8") +
+                    "&userid=" + User.getUserAccount() +
+                    "&songid=" + mCurrentSong.getId() +
+                    "&state=" + state.toString() +
+                    "&isfollow=" + YaozuApplication.isFollowPlay +
+                    "&followid=" + YaozuApplication.followUserid;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

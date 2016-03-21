@@ -20,6 +20,7 @@ import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.dao.NetDao;
+import com.yaozu.listener.dao.UserState;
 import com.yaozu.listener.db.dao.FriendDao;
 import com.yaozu.listener.db.model.Person;
 import com.yaozu.listener.listener.PersonState;
@@ -28,6 +29,7 @@ import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.service.MusicService;
 import com.yaozu.listener.utils.IntentUtil;
 import com.yaozu.listener.utils.NetUtil;
+import com.yaozu.listener.utils.User;
 import com.yaozu.listener.widget.RoundCornerImageView;
 
 import org.json.JSONObject;
@@ -84,6 +86,30 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
         NetUtil.setImageIcon(str_userid, userIcon, true, false);
 
         initData();
+        getUserState();
+    }
+
+    //对方的信息
+    private boolean isfollow;
+    private String followid;
+
+    private void getUserState() {
+        NetDao.getUserState(str_userid, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                UserState userState = JSON.parseObject(response.toString(), UserState.class);
+                if (userState != null) {
+                    isfollow = Boolean.parseBoolean(userState.getIsfollow());
+                    followid = userState.getFollowid();
+                }
+                initData();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
     }
 
     private void findViewByIds() {
@@ -122,6 +148,11 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
         if (YaozuApplication.isFollowPlay && YaozuApplication.followUserid.equals(str_userid)) {
             t_playtogether.setVisibility(View.GONE);
             notFollow.setVisibility(View.VISIBLE);
+        } else {
+            if (isfollow && followid.equals(User.getUserAccount())) {
+                t_playtogether.setVisibility(View.GONE);
+                notFollow.setVisibility(View.GONE);
+            }
         }
     }
 
