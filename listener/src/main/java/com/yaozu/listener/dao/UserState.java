@@ -6,6 +6,7 @@ package com.yaozu.listener.dao;
 public class UserState {
     public String isfollow;
     public String followid;
+    //这个state和PersonState是一样的
     public String state;
     public String songname;
     public String singer;

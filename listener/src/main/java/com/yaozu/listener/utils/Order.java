@@ -40,7 +40,14 @@ public class Order {
         }
     }
 
-    public static void seekToPlay(Person person) {
-
+    /**
+     * 通知用户的当前状态
+     * 当一个用户的状态发生变化时，需要在相应的界面刷新显示
+     * @param person 此用户
+     */
+    public static void notifyPersonState(Person person) {
+        for (int i = 0; i < YaozuApplication.personStateInstances.size(); i++) {
+            YaozuApplication.personStateInstances.get(i).updatePersonState(person);
+        }
     }
 }

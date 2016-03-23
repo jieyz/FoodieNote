@@ -37,6 +37,7 @@ import com.yaozu.listener.listener.PersonState;
 import com.yaozu.listener.listener.PersonStateInterface;
 import com.yaozu.listener.service.MusicService;
 import com.yaozu.listener.utils.IntentUtil;
+import com.yaozu.listener.utils.Order;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
 import com.yaozu.listener.widget.ResizeLayout;
@@ -117,6 +118,12 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
             public void onResponse(JSONObject response) {
                 UserState userState = JSON.parseObject(response.toString(), UserState.class);
                 if (userState != null) {
+                    Person person = new Person();
+                    person.setId(mOtherUserId);
+                    person.setState(userState.getState());
+                    person.setCurrentSong(userState.getSongname() + "--" + userState.getSinger());
+                    Order.notifyPersonState(person);
+
                     isfollow = Boolean.parseBoolean(userState.getIsfollow());
                     followid = userState.getFollowid();
                 }

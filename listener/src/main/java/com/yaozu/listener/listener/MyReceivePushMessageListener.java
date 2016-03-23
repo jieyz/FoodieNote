@@ -18,6 +18,7 @@ import com.yaozu.listener.activity.LoginActivity;
 import com.yaozu.listener.adapter.MailListAdapter;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.model.Person;
+import com.yaozu.listener.utils.Order;
 import com.yaozu.listener.utils.PhoneInfoUtil;
 import com.yaozu.listener.utils.User;
 
@@ -59,10 +60,8 @@ public class MyReceivePushMessageListener implements RongIMClient.OnReceivePushM
             Person person = new Person();
             person.setId(userid);
             person.setState(state);
-            person.setCurrentSong(songInfo+"--"+singer);
-            for (int i = 0; i < YaozuApplication.personStateInstances.size(); i++) {
-                YaozuApplication.personStateInstances.get(i).updatePersonState(person);
-            }
+            person.setCurrentSong(songInfo + "--" + singer);
+            Order.notifyPersonState(person);
             return true;
         }
         //确保唯一设备登陆
