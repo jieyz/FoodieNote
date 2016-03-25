@@ -179,13 +179,10 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         mFollowUser = (TextView) findViewById(R.id.music_lyric_follow_user);
 
         //封面背景
-        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
-        if(YaozuApplication.currentBitmap != null){
-            mBitmap = YaozuApplication.currentBitmap;
-        }
+        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.common_bg);
         mBitmap = getAeroBitmap(mBitmap);
         BitmapDrawable drawable = new BitmapDrawable(mBitmap);
-        drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+        //drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
         background.setBackground(drawable);
     }
 
@@ -462,7 +459,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                     Allocation.USAGE_SCRIPT);
             final Allocation output = Allocation.createTyped(rs, input.getType());
             final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-            script.setRadius(25.0f /* e.g. 3.f */);
+            script.setRadius(5.0f /* e.g. 3.f */);
             script.setInput(input);
             script.forEach(output);
             output.copyTo(bitmap);
