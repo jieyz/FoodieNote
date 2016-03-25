@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
@@ -39,6 +40,8 @@ public class YaozuApplication extends Application {
     public static boolean isFollowPlay = false;
     public static String followUserid = null;
     public static String followUserName = null;
+
+    public static Bitmap currentBitmap = null;
 
     private final int CONNECTED = 0;
     private final int DISCONNECTED = 1;

@@ -36,8 +36,8 @@
 
             <ImageView
                 android:id="@+id/main_music_photo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
                 android:src="@drawable/ic_launcher" />

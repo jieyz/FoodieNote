@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -65,7 +66,6 @@ import java.util.List;
 
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
-import io.vov.vitamio.Vitamio;
 
 
 public class HomeMainActivity extends BaseActivity implements View.OnClickListener, OnFragmentInteractionListener, Infointerface {
@@ -143,7 +143,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
 
             @Override
             protected Boolean doInBackground(Object... params) {
-                return Vitamio.initialize(HomeMainActivity.this);
+                return false;
             }
 
             @Override
@@ -479,7 +479,9 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     public void notifyCurrentSongMsg(String name, String singer, long album_id, int currentPos) {
         mCurrentSongName.setText(name);
         mCurrentSinger.setText(singer);
-        //Bitmap bitmap = mMediaScanner.getImage(this, (int) album_id);
+        Bitmap bitmap = mMediaScanner.getImage(this, (int) album_id);
+        YaozuApplication.currentBitmap = bitmap;
+        mMusicPhoto.setImageBitmap(bitmap);
     }
 
     @Override

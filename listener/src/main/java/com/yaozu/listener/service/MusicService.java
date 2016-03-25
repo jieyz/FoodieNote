@@ -32,6 +32,7 @@ import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.Order;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
+import com.yaozu.video.player.IMediaPlayer;
 
 import org.json.JSONObject;
 
@@ -40,11 +41,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import io.vov.vitamio.MediaPlayer;
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
+
 
 public class MusicService extends Service implements PersonStateInterface {
     private String TAG = this.getClass().getSimpleName();
-    private MediaPlayer mMediaPlayer;
+    private IMediaPlayer mMediaPlayer;
     private YaozuApplication app;
 
     private AudioManager mAudioManager;
@@ -56,6 +58,7 @@ public class MusicService extends Service implements PersonStateInterface {
     private int NOTIFICATION_ID = -1;
     private User user;
     private int seektoOffset = 0;
+    private IMediaPlayer.MediaSource[] mMediaSource = new IMediaPlayer.MediaSource[1];
 
     public MusicService() {
 
@@ -109,49 +112,39 @@ public class MusicService extends Service implements PersonStateInterface {
 
     private void prepareToPlay() {
         synchronized (this) {
-            if (mMediaPlayer == null) {
-                mMediaPlayer = new MediaPlayer(this);
+            //if (mMediaPlayer == null) {
+                mMediaPlayer = new IjkMediaPlayer();
                 mMediaPlayer.setWakeMode(MusicService.this, PowerManager.PARTIAL_WAKE_LOCK);
-            }
-            try {
-                String playMediaPath = mCurrentSong.getFileUrl();
-                //mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                Log.d("MusicService", "playMediaPath: " + playMediaPath);
-                mMediaPlayer.setDataSource(playMediaPath);
-                mMediaPlayer.prepareAsync();
-                notifyState(PlayState.prepareing);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            //}
+            mMediaPlayer.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
+                public void onPrepared(IMediaPlayer mp, int extra) {
                     notifyState(PlayState.prepared);
                     start();
                 }
             });
-            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            mMediaPlayer.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
                 @Override
-                public void onCompletion(MediaPlayer mp) {
+                public void onCompletion(IMediaPlayer mp, int a) {
                     notifyState(PlayState.completed);
                 }
             });
 
-            mMediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+            mMediaPlayer.setOnBufferingUpdateListener(new IMediaPlayer.OnBufferingUpdateListener() {
                 @Override
-                public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
-                    //Log.d("MusicService", "percent: " + percent);
+                public void onBufferingUpdate(IMediaPlayer mediaPlayer, int percent) {
+                    Log.d("MusicService", "percent: " + percent);
                 }
             });
 
-            mMediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+            mMediaPlayer.setOnInfoListener(new IMediaPlayer.OnInfoListener() {
                 @Override
-                public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+                public boolean onInfo(IMediaPlayer mediaPlayer, int what, int extra, String str) {
                     switch (what) {
-                        case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                        case IMediaPlayer.MEDIA_INFO_WHAT_BUFFERING_START:
 
                             break;
-                        case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                        case IMediaPlayer.MEDIA_INFO_WHAT_BUFFERING_END:
 
                             break;
                     }
@@ -159,20 +152,20 @@ public class MusicService extends Service implements PersonStateInterface {
                 }
             });
 
-            mMediaPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
+            mMediaPlayer.setOnSeekCompleteListener(new IMediaPlayer.OnSeekCompleteListener() {
                 @Override
-                public void onSeekComplete(MediaPlayer mediaPlayer) {
+                public void onSeekComplete(IMediaPlayer mediaPlayer) {
                     //mMediaPlayer.start();
                 }
             });
 
-            mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            mMediaPlayer.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
                 @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
+                public boolean onError(IMediaPlayer mp, int what, int extra, String str) {
                     switch (what) {
-                        case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+                        case IMediaPlayer.MEDIA_ERROR_WHAT_UNKNOWN:
                             mMediaPlayer.release();
-                            mMediaPlayer = new MediaPlayer(MusicService.this);
+                            mMediaPlayer = new IjkMediaPlayer();
                             mMediaPlayer.setWakeMode(MusicService.this, PowerManager.PARTIAL_WAKE_LOCK);
                             break;
                         default:
@@ -182,6 +175,19 @@ public class MusicService extends Service implements PersonStateInterface {
                     return false;
                 }
             });
+            try {
+                String playMediaPath = mCurrentSong.getFileUrl();
+                //mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                Log.d("MusicService", "playMediaPath: " + playMediaPath);
+                IMediaPlayer.MediaSource source = new IMediaPlayer.MediaSource();
+                source.playUrl = playMediaPath;
+                mMediaSource[0] = source;
+                mMediaPlayer.setDataSource(mMediaSource);
+                mMediaPlayer.prepareAsync();
+                notifyState(PlayState.prepareing);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

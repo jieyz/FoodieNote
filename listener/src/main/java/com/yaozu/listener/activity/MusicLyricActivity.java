@@ -150,8 +150,8 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         initDate();
         mService = YaozuApplication.getIntance().getMusicService();
         setProgress();
-        initFollowUserState();
-        changeMenuState();
+        //initFollowUserState();
+        //changeMenuState();
 
         registerPushReceiver();
 
@@ -180,6 +180,9 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
 
         //封面背景
         Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background);
+        if(YaozuApplication.currentBitmap != null){
+            mBitmap = YaozuApplication.currentBitmap;
+        }
         mBitmap = getAeroBitmap(mBitmap);
         BitmapDrawable drawable = new BitmapDrawable(mBitmap);
         drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
@@ -552,7 +555,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     }
 
     public void notifySongPlaying() {
-        changeMenuState();
+        //changeMenuState();
         if (YaozuApplication.isFollowPlay) {
             mPlay.setImageResource(R.drawable.play_btn_pause_not_available);
         } else {
@@ -561,7 +564,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     }
 
     public void notifySongPause() {
-        changeMenuState();
+        //changeMenuState();
         if (YaozuApplication.isFollowPlay) {
             mPlay.setImageResource(R.drawable.play_btn_play_not_available);
         } else {
