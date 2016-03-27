@@ -33,6 +33,15 @@
                     android:layout_height="wrap_content"
                     android:button="@drawable/actionbar_mine_selector" />
             </RadioGroup>
+
+            <ImageView
+                android:id="@+id/home_actionbar_unread_dot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/actionbar_menu_dot"
+                android:paddingTop="10dp"
+                android:paddingRight="8dp"
+                android:layout_alignRight="@+id/home_actionbar_radiogroup"/>
         </RelativeLayout>
         <android.support.v4.view.ViewPager
             android:id="@+id/main_home_viewpager"

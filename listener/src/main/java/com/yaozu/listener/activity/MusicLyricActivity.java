@@ -459,7 +459,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                     Allocation.USAGE_SCRIPT);
             final Allocation output = Allocation.createTyped(rs, input.getType());
             final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-            script.setRadius(5.0f /* e.g. 3.f */);
+            script.setRadius(3.0f /* e.g. 3.f */);
             script.setInput(input);
             script.forEach(output);
             output.copyTo(bitmap);

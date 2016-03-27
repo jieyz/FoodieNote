@@ -12,7 +12,8 @@ public class Constant {
     public static int HOME_ACTIONBAR = 0;
     public static int SOCIAL_ACTIONBAR = 0;
 
-    public static String VERIFY_PREFIX = "verify_";
+    public static String VERIFY_PREFIX = "verify_request_";
+    public static String VERIFY_PREFIX_AGREET = "verify_agreet_";
 
     //保存歌曲信息
     public static String QUIT_SONG_NAME = "quit_song_name";

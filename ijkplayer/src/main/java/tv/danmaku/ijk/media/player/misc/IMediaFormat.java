@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Zhang Rui <bbcallen@gmail.com>
+ * Copyright (C) 2015 Zhang Rui <bbcallen@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package tv.danmaku.ijk.media.player;
+package tv.danmaku.ijk.media.player.misc;
 
-public class MediaInfo {
-    public String mMediaPlayerName;
+public interface IMediaFormat {
+    // Common keys
+    String KEY_MIME = "mime";
 
-    public String mVideoDecoder;
-    public String mVideoDecoderImpl;
+    // Video Keys
+    String KEY_WIDTH = "width";
+    String KEY_HEIGHT = "height";
 
-    public String mAudioDecoder;
-    public String mAudioDecoderImpl;
+    String getString(String name);
 
-    public IjkMediaMeta mMeta;
+    int getInteger(String name);
 }

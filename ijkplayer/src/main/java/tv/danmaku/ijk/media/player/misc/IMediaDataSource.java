@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Zhang Rui <bbcallen@gmail.com>
+ * Copyright (C) 2015 Zhang Rui <bbcallen@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package tv.danmaku.ijk.media.player;
+package tv.danmaku.ijk.media.player.misc;
 
-public class MediaInfo {
-    public String mMediaPlayerName;
+import java.io.IOException;
 
-    public String mVideoDecoder;
-    public String mVideoDecoderImpl;
+@SuppressWarnings("RedundantThrows")
+public interface IMediaDataSource {
+    int	 readAt(long position, byte[] buffer, int offset, int size) throws IOException;
 
-    public String mAudioDecoder;
-    public String mAudioDecoderImpl;
+    long getSize() throws IOException;
 
-    public IjkMediaMeta mMeta;
+    void close() throws IOException;
 }

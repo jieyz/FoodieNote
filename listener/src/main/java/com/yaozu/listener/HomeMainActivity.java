@@ -51,6 +51,7 @@ import com.yaozu.listener.playlist.model.SongList;
 import com.yaozu.listener.playlist.provider.JavaMediaScanner;
 import com.yaozu.listener.playlist.provider.NativeMediaScanner;
 import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.service.SupportMusicService;
 import com.yaozu.listener.utils.IntentUtil;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.PhoneInfoUtil;
@@ -66,6 +67,7 @@ import java.util.List;
 
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
+import io.vov.vitamio.Vitamio;
 
 
 public class HomeMainActivity extends BaseActivity implements View.OnClickListener, OnFragmentInteractionListener, Infointerface {
@@ -134,7 +136,6 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         app = YaozuApplication.getIntance();
-
         new AsyncTask<Object, Object, Boolean>() {
             @Override
             protected void onPreExecute() {
@@ -143,6 +144,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
 
             @Override
             protected Boolean doInBackground(Object... params) {
+                Vitamio.initialize(HomeMainActivity.this);
                 return false;
             }
 
@@ -193,6 +195,9 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
 
         Intent intent = new Intent(this, MusicService.class);
         startService(intent);
+
+        Intent spintent = new Intent(this, SupportMusicService.class);
+        startService(spintent);
     }
 
     @Override

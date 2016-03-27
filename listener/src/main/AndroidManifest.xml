@@ -80,6 +80,11 @@
             android:name="com.yaozu.listener.service.MusicService"
             android:enabled="true"
             android:exported="true"></service>
+
+        <service
+            android:name="com.yaozu.listener.service.SupportMusicService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

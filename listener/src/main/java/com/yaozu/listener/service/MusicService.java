@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.IBinder;
@@ -32,7 +33,6 @@ import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.Order;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
-import com.yaozu.video.player.IMediaPlayer;
 
 import org.json.JSONObject;
 
@@ -41,12 +41,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import tv.danmaku.ijk.media.player.IjkMediaPlayer;
-
 
 public class MusicService extends Service implements PersonStateInterface {
     private String TAG = this.getClass().getSimpleName();
-    private IMediaPlayer mMediaPlayer;
+    private MediaPlayer mMediaPlayer;
     private YaozuApplication app;
 
     private AudioManager mAudioManager;
@@ -58,7 +56,6 @@ public class MusicService extends Service implements PersonStateInterface {
     private int NOTIFICATION_ID = -1;
     private User user;
     private int seektoOffset = 0;
-    private IMediaPlayer.MediaSource[] mMediaSource = new IMediaPlayer.MediaSource[1];
 
     public MusicService() {
 
@@ -113,76 +110,19 @@ public class MusicService extends Service implements PersonStateInterface {
     private void prepareToPlay() {
         synchronized (this) {
             //if (mMediaPlayer == null) {
-                mMediaPlayer = new IjkMediaPlayer();
-                mMediaPlayer.setWakeMode(MusicService.this, PowerManager.PARTIAL_WAKE_LOCK);
+            mMediaPlayer = new MediaPlayer();
             //}
-            mMediaPlayer.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(IMediaPlayer mp, int extra) {
-                    notifyState(PlayState.prepared);
-                    start();
-                }
-            });
-            mMediaPlayer.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(IMediaPlayer mp, int a) {
-                    notifyState(PlayState.completed);
-                }
-            });
-
-            mMediaPlayer.setOnBufferingUpdateListener(new IMediaPlayer.OnBufferingUpdateListener() {
-                @Override
-                public void onBufferingUpdate(IMediaPlayer mediaPlayer, int percent) {
-                    Log.d("MusicService", "percent: " + percent);
-                }
-            });
-
-            mMediaPlayer.setOnInfoListener(new IMediaPlayer.OnInfoListener() {
-                @Override
-                public boolean onInfo(IMediaPlayer mediaPlayer, int what, int extra, String str) {
-                    switch (what) {
-                        case IMediaPlayer.MEDIA_INFO_WHAT_BUFFERING_START:
-
-                            break;
-                        case IMediaPlayer.MEDIA_INFO_WHAT_BUFFERING_END:
-
-                            break;
-                    }
-                    return false;
-                }
-            });
-
-            mMediaPlayer.setOnSeekCompleteListener(new IMediaPlayer.OnSeekCompleteListener() {
-                @Override
-                public void onSeekComplete(IMediaPlayer mediaPlayer) {
-                    //mMediaPlayer.start();
-                }
-            });
-
-            mMediaPlayer.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(IMediaPlayer mp, int what, int extra, String str) {
-                    switch (what) {
-                        case IMediaPlayer.MEDIA_ERROR_WHAT_UNKNOWN:
-                            mMediaPlayer.release();
-                            mMediaPlayer = new IjkMediaPlayer();
-                            mMediaPlayer.setWakeMode(MusicService.this, PowerManager.PARTIAL_WAKE_LOCK);
-                            break;
-                        default:
-                            Log.d("MultiPlayer", "Error: " + what + "," + extra);
-                            break;
-                    }
-                    return false;
-                }
-            });
+            mMediaPlayer.setOnPreparedListener(mPrepareListener);
+            mMediaPlayer.setOnCompletionListener(mCompletionListener);
+            mMediaPlayer.setOnBufferingUpdateListener(mBufferingUpdateListener);
+            mMediaPlayer.setOnInfoListener(mInfoListener);
+            mMediaPlayer.setOnSeekCompleteListener(mSeekCompleteListener);
+            mMediaPlayer.setOnErrorListener(mErrorListener);
             try {
                 String playMediaPath = mCurrentSong.getFileUrl();
                 //mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 Log.d("MusicService", "playMediaPath: " + playMediaPath);
-                IMediaPlayer.MediaSource source = new IMediaPlayer.MediaSource();
-                source.playUrl = playMediaPath;
-                mMediaSource[0] = source;
-                mMediaPlayer.setDataSource(mMediaSource);
+                mMediaPlayer.setDataSource(playMediaPath);
                 mMediaPlayer.prepareAsync();
                 notifyState(PlayState.prepareing);
             } catch (IOException e) {
@@ -190,6 +130,77 @@ public class MusicService extends Service implements PersonStateInterface {
             }
         }
     }
+
+    MediaPlayer.OnPreparedListener mPrepareListener = new MediaPlayer.OnPreparedListener() {
+        @Override
+        public void onPrepared(MediaPlayer mediaPlayer) {
+            Log.d("MusicService", "====onPrepared===");
+            notifyState(PlayState.prepared);
+            SupportMusicService spservice = YaozuApplication.getIntance().getSupportMusicService();
+            long pos = 0;
+            if(spservice != null){
+                pos = spservice.getCurrentPosition();
+                spservice.stopPlayBack();
+            }
+            if(pos > 0){
+               seekto((int) pos);
+            }
+            start();
+        }
+    };
+
+    MediaPlayer.OnCompletionListener mCompletionListener = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mediaPlayer) {
+            notifyState(PlayState.completed);
+        }
+    };
+
+    MediaPlayer.OnBufferingUpdateListener  mBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
+        @Override
+        public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
+            Log.d("MusicService", "percent: " + percent);
+        }
+    };
+
+    MediaPlayer.OnInfoListener mInfoListener = new MediaPlayer.OnInfoListener() {
+        @Override
+        public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+            switch (what) {
+                case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                    Log.d("MusicService", "=====MEDIA_INFO_WHAT_BUFFERING_START===");
+                    break;
+                case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                    Log.d("MusicService", "=====MEDIA_INFO_WHAT_BUFFERING_END===");
+                    break;
+            }
+            return false;
+        }
+    };
+
+    MediaPlayer.OnSeekCompleteListener mSeekCompleteListener = new MediaPlayer.OnSeekCompleteListener() {
+        @Override
+        public void onSeekComplete(MediaPlayer mediaPlayer) {
+
+        }
+    };
+
+    MediaPlayer.OnErrorListener mErrorListener = new MediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
+            switch (what) {
+                case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+                    mMediaPlayer.release();
+                    mMediaPlayer = new MediaPlayer();
+                    mMediaPlayer.setWakeMode(MusicService.this, PowerManager.PARTIAL_WAKE_LOCK);
+                    break;
+                default:
+                    Log.d("MultiPlayer", "Error: " + what + "," + extra);
+                    break;
+            }
+            return false;
+        }
+    };
 
     protected void notifyState(PlayState state) {
         currentState = state;
@@ -522,7 +533,6 @@ public class MusicService extends Service implements PersonStateInterface {
      */
     @Override
     public void updatePersonState(Person person) {
-        System.out.println("===MusicService=========updatePersonState================>");
         //切换下一首歌曲
         Order.switchToNextSongOrPlayPause(person);
     }

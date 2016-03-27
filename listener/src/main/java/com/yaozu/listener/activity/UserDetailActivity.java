@@ -27,6 +27,7 @@ import com.yaozu.listener.listener.PersonState;
 import com.yaozu.listener.listener.PersonStateInterface;
 import com.yaozu.listener.playlist.model.Song;
 import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.service.SupportMusicService;
 import com.yaozu.listener.utils.IntentUtil;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.Order;
@@ -235,15 +236,21 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
                 break;
             case R.id.user_detail_play_together:
                 final MusicService service = YaozuApplication.getIntance().getMusicService();
+                final SupportMusicService spservice = YaozuApplication.getIntance().getSupportMusicService();
                 final Song song = new Song();
                 String str[] = currentSongInfo.split("--");
                 final String songname = str[0];
                 final String singer = str[1];
                 song.setTitle(songname);
                 song.setSinger(singer);
+
                 if (service != null) {
                     service.playSongFromServer(song);
                 }
+                if(spservice != null){
+                    spservice.playSongFromServer(song);
+                }
+
                 YaozuApplication.setFollowPlayInfo(str_userid, name);
                 t_playtogether.setVisibility(View.GONE);
                 notFollow.setVisibility(View.VISIBLE);

@@ -9,12 +9,15 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.yaozu.listener.R;
 import com.yaozu.listener.adapter.HomeViewPagerAdapter;
 import com.yaozu.listener.constant.Constant;
+import com.yaozu.listener.db.dao.ChatListInfoDao;
+import com.yaozu.listener.db.model.ChatListInfo;
 import com.yaozu.listener.fragment.music.MusicHomeFragment;
 import com.yaozu.listener.fragment.music.MusicLocalFragment;
 import com.yaozu.listener.fragment.social.SocialFragment;
@@ -44,6 +47,8 @@ public class HomeFragment extends BaseFragment {
     private RadioButton homeMusicRadioButton;
     private RadioButton homeMineRadioButton;
     private RadioGroup homeRadioGroup;
+    private ImageView dotUnread;
+    private ChatListInfoDao chatListInfoDao;
 
     /**
      * Use this factory method to create a new instance of
@@ -70,6 +75,7 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        chatListInfoDao = new ChatListInfoDao(getActivity());
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -90,6 +96,7 @@ public class HomeFragment extends BaseFragment {
         homeRadioGroup = (RadioGroup) view.findViewById(R.id.home_actionbar_radiogroup);
         homeMusicRadioButton = (RadioButton) view.findViewById(R.id.home_actionbar_music_fragment);
         homeMineRadioButton = (RadioButton) view.findViewById(R.id.home_actionbar_mine_fragment);
+        dotUnread = (ImageView) view.findViewById(R.id.home_actionbar_unread_dot);
         homeMusicRadioButton.setChecked(true);
         homeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -111,6 +118,8 @@ public class HomeFragment extends BaseFragment {
         viewpager.setAdapter(new HomeViewPagerAdapter(((FragmentActivity) getActivity()).getSupportFragmentManager(), fragments));
 
         viewpager.addOnPageChangeListener(new HomeOnPageChangeListener());
+
+        updateChatListInfo(null);
     }
 
     @Override
@@ -126,6 +135,16 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void notifySongPause() {
 
+    }
+
+    @Override
+    public void updateChatListInfo(ChatListInfo info) {
+        boolean ishave = chatListInfoDao.isHaveUnreadChatInfo();
+        if (ishave) {
+            dotUnread.setVisibility(View.VISIBLE);
+        }else {
+            dotUnread.setVisibility(View.INVISIBLE);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

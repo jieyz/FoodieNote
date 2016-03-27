@@ -45,14 +45,18 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
      */
     @Override
     public boolean onReceived(Message message, int left) {
+        JSONObject object = JSON.parseObject(new String(message.getContent().encode()));
+        StringBuilder content = new StringBuilder(object.getString("content"));
         if (isVerifyMsg(message)) {
             return true;
+        }
+        if (isVerifyMsgAgree(message, content)) {
+
         }
         //更新或者插入聊天列表
         ChatListInfo chatListInfo = new ChatListInfo();
         chatListInfo.setOtherUserid(message.getSenderUserId());
-        JSONObject object = JSON.parseObject(new String(message.getContent().encode()));
-        chatListInfo.setLastchatcontent(object.getString("content"));
+        chatListInfo.setLastchatcontent(content.toString());
         if (chatListInfoDao.find(chatListInfo.getOtherUserid())) {
             chatListInfoDao.updateChatListInfoByid(chatListInfo.getLastchatcontent(), chatListInfo.getOtherUserid());
         } else {
@@ -99,6 +103,7 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
 
     /**
      * 是否是通讯录好友确认信息
+     *
      * @param message
      * @return
      */
@@ -110,6 +115,28 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
             is = true;
             //通知通讯录列表页面
             Intent intent = new Intent(IntentKey.NOTIFY_VERIFY_FRIEND);
+            intent.putExtra(IntentKey.USER_ID, message.getSenderUserId());
+            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(mContext);
+            localBroadcastManager.sendBroadcast(intent);
+        }
+        return is;
+    }
+
+    /**
+     * 是否是通讯录好友申请通过信息
+     *
+     * @param message
+     * @return
+     */
+    private boolean isVerifyMsgAgree(Message message, StringBuilder content) {
+        boolean is = false;
+        JSONObject object = JSON.parseObject(new String(message.getContent().encode()));
+        String msg = object.getString("content");
+        if (msg.contains(Constant.VERIFY_PREFIX_AGREET)) {
+            content.replace(0,Constant.VERIFY_PREFIX_AGREET.length(),"");
+            is = true;
+            //通知通讯录列表页面
+            Intent intent = new Intent(IntentKey.NOTIFY_VERIFY_AGREE_FRIEND);
             intent.putExtra(IntentKey.USER_ID, message.getSenderUserId());
             LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(mContext);
             localBroadcastManager.sendBroadcast(intent);

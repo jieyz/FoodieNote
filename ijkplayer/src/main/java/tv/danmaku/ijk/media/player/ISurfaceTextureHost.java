@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Zhang Rui <bbcallen@gmail.com>
+ * Copyright (C) 2015 Zhang Rui <bbcallen@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,8 @@
 
 package tv.danmaku.ijk.media.player;
 
-public class MediaInfo {
-    public String mMediaPlayerName;
+import android.graphics.SurfaceTexture;
 
-    public String mVideoDecoder;
-    public String mVideoDecoderImpl;
-
-    public String mAudioDecoder;
-    public String mAudioDecoderImpl;
-
-    public IjkMediaMeta mMeta;
+public interface ISurfaceTextureHost {
+    void releaseSurfaceTexture(SurfaceTexture surfaceTexture);
 }

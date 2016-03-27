@@ -120,7 +120,7 @@ public class JavaMediaScanner {
                         e.printStackTrace();
                     }*/
                     //插入数据库
-                    if (!mSongInfoDao.isHaveSong(displayName)) {
+                    if (!mSongInfoDao.isHaveSong(displayName) && duration > 10000) {
                         if (path.endsWith(".mp3")) {
                             NativeMediaScanner scanner = new NativeMediaScanner();
                             scanner.processFile(path, scanner);
@@ -151,11 +151,11 @@ public class JavaMediaScanner {
         }
     }
 
-    private void parserMediaMetaByRetriever(String path, Song song){
+    private void parserMediaMetaByRetriever(String path, Song song) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         try {
             mmr.setDataSource(path);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             song.setTitle("");
             return;
         }

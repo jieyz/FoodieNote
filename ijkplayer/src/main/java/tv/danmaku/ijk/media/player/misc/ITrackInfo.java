@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Zhang Rui <bbcallen@gmail.com>
+ * Copyright (C) 2015 Zhang Rui <bbcallen@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package tv.danmaku.ijk.media.player;
+package tv.danmaku.ijk.media.player.misc;
 
-public class MediaInfo {
-    public String mMediaPlayerName;
+public interface ITrackInfo {
+    int MEDIA_TRACK_TYPE_AUDIO = 2;
+    int MEDIA_TRACK_TYPE_METADATA = 5;
+    int MEDIA_TRACK_TYPE_SUBTITLE = 4;
+    int MEDIA_TRACK_TYPE_TIMEDTEXT = 3;
+    int MEDIA_TRACK_TYPE_UNKNOWN = 0;
+    int MEDIA_TRACK_TYPE_VIDEO = 1;
 
-    public String mVideoDecoder;
-    public String mVideoDecoderImpl;
+    IMediaFormat getFormat();
 
-    public String mAudioDecoder;
-    public String mAudioDecoderImpl;
+    String getLanguage();
 
-    public IjkMediaMeta mMeta;
+    int getTrackType();
+
+    String getInfoInline();
 }

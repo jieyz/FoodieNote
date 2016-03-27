@@ -2,6 +2,7 @@ package com.yaozu.listener;
 
 import android.app.ActivityManager;
 import android.app.Application;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.listener.MyConnectionStatusListener;
 import com.yaozu.listener.listener.PersonStateInterface;
 import com.yaozu.listener.service.MusicService;
+import com.yaozu.listener.service.SupportMusicService;
 import com.yaozu.listener.utils.VolleyHelper;
 
 import java.util.ArrayList;
@@ -32,7 +34,8 @@ public class YaozuApplication extends Application {
     private static YaozuApplication app;
 
     private final int MUSIC_SERVICE = 0;
-    private HashMap<Integer, MusicService> musicService = new HashMap<>();
+    private final int SUPPORT_MUSIC_SERVICE = 1;
+    private HashMap<Integer, Service> musicService = new HashMap<>();
     public static Map<BaseActivity, Boolean> mActivitys = new HashMap<BaseActivity, Boolean>();
     //PersonState的实例集合
     public static List<PersonStateInterface> personStateInstances = new ArrayList<PersonStateInterface>();
@@ -102,7 +105,7 @@ public class YaozuApplication extends Application {
     }
 
     public MusicService getMusicService() {
-        return musicService.get(MUSIC_SERVICE);
+        return (MusicService) musicService.get(MUSIC_SERVICE);
     }
 
     public void cleanMusicService() {
@@ -111,6 +114,14 @@ public class YaozuApplication extends Application {
 
     public void setMusicService(MusicService service) {
         musicService.put(MUSIC_SERVICE, service);
+    }
+
+    public void setSupportMusicService(Service service) {
+        musicService.put(SUPPORT_MUSIC_SERVICE, service);
+    }
+
+    public SupportMusicService getSupportMusicService() {
+        return (SupportMusicService) musicService.get(SUPPORT_MUSIC_SERVICE);
     }
 
     public static void clearFollowInfo() {

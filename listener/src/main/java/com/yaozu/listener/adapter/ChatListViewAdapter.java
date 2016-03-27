@@ -87,7 +87,7 @@ public class ChatListViewAdapter extends BaseAdapter implements PersonStateInter
         holder.lastcontent.setText(chatListInfo.getLastchatcontent());
         NetUtil.setImageIcon(chatListInfo.getOtherUserid(), holder.icon, true, false);
 
-        if (!TextUtils.isEmpty(chatListInfo.getUnreadcount()) & !"0".equals(chatListInfo.getUnreadcount())) {
+        if (!TextUtils.isEmpty(chatListInfo.getUnreadcount()) && !"0".equals(chatListInfo.getUnreadcount())) {
             holder.unreads.setVisibility(View.VISIBLE);
             holder.unreads.setText(chatListInfo.getUnreadcount());
         } else {

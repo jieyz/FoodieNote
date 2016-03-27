@@ -12,58 +12,82 @@
             android:id="@+id/social_actionbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="5dp">
 
             <RadioButton
                 android:id="@+id/social_chat_actionbar"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_weight="1"
                 android:button="@null"
+                android:gravity="center"
                 android:text="聊天" />
 
             <RadioButton
                 android:id="@+id/social_maillist_actionbar"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_weight="1"
                 android:button="@null"
+                android:gravity="center"
                 android:text="通讯录" />
 
             <RadioButton
                 android:id="@+id/social_my_actionbar"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_weight="1"
                 android:button="@null"
+                android:gravity="center"
                 android:text="我" />
         </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/social_chat_hava_unread"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingLeft="40dp"
+                android:paddingTop="3dp"
+                android:visibility="gone"
+                android:src="@drawable/actionbar_menu_dot"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
         <com.yaozu.listener.widget.PagerSlidingTabStrip
             android:id="@+id/social_pager_tabstrip"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_below="@+id/social_actionbar"
-            />
+            android:layout_below="@+id/social_actionbar" />
 
         <ImageView
             android:id="@+id/main_actionbar_shadow"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:alpha="0.4"
             android:layout_below="@+id/social_pager_tabstrip"
+            android:alpha="0.4"
             android:background="@drawable/actionbar_tab_shadow_skin_white" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/social_viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/social_pager_tabstrip"
-            >
-        </android.support.v4.view.ViewPager>
+            android:layout_below="@+id/social_pager_tabstrip"></android.support.v4.view.ViewPager>
     </RelativeLayout>
 
 </FrameLayout>

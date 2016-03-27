@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.activity.AddNewFriendActivity;
 import com.yaozu.listener.activity.UserDetailActivity;
+import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.dao.FriendDao;
@@ -52,19 +54,17 @@ import java.util.List;
 public class MailListAdapter extends BaseAdapter implements PersonStateInterface {
     public static List<Person> persons;
     private Context mContext;
-    private LinearLayout parentView;
-    private MailListFragment mf;
+    private RelativeLayout parentView;
     private FriendDao friendDao;
     private String TAG = this.getClass().getSimpleName();
 
     private String STR_PLAYING = "正在播放: ";
     private String STR_PAUSE = "暂停播放: ";
 
-    public MailListAdapter(Context context, List<Person> data, LinearLayout pv, MailListFragment mf) {
+    public MailListAdapter(Context context, List<Person> data, RelativeLayout pv) {
         YaozuApplication.personStateInstances.add(this);
         this.mContext = context;
         this.parentView = pv;
-        this.mf = mf;
         this.persons = data;
         friendDao = new FriendDao(mContext);
 
@@ -121,28 +121,6 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
             view = View.inflate(mContext, R.layout.maillist_list_sort_item, null);
             TextView letter = (TextView) view.findViewById(R.id.maillist_list_item_letter);
             letter.setText(person.getName());
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.scale_shrink);
-                    animation.setFillAfter(true);
-                    parentView.startAnimation(animation);
-                    animation.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            mf.showPopupView();
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-                        }
-                    });
-                }
-            });
             return view;
         }
         //通讯录条目
@@ -232,6 +210,8 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
                             agree.setVisibility(View.GONE);
                             person.setIsNew("false");
                             friendDao.update(person);
+                            //发送申请好友通过信息
+                            Order.sendAgreeFriendMsg(person.getId(), Constant.VERIFY_PREFIX_AGREET + "我通过你的好友请求，现在我们可以聊天了");
                         }
                     }
                 }, new Response.ErrorListener() {

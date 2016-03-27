@@ -72,6 +72,19 @@ public class ChatListInfoDao {
         db.close();
     }
 
+    public boolean isHaveUnreadChatInfo() {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        if (db.isOpen()) {
+            Cursor cursor = db.rawQuery("select * from chatlistinfo  where unreadcount>0 and thisuserid=?",
+                    new String[]{User.getUserAccount()});
+            while(cursor.moveToNext()){
+                return true;
+            }
+        }
+        db.close();
+        return false;
+    }
+
     public void updateChatListUnreadsByid(String unreadcount, String userid) {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
@@ -127,7 +140,7 @@ public class ChatListInfoDao {
                 ChatListInfo info = new ChatListInfo();
                 String userid = cursor.getString(cursor.getColumnIndex("otheruserid"));
                 if(userid.equals(User.getUserAccount())){
-                   continue;
+                    continue;
                 }
                 String username = cursor.getString(cursor.getColumnIndex("username"));
                 String lastchatcontent = cursor.getString(cursor.getColumnIndex("lastchatcontent"));

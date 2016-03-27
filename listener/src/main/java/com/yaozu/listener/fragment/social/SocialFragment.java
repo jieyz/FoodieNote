@@ -12,11 +12,14 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.yaozu.listener.R;
 import com.yaozu.listener.constant.Constant;
+import com.yaozu.listener.db.dao.ChatListInfoDao;
+import com.yaozu.listener.db.model.ChatListInfo;
 import com.yaozu.listener.fragment.BaseFragment;
 import com.yaozu.listener.fragment.OnFragmentInteractionListener;
 import com.yaozu.listener.widget.PagerSlidingTabStrip;
@@ -46,6 +49,9 @@ public class SocialFragment extends BaseFragment {
     private RadioGroup mRdioGroup;
     private RadioButton chat, maillist, my;
     private PagerSlidingTabStrip pagerSlidingTabStrip;
+    private ChatListInfoDao chatListInfoDao;
+    //标记有没有未读数
+    private ImageView dotUnread;
 
     /**
      * Use this factory method to create a new instance of
@@ -76,6 +82,7 @@ public class SocialFragment extends BaseFragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        chatListInfoDao = new ChatListInfoDao(this.getActivity());
         fragments.add(new ChatFragment());
         fragments.add(new MailListFragment());
         fragments.add(new MyselfFragment());
@@ -111,6 +118,7 @@ public class SocialFragment extends BaseFragment {
         mViewPager.setAdapter(new SocialViewPagerAdapter(((FragmentActivity) getActivity()).getSupportFragmentManager()));
         mRdioGroup = (RadioGroup) view.findViewById(R.id.social_actionbar);
 
+        dotUnread = (ImageView) view.findViewById(R.id.social_chat_hava_unread);
         chat = (RadioButton) view.findViewById(R.id.social_chat_actionbar);
         maillist = (RadioButton) view.findViewById(R.id.social_maillist_actionbar);
         my = (RadioButton) view.findViewById(R.id.social_my_actionbar);
@@ -141,6 +149,8 @@ public class SocialFragment extends BaseFragment {
                 }
             }
         });
+        //更新未读数
+        updateChatListInfo(null);
 
         pagerSlidingTabStrip = (PagerSlidingTabStrip) view.findViewById(R.id.social_pager_tabstrip);
         pagerSlidingTabStrip.setViewPager(mViewPager);
@@ -151,6 +161,16 @@ public class SocialFragment extends BaseFragment {
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void updateChatListInfo(ChatListInfo info) {
+        boolean ishave = chatListInfoDao.isHaveUnreadChatInfo();
+        if (ishave) {
+            dotUnread.setVisibility(View.VISIBLE);
+        }else {
+            dotUnread.setVisibility(View.INVISIBLE);
         }
     }
 

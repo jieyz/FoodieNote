@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -20,6 +21,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -60,24 +62,24 @@ public class MailListFragment extends BaseFragment implements View.OnClickListen
     /**
      * 父布局
      */
-    private LinearLayout parentView;
+    private RelativeLayout parentView;
     private PopupWindow popupwindow;
     private int mWindowWidth;
     private int mWindowHeight;
     //通讯录数据DAO
     private static FriendDao friendDao;
     public static List<Person> persons;
+    //索引
+    private LinearLayout indexesLinearLayout;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.scale_expand);
-            animation.setFillAfter(true);
-            parentView.startAnimation(animation);
+            hideIndexesLinearLayout();
         }
     };
 
-    public static Handler updateAdapterHandler = new Handler(){
+    public static Handler updateAdapterHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -102,14 +104,69 @@ public class MailListFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        parentView = (LinearLayout) view.findViewById(R.id.maillist_parentview);
+        parentView = (RelativeLayout) view.findViewById(R.id.maillist_parentview);
         mListView = (ListView) view.findViewById(R.id.maillist_listview);
+        indexesLinearLayout = (LinearLayout) view.findViewById(R.id.mailist_listview_indexes);
+        initAlphabetLayout();
 
-        adapter = new MailListAdapter(this.getActivity(), persons, parentView, this);
+        adapter = new MailListAdapter(this.getActivity(), persons, parentView);
         mListView.setAdapter(adapter);
         WindowManager wm = (WindowManager) this.getActivity().getSystemService(Context.WINDOW_SERVICE);
         mWindowWidth = wm.getDefaultDisplay().getWidth();
         mWindowHeight = wm.getDefaultDisplay().getHeight();
+
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (AbsListView.SCREEN_STATE_ON == scrollState) {
+                    if (indexesLinearLayout.getVisibility() == View.VISIBLE) {
+                        removeHideMessage();
+                    } else {
+                        showIndexesLinearLayout();
+                    }
+                } else if (AbsListView.SCREEN_STATE_OFF == scrollState) {
+                    sendHideMessage();
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+    }
+
+    private void initAlphabetLayout() {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.weight = 1;
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+        for (int i = 0; i < letters.length; i++) {
+            TextView textView = new TextView(getActivity());
+            textView.setTextColor(getResources().getColor(R.color.white));
+            textView.setTextSize(10);
+            textView.setText(letters[i]);
+            textView.setGravity(Gravity.CENTER);
+            textView.setLayoutParams(params);
+            textView.setTag(i + 1);
+            indexesLinearLayout.addView(textView);
+        }
+
+        indexesLinearLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        removeHideMessage();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        sendHideMessage();
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     @Nullable
@@ -142,72 +199,65 @@ public class MailListFragment extends BaseFragment implements View.OnClickListen
     /**
      * 展示索引字母
      */
-    public void showPopupView() {
-        View contentview = View.inflate(this.getActivity(), R.layout.username_select_menu, null);
-        GridView gridView = (GridView) contentview.findViewById(R.id.username_select_gridview);
-        gridView.setAdapter(new BaseAdapter() {
-            @Override
-            public int getCount() {
-                return letters.length;
-            }
-
-            @Override
-            public Object getItem(int i) {
-                return null;
-            }
-
-            @Override
-            public long getItemId(int i) {
-                return 0;
-            }
-
-            @Override
-            public View getView(int i, View view, ViewGroup viewGroup) {
-                View v = View.inflate(getActivity(), R.layout.username_select_menu_item, null);
-                v.setLayoutParams(new GridView.LayoutParams(mWindowWidth / 4, mWindowWidth / 4));
-                TextView text = (TextView) v.findViewById(R.id.username_select_menu_item_text);
-                text.setText(letters[i]);
-                v.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        popupwindow.dismiss();
-                    }
-                });
-                return v;
-            }
-        });
-
-        popupwindow = new PopupWindow(contentview, LinearLayout.LayoutParams.MATCH_PARENT, parentView.getHeight());
-        popupwindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(150);
-                            Message msg = mHandler.obtainMessage();
-                            mHandler.sendMessage(msg);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-            }
-        });
-        //设置消失动画
-        popupwindow.setAnimationStyle(R.style.mypopwindow_anim_style);
-        popupwindow.setFocusable(true);
-        popupwindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        int[] location = new int[2];
-        parentView.getLocationInWindow(location);
-        popupwindow.showAtLocation(parentView, Gravity.TOP | Gravity.LEFT, 0, Constant.HOME_ACTIONBAR + Constant.SOCIAL_ACTIONBAR + getStatusBarHeight());
-
+    private void showIndexesLinearLayout() {
         Animation scaleAt = AnimationUtils.loadAnimation(getActivity(), R.anim.popup_show);
         //TranslateAnimation translate = new TranslateAnimation(0, 0, popupwindow.getHeight(), 0);
         scaleAt.setFillEnabled(true);
         scaleAt.setInterpolator(new DecelerateInterpolator());
-        contentview.startAnimation(scaleAt);
+        scaleAt.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                indexesLinearLayout.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        indexesLinearLayout.startAnimation(scaleAt);
+    }
+
+    /**
+     * 隐藏索引字母
+     */
+    private void hideIndexesLinearLayout() {
+        Animation scaleAt = AnimationUtils.loadAnimation(getActivity(), R.anim.popup_dismiss);
+        //TranslateAnimation translate = new TranslateAnimation(0, 0, popupwindow.getHeight(), 0);
+        scaleAt.setFillEnabled(true);
+        scaleAt.setInterpolator(new DecelerateInterpolator());
+        scaleAt.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                indexesLinearLayout.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        indexesLinearLayout.startAnimation(scaleAt);
+    }
+
+    private void sendHideMessage() {
+        Message msg = mHandler.obtainMessage();
+        msg.what = 0;
+        mHandler.sendMessageDelayed(msg, 2000);
+    }
+
+    private void removeHideMessage() {
+        mHandler.removeMessages(0);
     }
 
     public int getStatusBarHeight() {
@@ -255,6 +305,7 @@ public class MailListFragment extends BaseFragment implements View.OnClickListen
             verifyFrienBroadcastReceiver = new VerifyFrienBroadcastReceiver();
             IntentFilter filter = new IntentFilter();
             filter.addAction(IntentKey.NOTIFY_VERIFY_FRIEND);
+            filter.addAction(IntentKey.NOTIFY_VERIFY_AGREE_FRIEND);
             localBroadcastManager = LocalBroadcastManager.getInstance(this.getActivity());
             localBroadcastManager.registerReceiver(verifyFrienBroadcastReceiver, filter);
         }
@@ -275,12 +326,17 @@ public class MailListFragment extends BaseFragment implements View.OnClickListen
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            String userid = intent.getStringExtra(IntentKey.USER_ID);
-            requestCheckUserInfo(userid);
+            if (IntentKey.NOTIFY_VERIFY_FRIEND.equals(intent.getAction())) {
+                String userid = intent.getStringExtra(IntentKey.USER_ID);
+                requestCheckUserInfo(userid, false);
+            } else if (IntentKey.NOTIFY_VERIFY_AGREE_FRIEND.equals(intent.getAction())) {
+                String userid = intent.getStringExtra(IntentKey.USER_ID);
+                requestCheckUserInfo(userid, true);
+            }
         }
     }
 
-    private void requestCheckUserInfo(final String userid) {
+    private void requestCheckUserInfo(final String userid, final boolean isAgree) {
         String url = DataInterface.getCheckUserInfoUrl() + "?userid=" + userid;
         VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
                 url, new Response.Listener<JSONObject>() {
@@ -297,7 +353,12 @@ public class MailListFragment extends BaseFragment implements View.OnClickListen
                     person.setId(userid);
                     person.setName(username);
                     person.setBeizhuname(username);
-                    person.setIsNew("true");
+                    if (isAgree) {
+                        person.setIsNew("false");
+                    } else {
+                        person.setIsNew("true");
+
+                    }
                     //更新数据库
                     if (!friendDao.isHavePerson(userid)) {
                         friendDao.add(person);

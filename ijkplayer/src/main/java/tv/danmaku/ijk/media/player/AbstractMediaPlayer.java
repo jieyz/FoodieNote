@@ -16,15 +16,10 @@
 
 package tv.danmaku.ijk.media.player;
 
+import tv.danmaku.ijk.media.player.misc.IMediaDataSource;
 
-import com.yaozu.video.player.IMediaPlayer;
-
-/**
- * Common IMediaPlayer implement
- *
- * @author bbcallen
- */
-public abstract class SimpleMediaPlayer extends BaseMediaPlayer implements IMediaPlayer {
+@SuppressWarnings("WeakerAccess")
+public abstract class AbstractMediaPlayer implements IMediaPlayer {
     private OnPreparedListener mOnPreparedListener;
     private OnCompletionListener mOnCompletionListener;
     private OnBufferingUpdateListener mOnBufferingUpdateListener;
@@ -41,7 +36,8 @@ public abstract class SimpleMediaPlayer extends BaseMediaPlayer implements IMedi
         mOnCompletionListener = listener;
     }
 
-    public final void setOnBufferingUpdateListener(OnBufferingUpdateListener listener) {
+    public final void setOnBufferingUpdateListener(
+            OnBufferingUpdateListener listener) {
         mOnBufferingUpdateListener = listener;
     }
 
@@ -49,7 +45,8 @@ public abstract class SimpleMediaPlayer extends BaseMediaPlayer implements IMedi
         mOnSeekCompleteListener = listener;
     }
 
-    public final void setOnVideoSizeChangedListener(OnVideoSizeChangedListener listener) {
+    public final void setOnVideoSizeChangedListener(
+            OnVideoSizeChangedListener listener) {
         mOnVideoSizeChangedListener = listener;
     }
 
@@ -61,17 +58,7 @@ public abstract class SimpleMediaPlayer extends BaseMediaPlayer implements IMedi
         mOnInfoListener = listener;
     }
 
-    public void attachListeners(IMediaPlayer mp) {
-        mp.setOnPreparedListener(mOnPreparedListener);
-        mp.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
-        mp.setOnCompletionListener(mOnCompletionListener);
-        mp.setOnSeekCompleteListener(mOnSeekCompleteListener);
-        mp.setOnVideoSizeChangedListener(mOnVideoSizeChangedListener);
-        mp.setOnErrorListener(mOnErrorListener);
-        mp.setOnInfoListener(mOnInfoListener);
-    }
-
-    public final void resetListeners() {
+    public void resetListeners() {
         mOnPreparedListener = null;
         mOnBufferingUpdateListener = null;
         mOnCompletionListener = null;
@@ -81,47 +68,42 @@ public abstract class SimpleMediaPlayer extends BaseMediaPlayer implements IMedi
         mOnInfoListener = null;
     }
 
-    protected final void notifyOnPrepared(int playTypeId) {
-        if (mOnPreparedListener != null) {
-            mOnPreparedListener.onPrepared(this, playTypeId);
-        }
+    protected final void notifyOnPrepared() {
+        if (mOnPreparedListener != null)
+            mOnPreparedListener.onPrepared(this);
     }
 
-    protected final void notifyOnCompletion(int playTypeId) {
-        if (mOnCompletionListener != null) {
-            mOnCompletionListener.onCompletion(this, playTypeId);
-        }
+    protected final void notifyOnCompletion() {
+        if (mOnCompletionListener != null)
+            mOnCompletionListener.onCompletion(this);
     }
 
     protected final void notifyOnBufferingUpdate(int percent) {
-        if (mOnBufferingUpdateListener != null) {
+        if (mOnBufferingUpdateListener != null)
             mOnBufferingUpdateListener.onBufferingUpdate(this, percent);
-        }
     }
 
     protected final void notifyOnSeekComplete() {
-        if (mOnSeekCompleteListener != null) {
+        if (mOnSeekCompleteListener != null)
             mOnSeekCompleteListener.onSeekComplete(this);
-        }
     }
 
-    protected final void notifyOnVideoSizeChanged(int width, int height, int sarNum, int sarDen) {
-        if (mOnVideoSizeChangedListener != null) {
-            mOnVideoSizeChangedListener.onVideoSizeChanged(this, width, height, sarNum, sarDen);
-        }
+    protected final void notifyOnVideoSizeChanged(int width, int height,
+                                                  int sarNum, int sarDen) {
+        if (mOnVideoSizeChangedListener != null)
+            mOnVideoSizeChangedListener.onVideoSizeChanged(this, width, height,
+                    sarNum, sarDen);
     }
 
-    protected final boolean notifyOnError(int what, int extra, String jsonReport) {
-        if (mOnErrorListener != null) {
-            return mOnErrorListener.onError(this, what, extra, jsonReport);
-        }
-        return false;
+    protected final boolean notifyOnError(int what, int extra) {
+        return mOnErrorListener != null && mOnErrorListener.onError(this, what, extra);
     }
 
-    protected final boolean notifyOnInfo(int what, int extra, String jsonReport) {
-        if (mOnInfoListener != null) {
-            return mOnInfoListener.onInfo(this, what, extra, jsonReport);
-        }
-        return false;
+    protected final boolean notifyOnInfo(int what, int extra) {
+        return mOnInfoListener != null && mOnInfoListener.onInfo(this, what, extra);
+    }
+
+    public void setDataSource(IMediaDataSource mediaDataSource) {
+        throw new UnsupportedOperationException();
     }
 }
