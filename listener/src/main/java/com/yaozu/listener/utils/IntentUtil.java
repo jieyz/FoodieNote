@@ -8,7 +8,9 @@ import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.activity.MusicLyricActivity;
 import com.yaozu.listener.activity.UserDetailActivity;
+import com.yaozu.listener.activity.UserIconDetail;
 import com.yaozu.listener.constant.IntentKey;
+import com.yaozu.listener.fragment.social.MyselfFragment;
 import com.yaozu.listener.service.MusicService;
 
 /**
@@ -49,5 +51,17 @@ public class IntentUtil {
         //intent.putExtra(IntentKey.USER_ICON_URL, iconurl);
         context.startActivity(intent);
         ((Activity) context).overridePendingTransition(R.anim.right_enter_page, R.anim.left_quit_page);
+    }
+
+    /**
+     * 跳到查看用户头像页面
+     *
+     * @param context
+     */
+    public static void toUserIconActivity(Context context,String userid) {
+        Intent intent = new Intent(context, UserIconDetail.class);
+        intent.putExtra(IntentKey.USER_ID, userid);
+        context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(R.anim.usericon_scale_enter, R.anim.left_quit_page);
     }
 }

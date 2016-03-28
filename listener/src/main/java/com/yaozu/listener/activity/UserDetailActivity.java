@@ -230,9 +230,7 @@ public class UserDetailActivity extends SwipeBackBaseActivity implements View.On
                 finish();
                 break;
             case R.id.activity_userdetail_usericon:
-                Intent intent = new Intent(UserDetailActivity.this, UserIconDetail.class);
-                intent.putExtra(IntentKey.USER_ID, str_userid);
-                startActivity(intent);
+                IntentUtil.toUserIconActivity(this,str_userid);
                 break;
             case R.id.user_detail_play_together:
                 final MusicService service = YaozuApplication.getIntance().getMusicService();

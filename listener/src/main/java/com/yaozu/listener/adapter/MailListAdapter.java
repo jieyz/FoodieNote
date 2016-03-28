@@ -1,5 +1,6 @@
 package com.yaozu.listener.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -111,6 +112,7 @@ public class MailListAdapter extends BaseAdapter implements PersonStateInterface
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, AddNewFriendActivity.class);
                     mContext.startActivity(intent);
+                    ((Activity) mContext).overridePendingTransition(R.anim.right_enter_page, R.anim.left_quit_page);
                 }
             });
             return view;

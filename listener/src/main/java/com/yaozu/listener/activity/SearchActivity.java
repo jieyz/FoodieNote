@@ -47,6 +47,12 @@ public class SearchActivity extends SwipeBackBaseActivity implements View.OnClic
         });
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.left_enter_page, R.anim.right_quit_page);
+    }
+
     private void requestSearchUser(final String userid) {
         String url = DataInterface.getCheckUserInfoUrl() + "?userid=" + userid;
         VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
@@ -66,6 +72,7 @@ public class SearchActivity extends SwipeBackBaseActivity implements View.OnClic
                     intent.putExtra(IntentKey.USER_ID, userid);
                     intent.putExtra(IntentKey.USER_ICON_URL, iconurl);
                     startActivity(intent);
+                    overridePendingTransition(R.anim.right_enter_page, R.anim.left_quit_page);
                 } else if (code == 0) {
                     Toast.makeText(SearchActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }

@@ -25,12 +25,18 @@ public class UserIconDetail extends BaseActivity implements View.OnClickListener
         gestureImageView = (GestureImageView) findViewById(R.id.activity_usericon_detail);
         iconPath = getIntent().getStringExtra(IntentKey.USER_ICON_PATH);
         userid = getIntent().getStringExtra(IntentKey.USER_ID);
-        Bitmap bmp = BitmapFactory.decodeFile(iconPath);
-        if (bmp != null) {
+/*         Bitmap bmp = BitmapFactory.decodeFile(iconPath);
+       if (bmp != null) {
             gestureImageView.setImageBitmap(bmp);
-        } else {
+        } else {*/
             NetUtil.setImageIcon(userid, gestureImageView, true, true);
-        }
+        //}
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.left_enter_page, R.anim.usericon_scale_quit);
     }
 
     @Override

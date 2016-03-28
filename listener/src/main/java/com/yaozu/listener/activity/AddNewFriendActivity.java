@@ -1,5 +1,6 @@
 package com.yaozu.listener.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -30,6 +31,12 @@ public class AddNewFriendActivity extends SwipeBackBaseActivity implements View.
     }
 
     @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.left_enter_page, R.anim.right_quit_page);
+    }
+
+    @Override
     public void notifyCurrentSongMsg(String name, String singer, long album_id, int currentPos) {
 
     }
@@ -53,6 +60,7 @@ public class AddNewFriendActivity extends SwipeBackBaseActivity implements View.
             case R.id.add_new_friend_search:
                 Intent intent = new Intent(this, SearchActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.right_enter_page, R.anim.left_quit_page);
                 break;
             case R.id.activity_add_phone_user:
                 break;

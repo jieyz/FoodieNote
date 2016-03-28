@@ -38,6 +38,7 @@ import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.fragment.BaseFragment;
 import com.yaozu.listener.listener.UploadListener;
 import com.yaozu.listener.utils.FileUtil;
+import com.yaozu.listener.utils.IntentUtil;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
@@ -254,9 +255,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                 showEditNameDialog();
                 break;
             case R.id.fragment_social_mine_usericon_onclick:
-                Intent intent = new Intent(getActivity(), UserIconDetail.class);
-                intent.putExtra(IntentKey.USER_ICON_PATH, ICON_PATH);
-                startActivity(intent);
+                IntentUtil.toUserIconActivity(this.getActivity(), User.getUserAccount());
                 break;
         }
     }
