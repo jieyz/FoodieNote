@@ -486,7 +486,9 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         mCurrentSinger.setText(singer);
         Bitmap bitmap = mMediaScanner.getImage(this, (int) album_id);
         YaozuApplication.currentBitmap = bitmap;
-        mMusicPhoto.setImageBitmap(bitmap);
+        if(bitmap != null){
+            mMusicPhoto.setImageBitmap(bitmap);
+        }
     }
 
     @Override

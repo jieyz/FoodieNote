@@ -7,15 +7,15 @@
 
     <RelativeLayout
         android:id="@+id/fragment_social_mine_userinfo_rl"
-        android:background="@drawable/main_listview_selector"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:background="@drawable/main_listview_selector">
 
         <RelativeLayout
+            style="@style/RippleBackground"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            style="@style/RippleBackground">
+            android:layout_height="match_parent">
 
             <com.yaozu.listener.widget.RoundCornerImageView
                 android:id="@+id/fragment_social_mine_usericon"
@@ -24,7 +24,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/usericon" />
+                android:src="@drawable/default_usericon_150" />
 
             <ImageView
                 android:id="@+id/fragment_social_mine_usericon_onclick"
@@ -32,7 +32,7 @@
                 android:layout_height="70dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
-                android:background="@drawable/transparent_bg_selector"/>
+                android:background="@drawable/transparent_bg_selector" />
 
             <TextView
                 android:id="@+id/fragment_social_mine_nickname"
@@ -68,13 +68,14 @@
                     android:text=""
                     android:textSize="14dp" />
             </LinearLayout>
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/right_arrow"/>
+                android:src="@drawable/right_arrow" />
         </RelativeLayout>
     </RelativeLayout>
 
@@ -84,28 +85,31 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="@drawable/main_listview_selector">
+
         <RelativeLayout
+            style="@style/RippleBackground"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/RippleBackground">
+            android:layout_height="wrap_content">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
+                android:text="昵称"
                 android:textColor="#363636"
-                android:textSize="16dp"
-                android:text="昵称"/>
+                android:textSize="16dp" />
+
             <TextView
                 android:id="@+id/fragment_social_mine_nickname2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="迷失香"
                 android:layout_alignParentRight="true"
-                android:textSize="15dp"
-                android:drawablePadding="5dp"
+                android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
+                android:drawablePadding="5dp"
                 android:drawableRight="@drawable/right_arrow"
-                android:layout_centerVertical="true"/>
+                android:text="迷失香"
+                android:textSize="15dp" />
         </RelativeLayout>
     </RelativeLayout>
 
@@ -115,17 +119,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="@drawable/main_listview_selector">
+
         <RelativeLayout
+            style="@style/RippleBackground"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/RippleBackground">
+            android:layout_height="wrap_content">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
+                android:text="退出"
                 android:textColor="#363636"
-                android:textSize="16dp"
-                android:text="退出"/>
+                android:textSize="16dp" />
         </RelativeLayout>
     </RelativeLayout>
 </LinearLayout>

@@ -56,7 +56,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="15dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/usericon" />
+                    android:src="@drawable/default_usericon_150" />
 
                 <TextView
                     android:id="@+id/user_detail_beizhuname"

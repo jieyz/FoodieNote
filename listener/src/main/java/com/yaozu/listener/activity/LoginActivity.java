@@ -28,6 +28,7 @@ import com.yaozu.listener.db.model.Person;
 import com.yaozu.listener.fragment.social.MailListFragment;
 import com.yaozu.listener.fragment.social.MyselfFragment;
 import com.yaozu.listener.listener.DownLoadIconListener;
+import com.yaozu.listener.utils.FileUtil;
 import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.PhoneInfoUtil;
 import com.yaozu.listener.utils.User;
@@ -141,7 +142,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         String iconurl = jsonObject.getString("iconurl");
                         Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
                         if (code == 1) {
-                            NetUtil.downLoadUserIcon(iconurl, new MyDownLoadListener());
                             //更新通讯录
                             friendDao.clear();
                             getFriendsIdRequest(userid);
@@ -232,29 +232,5 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
             }
         }));
-    }
-
-    public class MyDownLoadListener implements DownLoadIconListener {
-
-        @Override
-        public void downLoadSuccess(Bitmap bitmap) {
-            Log.d(TAG, "=============downLoadSuccess==================>");
-            if (bitmap != null) {
-                Toast.makeText(LoginActivity.this, "下载头像成功！", Toast.LENGTH_SHORT).show();
-                MyselfFragment.saveOutput(bitmap, MyselfFragment.ICON_PATH);
-                File cpIconPath = new File(MyselfFragment.CP_ICON_PATH);
-                if (cpIconPath.exists()) {
-                    cpIconPath.delete();
-                }
-            } else {
-                Toast.makeText(LoginActivity.this, "下载的头像为空的！", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        public void downLoadFailed() {
-            Log.d(TAG, "=============downLoadFailed==================>");
-            Toast.makeText(LoginActivity.this, "下载头像失败！", Toast.LENGTH_SHORT).show();
-        }
     }
 }

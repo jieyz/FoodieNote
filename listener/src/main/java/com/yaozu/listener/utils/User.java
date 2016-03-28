@@ -4,10 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import com.yaozu.listener.constant.Constant;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import io.rong.imkit.RongIM;
 
@@ -18,9 +22,6 @@ public class User {
     private static String mAccount, mUserName, mToken;
     private Context mCotext;
     private static SharedPreferences preferences;
-
-    public static String ICON_PATH = FileUtil.getSDPath() + File.separator + "ListenerMusic" + File.separator + "icon.jpg";
-    public static String CP_ICON_PATH = FileUtil.getSDPath() + File.separator + "ListenerMusic" + File.separator + "cp_icon.jpg";
 
     public User(Context context) {
         this.mCotext = context;
@@ -40,6 +41,7 @@ public class User {
 
     /**
      * 更新用户名
+     *
      * @param userName
      */
     public void updateUserName(String userName) {
@@ -70,10 +72,6 @@ public class User {
         return mToken;//preferences.getString(Constant.USER_TOKEN, "");
     }
 
-    public static Bitmap getUserIcon() {
-        return BitmapFactory.decodeFile(CP_ICON_PATH);
-    }
-
     public void quitLogin() {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(Constant.IS_LOGINING, false);
@@ -90,10 +88,11 @@ public class User {
 
     /**
      * 保存退出时播放的歌曲
+     *
      * @param songname
      * @param singer
      */
-    public void storeQuitSongInfo(String songname,String singer,int index){
+    public void storeQuitSongInfo(String songname, String singer, int index) {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(Constant.QUIT_SONG_NAME, songname);
         editor.putString(Constant.QUIT_SONG_SINGER, singer);
@@ -103,25 +102,28 @@ public class User {
 
     /**
      * 获得退出时播放的歌曲名
+     *
      * @return
      */
-    public String getQuitSongName(){
+    public String getQuitSongName() {
         return preferences.getString(Constant.QUIT_SONG_NAME, "");
     }
 
     /**
      * 获得退出时播放的歌手名
+     *
      * @return
      */
-    public String getQuitSinger(){
+    public String getQuitSinger() {
         return preferences.getString(Constant.QUIT_SONG_SINGER, "");
     }
 
     /**
      * 退出时的下标
+     *
      * @return
      */
-    public int getQuitIndex(){
+    public int getQuitIndex() {
         return preferences.getInt(Constant.QUIT_MEDIA_CURRENT_INDEX, 0);
     }
 }

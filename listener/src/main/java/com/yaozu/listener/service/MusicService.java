@@ -57,6 +57,13 @@ public class MusicService extends Service implements PersonStateInterface {
     private User user;
     private int seektoOffset = 0;
 
+    public enum PlayMode {
+        SingleLoop, ListLoop;
+    }
+
+    private PlayMode[] modes = new PlayMode[]{PlayMode.SingleLoop, PlayMode.ListLoop};
+    private PlayMode currentPlayMode = PlayMode.ListLoop;
+
     public MusicService() {
 
     }
@@ -138,12 +145,12 @@ public class MusicService extends Service implements PersonStateInterface {
             notifyState(PlayState.prepared);
             SupportMusicService spservice = YaozuApplication.getIntance().getSupportMusicService();
             long pos = 0;
-            if(spservice != null){
+            if (spservice != null) {
                 pos = spservice.getCurrentPosition();
                 spservice.stopPlayBack();
             }
-            if(pos > 0){
-               seekto((int) pos);
+            if (pos > 0) {
+                seekto((int) pos);
             }
             start();
         }
@@ -156,7 +163,7 @@ public class MusicService extends Service implements PersonStateInterface {
         }
     };
 
-    MediaPlayer.OnBufferingUpdateListener  mBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
+    MediaPlayer.OnBufferingUpdateListener mBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
         @Override
         public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
             Log.d("MusicService", "percent: " + percent);
@@ -238,9 +245,13 @@ public class MusicService extends Service implements PersonStateInterface {
                 notificationServerPersonState(PersonState.PAUSE);
                 break;
             case completed:
-                //播放列表不为空
-                if (mSongs != null && !mSongs.isEmpty()) {
-                    playNextSong();
+                if (currentPlayMode == PlayMode.ListLoop) {
+                    //播放列表不为空
+                    if (mSongs != null && !mSongs.isEmpty()) {
+                        playNextSong();
+                    }
+                } else if (currentPlayMode == PlayMode.SingleLoop) {
+                    playCurrentIndexSong(mCurrentIndex);
                 }
                 break;
         }
@@ -299,6 +310,16 @@ public class MusicService extends Service implements PersonStateInterface {
         }
         stopPlayBack();
         playCurrentIndexSong(mCurrentIndex);
+    }
+
+    private int modeIndex = 0;
+
+    public PlayMode switchNextPlayMode() {
+        modeIndex++;
+        if (modeIndex >= modes.length) {
+            modeIndex = 0;
+        }
+        return currentPlayMode = modes[modeIndex];
     }
 
     /**

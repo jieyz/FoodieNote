@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +13,6 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,13 +44,9 @@ import com.yaozu.listener.utils.VolleyHelper;
 import com.yaozu.listener.widget.RoundCornerImageView;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -76,7 +70,6 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
     private static final int ACTIVITY_RESULT_GALRY = 0;
     private static final int ACTIVITY_RESULT_CROPIMAGE = 1;
     public static String ICON_PATH = FileUtil.getSDPath() + File.separator + "ListenerMusic" + File.separator + "icon.jpg";
-    public static String CP_ICON_PATH = FileUtil.getSDPath() + File.separator + "ListenerMusic" + File.separator + "cp_icon.jpg";
 
     public Handler handler = new Handler() {
 
@@ -88,6 +81,10 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                     Bitmap localBitmap = (Bitmap) msg.obj;
                     userIcon.setImageBitmap(localBitmap);
                     userIcon.invalidate();
+                    break;
+                case 2000:
+                    Toast.makeText(getActivity(), "上传头像失败，请重试！", Toast.LENGTH_SHORT).show();
+                    FileUtil.deleteFile(ICON_PATH);
                     break;
             }
         }
@@ -122,19 +119,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
         nickName1.setText(mUser.getUserName());
         nickName2.setText(mUser.getUserName());
 
-        Bitmap bitmap = BitmapFactory.decodeFile(CP_ICON_PATH);
-        if (bitmap != null) {
-            userIcon.setImageBitmap(bitmap);
-        } else {
-            File icon = new File(ICON_PATH);
-            if (icon.exists()) {
-                //压缩小的图片
-                Bitmap smallBitmap = compressUserIcon(200, ICON_PATH);
-                //保存压缩后的图片
-                saveOutput(smallBitmap, CP_ICON_PATH);
-                userIcon.setImageBitmap(smallBitmap);
-            }
-        }
+        NetUtil.setImageIcon(User.getUserAccount(), userIcon, false, false);
     }
 
     @Nullable
@@ -209,12 +194,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                     @Override
                     public void run() {
                         //保存到本地
-                        saveOutput(IntentKey.cropBitmap, ICON_PATH);
-                        //压缩大的图片
-                        Bitmap bigBitmap = compressUserIcon(600, ICON_PATH);
-                        //保存大的图片到本地
-                        saveOutput(bigBitmap, ICON_PATH);
-
+                        FileUtil.saveOutput(IntentKey.cropBitmap, ICON_PATH);
                         //上传头像到服务器上
                         NetUtil.uploadIconFile(getActivity(), new File(ICON_PATH), new MyUploadListener());
                     }
@@ -231,10 +211,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
         @Override
         public void uploadSuccess() {
             //压缩小的图片
-            Bitmap smallBitmap = compressUserIcon(200, ICON_PATH);
-            //保存压缩后的图片
-            saveOutput(smallBitmap, CP_ICON_PATH);
-
+            Bitmap smallBitmap = FileUtil.compressUserIcon(200, ICON_PATH);
             Message msg = handler.obtainMessage();
             msg.obj = smallBitmap;
             msg.what = 1000;
@@ -243,52 +220,10 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
 
         @Override
         public void uploadFailed() {
-            Toast.makeText(getActivity(), "上传头像失败，请重试！", Toast.LENGTH_SHORT).show();
+            Message msg = handler.obtainMessage();
+            msg.what = 1000;
+            handler.sendMessage(msg);
         }
-    }
-
-    /**
-     * 保存到本地
-     *
-     * @param croppedImage
-     */
-    public static void saveOutput(Bitmap croppedImage, String path) {
-        File file = new File(path);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        OutputStream outStream;
-        try {
-            outStream = new FileOutputStream(file);
-            croppedImage.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-            outStream.flush();
-            outStream.close();
-            Log.i("CropImage", "bitmap saved tosd,path:" + file.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private BitmapFactory.Options localOptions;
-
-    /**
-     * 压缩图片
-     */
-    private Bitmap compressUserIcon(int maxWidth, String srcpath) {
-        localOptions = new BitmapFactory.Options();
-        localOptions.inJustDecodeBounds = true;
-        localOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        BitmapFactory.decodeFile(srcpath, localOptions);
-        if (localOptions.outWidth > maxWidth) {
-            int j = localOptions.outWidth / (maxWidth / 2);
-            localOptions.inSampleSize = j;
-        }
-        localOptions.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(srcpath, localOptions);
     }
 
     @Override

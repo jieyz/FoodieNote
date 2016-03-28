@@ -55,7 +55,7 @@ public class FileUtil {
         if (!file.exists()) {
             file.createNewFile();
             Log.d(TAG, "=======创建文件:SDPATH + fileName======>" + SDPATH + fileName);
-        }else{
+        } else {
             Log.d(TAG, "=======文件已存在:SDPATH + fileName======>" + SDPATH + fileName);
         }
         return file;
@@ -70,9 +70,9 @@ public class FileUtil {
         File dir = new File(SDPATH + dirName);
         if (!dir.exists()) {
             dir.mkdirs();
-            Log.d(TAG,"=======创建文件夹:SDPATH + dirName======>"+SDPATH + dirName);
+            Log.d(TAG, "=======创建文件夹:SDPATH + dirName======>" + SDPATH + dirName);
         } else {
-            Log.d(TAG,"=======文件夹已存在:SDPATH + dirName======>"+SDPATH + dirName);
+            Log.d(TAG, "=======文件夹已存在:SDPATH + dirName======>" + SDPATH + dirName);
         }
         return dir;
     }
@@ -113,7 +113,7 @@ public class FileUtil {
     /**
      * 压缩图片
      */
-    public static  Bitmap compressUserIcon(int maxWidth, String srcpath) {
+    public static Bitmap compressUserIcon(int maxWidth, String srcpath) {
         BitmapFactory.Options localOptions = new BitmapFactory.Options();
         localOptions.inJustDecodeBounds = true;
         localOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -149,6 +149,15 @@ public class FileUtil {
             Log.i("CropImage", "bitmap saved tosd,path:" + file.toString());
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private static BitmapFactory.Options localOptions;
+
+    public static void deleteFile(String path) {
+        File file = new File(path);
+        if (file.exists()) {
+            file.delete();
         }
     }
 }

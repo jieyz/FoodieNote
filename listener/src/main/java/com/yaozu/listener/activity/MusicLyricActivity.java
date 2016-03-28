@@ -79,6 +79,8 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     private LyricAdapter mAdapter;
     private ArrayList<LRCUtils.timelrc> lyricData;
     private boolean mFirstEnter = true;
+    //播放模式
+    private ImageView mPlayMode;
 
     private final int SET_PROGRESS = 0;
     private final int GET_CURRENT_PLAY_POSTTION = 1;
@@ -177,6 +179,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         mPrev = (ImageView) findViewById(R.id.play_btn_prev);
         mNext = (ImageView) findViewById(R.id.play_btn_next);
         mFollowUser = (TextView) findViewById(R.id.music_lyric_follow_user);
+        mPlayMode = (ImageView) findViewById(R.id.play_btn_play_mode);
 
         //封面背景
         Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.common_bg);
@@ -314,6 +317,7 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
     private void setOnclickListener() {
         mPlay.setOnClickListener(this);
         mFollowUser.setOnClickListener(this);
+        mPlayMode.setOnClickListener(this);
     }
 
     @Override
@@ -333,6 +337,14 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
             case R.id.music_lyric_follow_user:
                 IntentUtil.toUserDetail(MusicLyricActivity.this, YaozuApplication.followUserName, YaozuApplication.followUserid,
                         PersonState.PLAYING.toString(), lyricTitle.getText().toString() + "--" + lyricSinger.getText().toString());
+                break;
+            case R.id.play_btn_play_mode:
+                MusicService.PlayMode playMode = mService.switchNextPlayMode();
+                if (playMode == MusicService.PlayMode.ListLoop) {
+                    mPlayMode.setImageResource(R.drawable.play_icn_loop_prs);
+                } else if (playMode == MusicService.PlayMode.SingleLoop) {
+                    mPlayMode.setImageResource(R.drawable.play_icn_one_prs);
+                }
                 break;
         }
     }

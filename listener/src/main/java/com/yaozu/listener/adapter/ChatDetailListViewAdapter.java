@@ -27,17 +27,11 @@ import java.util.List;
 public class ChatDetailListViewAdapter extends BaseAdapter {
     private List<ChatDetailInfo> mChatDetaillists = new ArrayList<ChatDetailInfo>();
     private Context mContext;
-    //当前登录用户的头像
-    private Bitmap thisUserBitmap;
-    //其它用户的头像
-    private Bitmap otherUserBitmap;
 
     public ChatDetailListViewAdapter(Context context, String otherUserid, List<ChatDetailInfo> chatlists) {
         mContext = context;
         mChatDetaillists = chatlists;
-        thisUserBitmap = User.getUserIcon();
         NetUtil.setImageIcon(otherUserid, null, false, false);
-        otherUserBitmap = NetUtil.getLocalOtherUserIcon(otherUserid);
     }
 
     public void updateAddData(ChatDetailInfo info) {
@@ -82,14 +76,13 @@ public class ChatDetailListViewAdapter extends BaseAdapter {
         if ("true".equals(info.getIssender())) {
             holder.senderrl.setVisibility(View.VISIBLE);
             holder.myselfrl.setVisibility(View.GONE);
-            if (otherUserBitmap != null) {
-                holder.senderIcon.setImageBitmap(otherUserBitmap);
-            }
+            NetUtil.setImageIcon(info.getOtherUserid(), holder.senderIcon, true, false);
+
             holder.sendercontent.setText(info.getChatcontent());
         } else {
             holder.senderrl.setVisibility(View.GONE);
             holder.myselfrl.setVisibility(View.VISIBLE);
-            holder.myselfIcon.setImageBitmap(thisUserBitmap);
+            NetUtil.setImageIcon(User.getUserAccount(), holder.myselfIcon, true, false);
             holder.myselfcontent.setText(info.getChatcontent());
         }
         return view;

@@ -132,6 +132,14 @@
         android:paddingTop="10dp">
 
         <ImageView
+            android:id="@+id/play_btn_play_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/play_icn_loop_prs"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/play_btn_prev"/>
+
+        <ImageView
             android:id="@+id/play_btn_prev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

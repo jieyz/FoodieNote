@@ -227,6 +227,8 @@ public class NetUtil {
      *
      * @param userid
      * @param imageView
+     * @param isGetfromLocal  是否优先从本地缓存中取
+     * @param isOrigin  是否取得原始大小的图片
      */
     public static void setImageIcon(String userid, final ImageView imageView, boolean isGetfromLocal, boolean isOrigin) {
         final String filePath = USERS_ICON_PATH + File.separator + userid + "_icon";
