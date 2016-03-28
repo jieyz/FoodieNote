@@ -17,6 +17,7 @@ import com.yaozu.listener.service.MusicService;
 public class IntentUtil {
     /**
      * 跳到歌词展示页面
+     *
      * @param context
      */
     public static void toMusicLyric(Context context) {
@@ -32,6 +33,7 @@ public class IntentUtil {
 
     /**
      * 跳到用户详情页面
+     *
      * @param context
      * @param username
      * @param userid
@@ -46,5 +48,6 @@ public class IntentUtil {
         intent.putExtra(IntentKey.CURRENT_SONG_INFO, songinfo);
         //intent.putExtra(IntentKey.USER_ICON_URL, iconurl);
         context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(R.anim.right_enter_page, R.anim.left_quit_page);
     }
 }

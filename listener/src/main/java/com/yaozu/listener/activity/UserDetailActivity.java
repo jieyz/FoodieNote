@@ -48,7 +48,7 @@ import io.rong.message.TextMessage;
 /**
  * Created by jieyaozu on 2016/2/20.
  */
-public class UserDetailActivity extends BaseActivity implements View.OnClickListener, PersonStateInterface {
+public class UserDetailActivity extends SwipeBackBaseActivity implements View.OnClickListener, PersonStateInterface {
     private TextView userBeizhuName, userId, userName;
     private TextView addOrSend;
     private ImageView actionBack;
@@ -247,7 +247,7 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
                 if (service != null) {
                     service.playSongFromServer(song);
                 }
-                if(spservice != null){
+                if (spservice != null) {
                     spservice.playSongFromServer(song);
                 }
 
@@ -271,6 +271,12 @@ public class UserDetailActivity extends BaseActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         YaozuApplication.personStateInstances.remove(this);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.left_enter_page, R.anim.right_quit_page);
     }
 
     @Override

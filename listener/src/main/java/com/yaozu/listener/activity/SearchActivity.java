@@ -24,7 +24,7 @@ import org.json.JSONObject;
 /**
  * Created by jieyaozu on 2016/2/20.
  */
-public class SearchActivity extends BaseActivity implements View.OnClickListener {
+public class SearchActivity extends SwipeBackBaseActivity implements View.OnClickListener {
     private ImageView actionBack;
     private EditText searchUser;
 

@@ -61,8 +61,8 @@ public class MusicService extends Service implements PersonStateInterface {
         SingleLoop, ListLoop;
     }
 
-    private PlayMode[] modes = new PlayMode[]{PlayMode.SingleLoop, PlayMode.ListLoop};
-    private PlayMode currentPlayMode = PlayMode.ListLoop;
+    private PlayMode[] modes = new PlayMode[]{PlayMode.ListLoop, PlayMode.SingleLoop};
+    public PlayMode currentPlayMode = PlayMode.ListLoop;
 
     public MusicService() {
 

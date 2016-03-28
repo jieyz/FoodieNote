@@ -54,7 +54,7 @@ import io.rong.message.TextMessage;
 /**
  * Created by 耀祖 on 2016/1/18.
  */
-public class ChatDetailActivity extends BaseActivity implements View.OnClickListener, PersonStateInterface {
+public class ChatDetailActivity extends SwipeBackBaseActivity implements View.OnClickListener, PersonStateInterface {
     private ListView mListView;
     private TextView user;
     private EditText mEditText;
@@ -173,6 +173,12 @@ public class ChatDetailActivity extends BaseActivity implements View.OnClickList
         super.onDestroy();
         makeUnreadTohadread();
         YaozuApplication.personStateInstances.remove(this);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.left_enter_page, R.anim.right_quit_page);
     }
 
     /**

@@ -5,7 +5,7 @@ import android.os.Bundle;
 /**
  * Created by jieyaozu on 2016/2/20.
  */
-public class SearchResultActivity extends BaseActivity {
+public class SearchResultActivity extends SwipeBackBaseActivity {
 
 
     @Override

@@ -1,5 +1,6 @@
 package com.yaozu.listener.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -108,6 +109,7 @@ public class ChatListViewAdapter extends BaseAdapter implements PersonStateInter
                 intent.putExtra(IntentKey.CURRENT_SONG_INFO, chatListInfo.getSonginfo());
                 intent.putExtra(IntentKey.CURRENT_SONG_STATE, chatListInfo.getState());
                 mContext.startActivity(intent);
+                ((Activity) mContext).overridePendingTransition(R.anim.right_enter_page, R.anim.left_quit_page);
             }
         });
         return view;

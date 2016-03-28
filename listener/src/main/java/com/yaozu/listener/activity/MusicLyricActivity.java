@@ -57,7 +57,7 @@ import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 /**
  * Created by jieyz on 2015/9/29.
  */
-public class MusicLyricActivity extends SwipeBackActivity implements View.OnClickListener {
+public class MusicLyricActivity extends SwipeBackBaseActivity implements View.OnClickListener {
     //?songname=爷爷泡的茶&singer=周杰伦"
     private static final String downloadUrl = "http://120.27.129.229:8080/TestServers/servlet/DownLoadServlet";
     private static final String baiduGetLrcIdUrl = "http://box.zhangmen.baidu.com/x?op=12&count=1";//&title=我是一只鱼$$任贤齐$$$$";
@@ -149,20 +149,13 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
         setContentView(R.layout.activity_music_home);
         findviewByids();
         setOnclickListener();
-        initDate();
         mService = YaozuApplication.getIntance().getMusicService();
+        initDate();
         setProgress();
         //initFollowUserState();
         //changeMenuState();
 
         registerPushReceiver();
-
-        SwipeBackLayout swipeBackLayout = getSwipeBackLayout();
-        swipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
-
-        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        int width = wm.getDefaultDisplay().getWidth();
-        swipeBackLayout.setEdgeSize(width / 2);
     }
 
     private void findviewByids() {
@@ -198,6 +191,13 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
 
         if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(singer)) {
             showMusicLyric(name);
+        }
+
+        MusicService.PlayMode playMode = mService.currentPlayMode;
+        if (playMode == MusicService.PlayMode.ListLoop) {
+            mPlayMode.setImageResource(R.drawable.play_icn_loop_prs);
+        } else if (playMode == MusicService.PlayMode.SingleLoop) {
+            mPlayMode.setImageResource(R.drawable.play_icn_one_prs);
         }
     }
 
@@ -339,13 +339,17 @@ public class MusicLyricActivity extends SwipeBackActivity implements View.OnClic
                         PersonState.PLAYING.toString(), lyricTitle.getText().toString() + "--" + lyricSinger.getText().toString());
                 break;
             case R.id.play_btn_play_mode:
-                MusicService.PlayMode playMode = mService.switchNextPlayMode();
-                if (playMode == MusicService.PlayMode.ListLoop) {
-                    mPlayMode.setImageResource(R.drawable.play_icn_loop_prs);
-                } else if (playMode == MusicService.PlayMode.SingleLoop) {
-                    mPlayMode.setImageResource(R.drawable.play_icn_one_prs);
-                }
+                changePlayModeIcon();
                 break;
+        }
+    }
+
+    private void changePlayModeIcon() {
+        MusicService.PlayMode playMode = mService.switchNextPlayMode();
+        if (playMode == MusicService.PlayMode.ListLoop) {
+            mPlayMode.setImageResource(R.drawable.play_icn_loop_prs);
+        } else if (playMode == MusicService.PlayMode.SingleLoop) {
+            mPlayMode.setImageResource(R.drawable.play_icn_one_prs);
         }
     }
 

@@ -1,6 +1,5 @@
 package com.yaozu.listener.activity;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,7 +17,6 @@ import com.yaozu.listener.R;
 import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.model.ChatDetailInfo;
-import com.yaozu.listener.db.model.ChatListInfo;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
 

@@ -11,7 +11,7 @@ import com.yaozu.listener.R;
 /**
  * Created by jieyaozu on 2016/2/19.
  */
-public class AddNewFriendActivity extends BaseActivity implements View.OnClickListener {
+public class AddNewFriendActivity extends SwipeBackBaseActivity implements View.OnClickListener {
 
     private ImageView actionBack;
     private RelativeLayout add_new_friend_search;
