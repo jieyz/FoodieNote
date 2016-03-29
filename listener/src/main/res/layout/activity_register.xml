@@ -39,11 +39,11 @@
         android:layout_height="match_parent"
         android:background="@color/white"
         android:orientation="vertical"
-        android:padding="7dp">
+        android:padding="10dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp">
+            android:layout_height="50dp">
 
             <TextView
                 android:layout_width="60dp"
@@ -70,12 +70,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_alignParentBottom="true"
-                android:background="@color/appthemecolor" />
+                android:background="@color/gray_white" />
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp">
+            android:layout_height="50dp">
 
             <TextView
                 android:layout_width="60dp"
@@ -102,12 +102,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_alignParentBottom="true"
-                android:background="@color/appthemecolor" />
+                android:background="@color/gray_white" />
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp">
+            android:layout_height="50dp">
 
             <TextView
                 android:layout_width="60dp"
@@ -133,14 +133,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_alignParentBottom="true"
-                android:background="@color/appthemecolor" />
+                android:background="@color/gray_white" />
         </RelativeLayout>
 
         <Button
             android:id="@+id/register_register"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="25dp"
             android:background="@drawable/button_background_selector"
             android:text="注 册"
             android:textColor="@color/white"

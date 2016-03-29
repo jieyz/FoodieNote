@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,8 +35,10 @@ import com.yaozu.listener.utils.NetUtil;
 import com.yaozu.listener.utils.PhoneInfoUtil;
 import com.yaozu.listener.utils.User;
 import com.yaozu.listener.utils.VolleyHelper;
+import com.yaozu.listener.widget.RoundCornerImageView;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.File;
 
@@ -43,6 +47,14 @@ import java.io.File;
  */
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
     private EditText mAccout, mPassword;
+    private RelativeLayout accoutLayout;
+    private LinearLayout userIconLL;
+    //头像
+    private RoundCornerImageView userIcon;
+    //用户ID
+    private TextView userIdView;
+    //切换用户账号登录
+    private TextView switchAccout;
     private Button mLogin;
 
     private String token1 = "ZeOpNKgIS6NVsPnNIGS6NGxP7Qfd0jcFN0C5Ibqjpg328zglcxril0v4m4zETCFHBA68rgPUDVEw2+rmhAQNLnLfI1nmn0oY";
@@ -62,10 +74,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mPassword = (EditText) findViewById(R.id.login_password);
         mLogin = (Button) findViewById(R.id.login_login);
         registerTextView = (TextView) findViewById(R.id.activity_login_register);
+        accoutLayout = (RelativeLayout) findViewById(R.id.login_account_rl);
+        userIconLL = (LinearLayout) findViewById(R.id.login_layout_imageview_ll);
+        userIcon = (RoundCornerImageView) findViewById(R.id.login_layout_imageview);
+        userIdView = (TextView) findViewById(R.id.login_userid);
+        switchAccout = (TextView) findViewById(R.id.activity_login_switch_account);
 
         sp = this.getSharedPreferences(Constant.LOGIN_MSG, Context.MODE_PRIVATE);
         mLogin.setOnClickListener(this);
         registerTextView.setOnClickListener(this);
+        switchAccout.setOnClickListener(this);
         friendDao = new FriendDao(this);
         mUser = new User(this);
 
@@ -76,6 +94,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             intent.putExtra("token", mUser.getUserToken());
             startActivity(intent);
             finish();
+        } else {
+            String userId = mUser.getUserAccoutFromLocal();
+            if (!TextUtils.isEmpty(userId)) {
+                accoutLayout.setVisibility(View.GONE);
+                userIconLL.setVisibility(View.VISIBLE);
+                switchAccout.setVisibility(View.VISIBLE);
+                userIdView.setText(userId);
+                NetUtil.setImageIcon(userId, userIcon, true, true);
+            }
         }
     }
 
@@ -98,7 +125,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.login_login:
-                String account = mAccout.getText().toString().trim();
+                String account = accoutLayout.getVisibility() == View.VISIBLE ? mAccout.getText().toString().trim() : mUser.getUserAccoutFromLocal();
                 String password = mPassword.getText().toString().trim();
                 if (TextUtils.isEmpty(account)) {
                     Toast.makeText(this, "账号不能为空", Toast.LENGTH_SHORT).show();
@@ -114,6 +141,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             case R.id.activity_login_register:
                 Intent registerIntent = new Intent(this, RegisterActivity.class);
                 startActivity(registerIntent);
+                break;
+            case R.id.activity_login_switch_account:
+                switchAccout.setVisibility(View.GONE);
+                accoutLayout.setVisibility(View.VISIBLE);
+                userIconLL.setVisibility(View.GONE);
                 break;
         }
     }

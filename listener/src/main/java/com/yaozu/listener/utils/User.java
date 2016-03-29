@@ -72,6 +72,10 @@ public class User {
         return mToken;//preferences.getString(Constant.USER_TOKEN, "");
     }
 
+    public String getUserAccoutFromLocal(){
+        return preferences.getString(Constant.USER_ACCOUNT, "");
+    }
+
     public void quitLogin() {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(Constant.IS_LOGINING, false);
