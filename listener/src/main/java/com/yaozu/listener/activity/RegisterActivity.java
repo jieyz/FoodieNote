@@ -75,6 +75,8 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                 if (TextUtils.isEmpty(userid)) {
                     Toast.makeText(this, "电话号码不能为空", Toast.LENGTH_SHORT).show();
                     return;
+                } else if (!verifyPhoneNumber(userid)) {
+                    return;
                 }
 
                 if (TextUtils.isEmpty(pwd)) {
@@ -89,6 +91,14 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                 }
                 break;
         }
+    }
+
+    private boolean verifyPhoneNumber(String number) {
+        if (number.length() != 11 || !number.matches("[0-9]+") || number.charAt(0) != 49) {
+            Toast.makeText(this, "电话号码的格式不正确", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     /**
