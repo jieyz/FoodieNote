@@ -14,6 +14,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.taobao.api.ApiException;
+import com.taobao.api.DefaultTaobaoClient;
+import com.taobao.api.TaobaoClient;
+import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
+import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
 import com.yaozu.listener.HomeMainActivity;
 import com.yaozu.listener.R;
 import com.yaozu.listener.constant.DataInterface;
@@ -22,8 +27,6 @@ import com.yaozu.listener.utils.VolleyHelper;
 
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * Created by jieyz on 2016/1/26.
@@ -64,7 +67,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         switch (view.getId()) {
             case R.id.register_register:
                 String nickname = nickName.getText().toString().trim();
-                String userid = phoneNumber.getText().toString().trim();
+                final String userid = phoneNumber.getText().toString().trim();
                 String pwd = password.getText().toString().trim();
 
                 if (TextUtils.isEmpty(nickname)) {
@@ -84,11 +87,17 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                     return;
                 }
                 PhoneInfoUtil phoneInfo = new PhoneInfoUtil(this);
-                try {
+/*                try {
                     registerRequest(userid, URLEncoder.encode(nickname, "UTF-8"), pwd, phoneInfo.getDeviceId());
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
-                }
+                }*/
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendVerifyCode(userid);
+                    }
+                }).start();
                 break;
         }
     }
@@ -99,6 +108,27 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
             return false;
         }
         return true;
+    }
+
+    /**
+     * 发送短信验证码
+     */
+    private void sendVerifyCode(String phoneNumber){
+        TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", getResources().getString(R.string.dayu_appkey), getResources().getString(R.string.dayu_appsecret));
+        AlibabaAliqinFcSmsNumSendRequest req = new AlibabaAliqinFcSmsNumSendRequest();
+        req.setExtend("123456");
+        req.setSmsType("normal");
+        req.setSmsFreeSignName("注册验证");
+        req.setSmsParamString("{\"code\":\"1234\",\"product\":\"【超级计划】\"}");
+        req.setRecNum(phoneNumber);
+        req.setSmsTemplateCode("SMS_7205064");
+        AlibabaAliqinFcSmsNumSendResponse rsp = null;
+        try {
+            rsp = client.execute(req);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        System.out.println(rsp.getBody());
     }
 
     /**
