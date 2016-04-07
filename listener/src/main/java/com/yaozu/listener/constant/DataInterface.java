@@ -5,9 +5,9 @@ package com.yaozu.listener.constant;
  */
 public class DataInterface {
     //生产地址
-    public static String APP_HOST = "http://120.27.129.229:8080/";
+    //public static String APP_HOST = "http://120.27.129.229:8080/";
     //测试地址
-    //public static String APP_HOST = "http://192.168.0.110:8080/";
+    public static String APP_HOST = "http://192.168.1.20:8080/";
 
     public static String getLoginUrl() {
         return APP_HOST + "TestServers/servlet/LoginServlet";
@@ -106,5 +106,13 @@ public class DataInterface {
 
     public static String getUserStateUrl() {
         return APP_HOST + "TestServers/servlet/getUserStateServlet";
+    }
+
+    /**
+     * 获取验证码
+     * @return
+     */
+    public static String getSmsCodeUrl() {
+        return APP_HOST + "TestServers/servlet/getSmsCodeServlet";
     }
 }

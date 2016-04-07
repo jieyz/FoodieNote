@@ -74,6 +74,10 @@
             android:launchMode="singleTask"
             android:theme="@style/MusicLyricTheme"
             android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activity.CheckSmsCodeActivity"
+            android:theme="@style/MusicLyricTheme"
+            android:windowSoftInputMode="adjustPan" />
 
         <service
             android:name="com.yaozu.listener.service.MusicService"
