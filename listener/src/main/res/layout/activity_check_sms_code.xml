@@ -28,7 +28,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/activity_register_back"
-            android:text="填写手机号"
+            android:text="填写验证码"
             android:textColor="@color/white"
             android:textSize="18dp" />
     </RelativeLayout>
@@ -44,68 +44,39 @@
         <RelativeLayout
             android:id="@+id/rl1"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="wrap_content">
 
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:paddingLeft="5dp"
                 android:paddingRight="10dp"
-                android:text="昵称"
-                android:textColor="#363636"
+                android:text="我们已经发送了验证码到你的手机"
+                android:textColor="@color/gray_white"
                 android:textSize="16dp" />
-
-            <EditText
-                android:id="@+id/register_nickname"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:hint="例如：邦邦"
-                android:paddingLeft="60dp"
-                android:text=""
-                android:textColorHint="@color/gray_white"
-                android:textSize="15dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_alignParentBottom="true"
-                android:background="@color/gray_white" />
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/rl2"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/rl1">
 
             <TextView
-                android:layout_width="60dp"
+                android:id="@+id/check_sms_phonenumber"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
+                android:layout_marginTop="20dp"
                 android:paddingLeft="5dp"
                 android:paddingRight="10dp"
-                android:text="+86"
+                android:text="+86 "
                 android:textColor="#363636"
-                android:textSize="16dp" />
-
-            <EditText
-                android:id="@+id/register_phonenumber"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:hint="你的手机号码"
-                android:paddingLeft="60dp"
-                android:text=""
-                android:textColorHint="@color/gray_white"
-                android:textSize="15dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_alignParentBottom="true"
-                android:background="@color/gray_white" />
+                android:textSize="26dp"
+                android:textStyle="bold" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -115,22 +86,22 @@
             android:layout_below="@+id/rl2">
 
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:paddingLeft="5dp"
                 android:paddingRight="10dp"
-                android:text="密码"
+                android:text="验证码"
                 android:textColor="#363636"
                 android:textSize="16dp" />
 
             <EditText
-                android:id="@+id/register_password"
+                android:id="@+id/check_sms_code"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@null"
-                android:hint="密码"
-                android:paddingLeft="60dp"
+                android:hint="请输入验证码"
+                android:paddingLeft="70dp"
                 android:textColorHint="@color/gray_white"
                 android:textSize="15dp" />
 
@@ -141,26 +112,24 @@
                 android:background="@color/gray_white" />
         </RelativeLayout>
 
-        <Button
-            android:id="@+id/register_register"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_below="@+id/rl3"
-            android:layout_marginTop="25dp"
-            android:background="@drawable/button_background_selector"
-            android:text="注 册"
-            android:textColor="@color/white"
-            android:textSize="20dp" />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/rl3"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
-            android:textColor="@color/appthemecolor"
-            android:textSize="16dp"
-            android:text="账号注册" />
+            android:layout_marginTop="10dp"
+            android:text="重新获取验证码" />
+
+        <Button
+            android:id="@+id/check_sms_next"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_below="@+id/rl3"
+            android:layout_marginTop="55dp"
+            android:background="@drawable/button_background_selector"
+            android:text="下一步"
+            android:textColor="@color/white"
+            android:textSize="20dp" />
     </RelativeLayout>
 
 </LinearLayout>

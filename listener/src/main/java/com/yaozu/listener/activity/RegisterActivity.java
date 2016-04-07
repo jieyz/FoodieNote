@@ -1,5 +1,6 @@
 package com.yaozu.listener.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -7,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -14,14 +17,12 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.taobao.api.ApiException;
-import com.taobao.api.DefaultTaobaoClient;
-import com.taobao.api.TaobaoClient;
-import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
-import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
 import com.yaozu.listener.HomeMainActivity;
 import com.yaozu.listener.R;
 import com.yaozu.listener.constant.DataInterface;
+import com.yaozu.listener.dao.MsmResponse;
+import com.yaozu.listener.dao.NetDao;
+import com.yaozu.listener.utils.IntentUtil;
 import com.yaozu.listener.utils.PhoneInfoUtil;
 import com.yaozu.listener.utils.VolleyHelper;
 
@@ -32,9 +33,10 @@ import org.json.JSONObject;
  * Created by jieyz on 2016/1/26.
  */
 public class RegisterActivity extends BaseActivity implements View.OnClickListener {
+    private String TAG = this.getClass().getSimpleName();
     private EditText nickName, phoneNumber, password;
     private Button register;
-    private String TAG = this.getClass().getSimpleName();
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +68,9 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.register_register:
-                String nickname = nickName.getText().toString().trim();
+                final String nickname = nickName.getText().toString().trim();
                 final String userid = phoneNumber.getText().toString().trim();
-                String pwd = password.getText().toString().trim();
+                final String pwd = password.getText().toString().trim();
 
                 if (TextUtils.isEmpty(nickname)) {
                     Toast.makeText(this, "用户名称不能为空", Toast.LENGTH_SHORT).show();
@@ -92,12 +94,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }*/
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        sendVerifyCode(userid);
-                    }
-                }).start();
+                showDialog(userid, nickname, pwd);
                 break;
         }
     }
@@ -110,25 +107,57 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         return true;
     }
 
+    private void showDialog(final String phoneNumber, final String nickname, final String password) {
+        dialog = new Dialog(this, R.style.NobackDialog);
+        View view = View.inflate(this, R.layout.dialog_verify_phonenumber, null);
+        TextView phone = (TextView) view.findViewById(R.id.dialog_verify_phonenumber);
+        phone.setText("+86 " + phoneNumber);
+        TextView cancel = (TextView) view.findViewById(R.id.dialog_verify_cancel);
+        TextView ok = (TextView) view.findViewById(R.id.dialog_verify_confirm);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                sendVerifyCode(phoneNumber, nickname, password);
+            }
+        });
+        dialog.setContentView(view);
+        dialog.show();
+    }
+
     /**
      * 发送短信验证码
      */
-    private void sendVerifyCode(String phoneNumber){
-        TaobaoClient client = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", getResources().getString(R.string.dayu_appkey), getResources().getString(R.string.dayu_appsecret));
-        AlibabaAliqinFcSmsNumSendRequest req = new AlibabaAliqinFcSmsNumSendRequest();
-        req.setExtend("123456");
-        req.setSmsType("normal");
-        req.setSmsFreeSignName("注册验证");
-        req.setSmsParamString("{\"code\":\"1234\",\"product\":\"【超级计划】\"}");
-        req.setRecNum(phoneNumber);
-        req.setSmsTemplateCode("SMS_7205064");
-        AlibabaAliqinFcSmsNumSendResponse rsp = null;
-        try {
-            rsp = client.execute(req);
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
-        System.out.println(rsp.getBody());
+    private void sendVerifyCode(final String phoneNumber, final String nickname, final String password) {
+        NetDao.getSmsPhoneCode(phoneNumber, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, "response : " + response.toString());
+                MsmResponse msmResponse = JSON.parseObject(response.toString(), MsmResponse.class);
+                String state = msmResponse.getAlibaba_aliqin_fc_sms_num_send_response().getResult().getSuccess();
+                if (!"true".equals(state)) {
+                    Toast.makeText(RegisterActivity.this, "获取验证码失败，请重新获取", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(RegisterActivity.this, CheckSmsCodeActivity.class);
+                    intent.putExtra("username", nickname);
+                    intent.putExtra("pnumber", phoneNumber);
+                    intent.putExtra("password", password);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
     }
 
     /**

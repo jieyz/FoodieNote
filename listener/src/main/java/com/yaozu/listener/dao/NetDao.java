@@ -36,13 +36,26 @@ public class NetDao {
 
     /**
      * 获得用记的状态
+     *
      * @param userid
      * @param listener
      * @param errorListener
      */
-    public static void getUserState(String userid,Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+    public static void getUserState(String userid, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
         String url = DataInterface.getUserStateUrl() + "?userid=" + userid;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, listener,errorListener);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, listener, errorListener);
+        VolleyHelper.getRequestQueue().add(jsonObjectRequest);
+    }
+
+    /**
+     * 短信验证码
+     * @param phoneNumber
+     * @param listener
+     * @param errorListener
+     */
+    public static void getSmsPhoneCode(String phoneNumber, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+        String url = DataInterface.getSmsCodeUrl() + "?phonenumber=" + phoneNumber;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, listener, errorListener);
         VolleyHelper.getRequestQueue().add(jsonObjectRequest);
     }
 }
