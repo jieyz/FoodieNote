@@ -113,11 +113,13 @@
         </RelativeLayout>
 
         <TextView
+            android:id="@+id/check_sms_obtain_again"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/rl3"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
+            android:textColor="@color/gray_white"
             android:text="重新获取验证码" />
 
         <Button
