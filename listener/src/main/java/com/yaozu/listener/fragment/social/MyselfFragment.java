@@ -31,6 +31,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.yaozu.listener.R;
 import com.yaozu.listener.activity.CropImageActivity;
 import com.yaozu.listener.activity.LoginActivity;
+import com.yaozu.listener.activity.MyPlanActivity;
 import com.yaozu.listener.activity.UserIconDetail;
 import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.constant.DataInterface;
@@ -60,6 +61,8 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
     private RelativeLayout nickName;
     //昵称
     private TextView nickName1, nickName2;
+    //我的计划
+    private RelativeLayout myPlan;
     private SharedPreferences sp;
     private RoundCornerImageView userIcon;
     private ImageView fragment_social_mine_usericon_onclick;
@@ -100,6 +103,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mQuit = (RelativeLayout) view.findViewById(R.id.fragment_social_mine_quit);
+        myPlan = (RelativeLayout) view.findViewById(R.id.fragment_social_mine_myplan);
         mAccount_view = (TextView) view.findViewById(R.id.fragment_social_mine_account);
         userInfoRl = (RelativeLayout) view.findViewById(R.id.fragment_social_mine_userinfo_rl);
         nickName = (RelativeLayout) view.findViewById(R.id.fragment_social_mine_nickname_rl);
@@ -114,6 +118,7 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
         mUser = new User(getActivity());
         mAccount_view.setText(mUser.getUserAccount());
         mQuit.setOnClickListener(this);
+        myPlan.setOnClickListener(this);
         userInfoRl.setOnClickListener(this);
         nickName.setOnClickListener(this);
         fragment_social_mine_usericon_onclick.setOnClickListener(this);
@@ -256,6 +261,10 @@ public class MyselfFragment extends BaseFragment implements View.OnClickListener
                 break;
             case R.id.fragment_social_mine_usericon_onclick:
                 IntentUtil.toUserIconActivity(this.getActivity(), User.getUserAccount());
+                break;
+            case R.id.fragment_social_mine_myplan:
+                Intent myplan = new Intent(this.getActivity(), MyPlanActivity.class);
+                startActivity(myplan);
                 break;
         }
     }

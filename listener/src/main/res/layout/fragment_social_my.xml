@@ -114,6 +114,38 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/fragment_social_mine_myplan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/main_listview_selector">
+
+        <RelativeLayout
+            style="@style/RippleBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="我的计划"
+                android:textColor="#363636"
+                android:textSize="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:drawablePadding="5dp"
+                android:drawableRight="@drawable/right_arrow"
+                android:textSize="15dp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/fragment_social_mine_quit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

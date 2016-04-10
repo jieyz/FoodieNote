@@ -8,23 +8,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.yaozu.listener.HomeMainActivity;
 import com.yaozu.listener.R;
-import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.dao.MsmResponse;
 import com.yaozu.listener.dao.NetDao;
-import com.yaozu.listener.utils.IntentUtil;
 import com.yaozu.listener.utils.PhoneInfoUtil;
-import com.yaozu.listener.utils.VolleyHelper;
 
 import org.json.JSONObject;
 
@@ -124,11 +117,31 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                sendVerifyCode(phoneNumber, nickname, password);
+                checkPhoneNumberExist(phoneNumber, nickname, password);
             }
         });
         dialog.setContentView(view);
         dialog.show();
+    }
+
+    private void checkPhoneNumberExist(final String phoneNumber, final String nickname, final String password) {
+        NetDao.checkUserExist(phoneNumber, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                int code = jsonObject.getIntValue("code");
+                if (code == 0) {
+                    sendVerifyCode(phoneNumber, nickname, password);
+                } else {
+                    Toast.makeText(RegisterActivity.this, "此电话号码已经被注册", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(RegisterActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**

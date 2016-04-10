@@ -3,6 +3,7 @@ package com.yaozu.listener.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,9 +21,13 @@ import com.yaozu.listener.R;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.dao.MsmResponse;
 import com.yaozu.listener.dao.NetDao;
+import com.yaozu.listener.utils.PhoneInfoUtil;
 import com.yaozu.listener.utils.VolleyHelper;
 
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Created by jieyaozu on 2016/4/7.
@@ -105,7 +110,16 @@ public class CheckSmsCodeActivity extends BaseActivity implements View.OnClickLi
                 obtainVerifyCode();
                 break;
             case R.id.check_sms_next:
-                verifySmsCode();
+                String smscode = verifyCode.getText().toString().trim();
+                if (TextUtils.isEmpty(smscode)) {
+                    Toast.makeText(this, "请输入验证码", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (smscode.length() != 6 || !smscode.matches("[0-9]+")) {
+                    Toast.makeText(this, "请输入6位数字的验证码", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                verifySmsCode(smscode);
                 break;
         }
     }
@@ -114,9 +128,26 @@ public class CheckSmsCodeActivity extends BaseActivity implements View.OnClickLi
      * 输入验证码验证是否正确
      * 验证正确后发送注册请求并登录
      */
-    private void verifySmsCode() {
-        //TODO
-
+    private void verifySmsCode(String smscode) {
+        NetDao.verifySmsPhoneCode(pnumber, smscode, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(response.toString());
+                int code = jsonObject.getIntValue("code");
+                if (code == 1) {
+                    Toast.makeText(CheckSmsCodeActivity.this, "验证成功", Toast.LENGTH_SHORT).show();
+                    PhoneInfoUtil phoneInfo = new PhoneInfoUtil(CheckSmsCodeActivity.this);
+                    registerRequest(pnumber, username, password, phoneInfo.getDeviceId());
+                } else {
+                    Toast.makeText(CheckSmsCodeActivity.this, "验证失败", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(CheckSmsCodeActivity.this, "验证失败", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
@@ -127,7 +158,12 @@ public class CheckSmsCodeActivity extends BaseActivity implements View.OnClickLi
      * @param deviceid
      */
     private void registerRequest(final String userid, final String username, String password, String deviceid) {
-        String url = DataInterface.getRegisterUrl() + "?userid=" + userid + "&username=" + username + "&password=" + password + "&deviceid=" + deviceid;
+        String url = null;
+        try {
+            url = DataInterface.getRegisterUrl() + "?userid=" + userid + "&username=" + URLEncoder.encode(username, "UTF-8") + "&password=" + password + "&deviceid=" + deviceid;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET,
                 url,
                 new Response.Listener<JSONObject>() {

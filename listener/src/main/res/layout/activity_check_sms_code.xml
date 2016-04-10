@@ -101,6 +101,7 @@
                 android:layout_height="match_parent"
                 android:background="@null"
                 android:hint="请输入验证码"
+                android:inputType="number"
                 android:paddingLeft="70dp"
                 android:textColorHint="@color/gray_white"
                 android:textSize="15dp" />

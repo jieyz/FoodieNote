@@ -1,5 +1,8 @@
 package com.yaozu.listener.dao;
 
+import android.util.Log;
+
+import com.alibaba.fastjson.JSON;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -17,6 +20,19 @@ import java.net.URLEncoder;
  * Created by jieyaozu on 2016/3/14.
  */
 public class NetDao {
+    private static String TAG = "NetDao";
+
+    /**
+     * 查询用户是否存在
+     * @param userid
+     * @param listener
+     * @param errorListener
+     */
+    public static void checkUserExist(String userid, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+        String url = DataInterface.getCheckUserInfoUrl() + "?userid=" + userid;
+        VolleyHelper.getRequestQueue().add(new JsonObjectRequest(Request.Method.GET, url, listener, errorListener));
+    }
+
     /**
      * 获得歌曲在服务器上编过码的文件名
      *
@@ -49,12 +65,27 @@ public class NetDao {
 
     /**
      * 短信验证码
+     *
      * @param phoneNumber
      * @param listener
      * @param errorListener
      */
     public static void getSmsPhoneCode(String phoneNumber, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
         String url = DataInterface.getSmsCodeUrl() + "?phonenumber=" + phoneNumber;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, listener, errorListener);
+        VolleyHelper.getRequestQueue().add(jsonObjectRequest);
+    }
+
+    /**
+     * 短信验证码
+     *
+     * @param phoneNumber
+     * @param listener
+     * @param errorListener
+     */
+    public static void verifySmsPhoneCode(String phoneNumber, String smscode, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+        String url = DataInterface.verifySmsCodeUrl() + "?phonenumber=" + phoneNumber + "&smscode=" + smscode;
+        Log.d(TAG, "url====>" + url);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, listener, errorListener);
         VolleyHelper.getRequestQueue().add(jsonObjectRequest);
     }

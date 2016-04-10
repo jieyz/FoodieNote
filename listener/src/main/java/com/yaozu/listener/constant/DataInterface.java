@@ -110,9 +110,19 @@ public class DataInterface {
 
     /**
      * 获取验证码
+     *
      * @return
      */
     public static String getSmsCodeUrl() {
         return APP_HOST + "TestServers/servlet/getSmsCodeServlet";
+    }
+
+    /**
+     * 验证验证码
+     *
+     * @return
+     */
+    public static String verifySmsCodeUrl() {
+        return APP_HOST + "TestServers/servlet/verifySmsCodeServlet";
     }
 }
