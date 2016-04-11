@@ -33,9 +33,9 @@ import io.rong.imkit.RongIM;
 public class YaozuApplication extends Application {
     private static YaozuApplication app;
 
-    private final int MUSIC_SERVICE = 0;
-    private final int SUPPORT_MUSIC_SERVICE = 1;
-    private HashMap<Integer, Service> musicService = new HashMap<>();
+    private static final int MUSIC_SERVICE = 0;
+    private static final int SUPPORT_MUSIC_SERVICE = 1;
+    private static HashMap<Integer, Service> musicService = new HashMap<>();
     public static Map<BaseActivity, Boolean> mActivitys = new HashMap<BaseActivity, Boolean>();
     //PersonState的实例集合
     public static List<PersonStateInterface> personStateInstances = new ArrayList<PersonStateInterface>();
@@ -104,7 +104,7 @@ public class YaozuApplication extends Application {
         return app;
     }
 
-    public MusicService getMusicService() {
+    public static MusicService getMusicService() {
         return (MusicService) musicService.get(MUSIC_SERVICE);
     }
 
@@ -128,12 +128,20 @@ public class YaozuApplication extends Application {
         isFollowPlay = false;
         followUserid = null;
         followUserName = null;
+        MusicService musicService = getMusicService();
+        if (musicService != null) {
+            musicService.stopGetStateTask();
+        }
     }
 
     public static void setFollowPlayInfo(String userid, String username) {
         isFollowPlay = true;
         followUserid = userid;
         followUserName = username;
+        MusicService musicService = getMusicService();
+        if (musicService != null) {
+            musicService.startGetStateTask(userid);
+        }
     }
 
     /**

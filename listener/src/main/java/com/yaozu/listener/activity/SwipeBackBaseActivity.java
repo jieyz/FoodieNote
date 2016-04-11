@@ -30,7 +30,7 @@ public class SwipeBackBaseActivity extends BaseActivity implements SwipeBackActi
 
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         int width = wm.getDefaultDisplay().getWidth();
-        swipeBackLayout.setEdgeSize(width / 2);
+        swipeBackLayout.setEdgeSize(width / 3);
     }
 
     @Override

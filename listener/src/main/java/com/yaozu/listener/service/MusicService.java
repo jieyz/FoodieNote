@@ -25,6 +25,7 @@ import com.yaozu.listener.YaozuApplication;
 import com.yaozu.listener.constant.DataInterface;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.dao.NetDao;
+import com.yaozu.listener.dao.UserState;
 import com.yaozu.listener.db.model.Person;
 import com.yaozu.listener.listener.PersonState;
 import com.yaozu.listener.listener.PersonStateInterface;
@@ -56,6 +57,8 @@ public class MusicService extends Service implements PersonStateInterface {
     private int NOTIFICATION_ID = -1;
     private User user;
     private int seektoOffset = 0;
+    //每5秒一次的向服务器请求
+    private boolean isruntask = false;
 
     public enum PlayMode {
         SingleLoop, ListLoop;
@@ -576,5 +579,53 @@ public class MusicService extends Service implements PersonStateInterface {
                 //改变背景或者 处理网络的全局变量
             }
         }
+    }
+
+    /**
+     * 获取和对方听用户的状态
+     *
+     * @param mOtherUserId
+     */
+    private void getUserState(final String mOtherUserId) {
+        NetDao.getUserState(mOtherUserId, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                UserState userState = JSON.parseObject(response.toString(), UserState.class);
+                if (userState != null) {
+                    Person person = new Person();
+                    person.setId(mOtherUserId);
+                    person.setState(userState.getState());
+                    person.setCurrentSong(userState.getSongname() + "--" + userState.getSinger());
+                    Order.notifyPersonState(person);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+    }
+
+
+    public void startGetStateTask(final String mOtherUserId) {
+        isruntask = true;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (isruntask) {
+                    try {
+                        Thread.sleep(5000);
+                        getUserState(mOtherUserId);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void stopGetStateTask() {
+        isruntask = false;
     }
 }
