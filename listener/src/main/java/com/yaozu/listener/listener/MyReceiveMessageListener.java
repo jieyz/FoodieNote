@@ -1,5 +1,8 @@
 package com.yaozu.listener.listener;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,10 +12,14 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.yaozu.listener.R;
+import com.yaozu.listener.YaozuApplication;
+import com.yaozu.listener.activity.ChatDetailActivity;
 import com.yaozu.listener.constant.Constant;
 import com.yaozu.listener.constant.IntentKey;
 import com.yaozu.listener.db.dao.ChatDetailInfoDao;
 import com.yaozu.listener.db.dao.ChatListInfoDao;
+import com.yaozu.listener.db.dao.FriendDao;
 import com.yaozu.listener.db.model.ChatDetailInfo;
 import com.yaozu.listener.db.model.ChatListInfo;
 
@@ -29,11 +36,13 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
     private Context mContext;
     private ChatListInfoDao chatListInfoDao;
     private ChatDetailInfoDao mChatDetailInfoDao;
+    private FriendDao mFriendDao;
 
     public MyReceiveMessageListener(Context context) {
         mContext = context;
         chatListInfoDao = new ChatListInfoDao(mContext);
         mChatDetailInfoDao = new ChatDetailInfoDao(mContext);
+        mFriendDao = new FriendDao(mContext);
     }
 
     /**
@@ -52,6 +61,10 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
         }
         if (isVerifyMsgAgree(message, content)) {
 
+        }
+
+        if (!YaozuApplication.isAppTopRunning()) {
+            sendNotifycation(message.getSenderUserId(), content.toString());
         }
         //更新或者插入聊天列表
         ChatListInfo chatListInfo = new ChatListInfo();
@@ -133,7 +146,7 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
         JSONObject object = JSON.parseObject(new String(message.getContent().encode()));
         String msg = object.getString("content");
         if (msg.contains(Constant.VERIFY_PREFIX_AGREET)) {
-            content.replace(0,Constant.VERIFY_PREFIX_AGREET.length(),"");
+            content.replace(0, Constant.VERIFY_PREFIX_AGREET.length(), "");
             is = true;
             //通知通讯录列表页面
             Intent intent = new Intent(IntentKey.NOTIFY_VERIFY_AGREE_FRIEND);
@@ -142,5 +155,30 @@ public class MyReceiveMessageListener implements RongIMClient.OnReceiveMessageLi
             localBroadcastManager.sendBroadcast(intent);
         }
         return is;
+    }
+
+    private void sendNotifycation(String userid, String content) {
+        //消息通知栏
+        //定义NotificationManager
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(ns);
+        //定义通知栏展现的内容信息
+        Intent notificationIntent = new Intent(mContext, ChatDetailActivity.class);
+        notificationIntent.putExtra(IntentKey.CHAT_USERID, userid);
+        PendingIntent contentIntent = PendingIntent.getActivity(mContext, (int) System.currentTimeMillis(),
+                notificationIntent, 0);
+        int icon = R.drawable.ic_launcher;
+        Notification notification = new Notification.Builder(mContext)
+                .setContentTitle(mFriendDao.findFriend(userid).getName())
+                .setContentText(content)
+                .setTicker(content)
+                .setDefaults(Notification.DEFAULT_SOUND)
+                .setSmallIcon(icon)
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true)
+                .build();
+
+        //用mNotificationManager的notify方法通知用户生成标题栏消息通知
+        mNotificationManager.notify(1, notification);
     }
 }

@@ -1,6 +1,8 @@
 package com.yaozu.listener.activity;
 
 import android.app.Dialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -166,6 +168,8 @@ public class ChatDetailActivity extends SwipeBackBaseActivity implements View.On
     protected void onResume() {
         super.onResume();
         makeUnreadTohadread();
+        //取消通知消息
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancel(1);
     }
 
     @Override

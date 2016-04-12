@@ -103,10 +103,30 @@ public class FriendDao {
         return persons;
     }
 
-    public void clear(){
+    public Person findFriend(String userid) {
+        Person person = new Person();
+        SQLiteDatabase db = helper.getReadableDatabase();
+        if (db.isOpen()) {
+            Cursor cursor = db.rawQuery("select * from friend where userid=?", new String[]{userid});
+            while (cursor.moveToNext()) {
+                String username = cursor.getString(cursor.getColumnIndex("username"));
+                String beizhuname = cursor.getString(cursor.getColumnIndex("beizhuname"));
+                String isnew = cursor.getString(cursor.getColumnIndex("isnew"));
+
+                person.setId(userid);
+                person.setName(username);
+                person.setBeizhuname(beizhuname);
+                person.setIsNew(isnew);
+            }
+        }
+        db.close();
+        return person;
+    }
+
+    public void clear() {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (db.isOpen()) {
-            db.execSQL("delete from friend where 1=?",new Object[]{1});
+            db.execSQL("delete from friend where 1=?", new Object[]{1});
         }
         db.close();
     }
