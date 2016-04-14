@@ -101,6 +101,7 @@ public class HomeMainActivity extends BaseActivity implements View.OnClickListen
         System.loadLibrary("mediascanner");
     }
     //jieyz提交的
+	//kwgkwgw
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
